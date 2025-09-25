@@ -180,6 +180,7 @@ export const Wishlist = ({
   const [pagination, setPagination] = React.useState(initialPagination);
   const [isEditing, setIsEditing] = React.useState(false);
   const [loadingMore, setLoadingMore] = React.useState(false);
+  const gridRef = React.useRef<HTMLDivElement | null>(null);
 
   const loadMoreWishlistItems = async () => {
     if (loadingMore) return;
@@ -198,6 +199,16 @@ export const Wishlist = ({
     }
     setLoadingMore(false);
   };
+
+  React.useEffect(() => {
+    const observer = new IntersectionObserver((e) => {
+      if (e[0]?.isIntersecting && !loadingMore && pagination.next) void loadMoreWishlistItems();
+    });
+
+    if (items.length && gridRef.current?.lastElementChild) observer.observe(gridRef.current.lastElementChild);
+
+    return () => observer.disconnect();
+  }, [pagination, items]);
 
   return (
     <>
@@ -242,7 +253,7 @@ export const Wishlist = ({
         {description ? <h4>{description}</h4> : null}
       </PageHeader>
       <section className={classNames("p-4 md:p-8", isDiscover && "lg:px-16")}>
-        <div className="product-card-grid">
+        <div className="product-card-grid" ref={gridRef}>
           {items.map((item) => (
             <WishlistItemCard
               key={item.id}
@@ -252,13 +263,7 @@ export const Wishlist = ({
             />
           ))}
         </div>
-        {pagination.next !== null ? (
-          <div style={{ display: "flex", justifyContent: "center", marginTop: "var(--spacer-6)" }}>
-            <Button disabled={loadingMore} onClick={() => void loadMoreWishlistItems()}>
-              {loadingMore ? "Loading more items..." : "Load more items"}
-            </Button>
-          </div>
-        ) : null}
+
         {isEditing ? (
           <WishlistEditor
             id={id}
