@@ -1,3 +1,4 @@
+import uniqBy from "lodash/uniqBy";
 import * as React from "react";
 import { createCast } from "ts-safe-cast";
 
@@ -191,7 +192,7 @@ export const Wishlist = ({
         wishlist_id: id,
         page: pagination.next,
       });
-      setItems((prev) => [...prev, ...loaded.items]);
+      setItems((prev) => uniqBy([...prev, ...loaded.items], "id"));
       setPagination(loaded.pagination);
     } catch (e) {
       assertResponseError(e);
@@ -259,7 +260,11 @@ export const Wishlist = ({
               key={item.id}
               wishlistId={id}
               item={item}
-              onDelete={() => setItems((prev) => prev.filter((i) => i.id !== item.id))}
+              onDelete={() => {
+                setItems((prev) => prev.filter((i) => i.id !== item.id));
+                // Go back to first page to avoid empty last page
+                setPagination(initialPagination);
+              }}
             />
           ))}
         </div>
