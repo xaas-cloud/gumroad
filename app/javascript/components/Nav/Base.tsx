@@ -1,4 +1,4 @@
-import classNames from "$app/utils/classNames";
+import { classNames } from "$app/utils/classNames";
 import * as React from "react";
 import { cast } from "ts-safe-cast";
 
