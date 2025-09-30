@@ -74,35 +74,17 @@ interface NavLinkProps extends BaseNavLinkProps {
   onClick?: (ev: React.MouseEvent<HTMLAnchorElement>) => void;
 };
 
-export const NavLink = ({
-  onClick,
-  ...props
-}: NavLinkProps) =>  {
-  return (
-    <BaseNavLink
-      {...props}
-      {...(onClick && { onClick })}
-    />
-  );
-};
+export const NavLink = ({ onClick, ...props }: NavLinkProps) => (
+  <BaseNavLink {...props} {...(onClick && { onClick })} />
+);
 
 interface InertiaNavLinkProps extends BaseNavLinkProps {
   prefetch?: boolean;
 };
 
-export const InertiaNavLink = ({
-  prefetch = false,
-  ...props
-}: InertiaNavLinkProps) =>  {
-  console.log("prefetch", prefetch);
-  console.log("props", props);
-  return (
-    <BaseNavLink
-      {...props}
-      {...(prefetch && { prefetch })}
-    />
-  );
-};
+export const InertiaNavLink = ({ prefetch = false, ...props }: InertiaNavLinkProps) => (
+  <BaseNavLink {...props} {...(prefetch && { prefetch })} />
+);
 
 export const NavLinkDropdownItem = ({
   text,
