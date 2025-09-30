@@ -1,6 +1,7 @@
 import { classNames } from "$app/utils/classNames";
 import * as React from "react";
 import { cast } from "ts-safe-cast";
+import { Link } from "@inertiajs/react";
 
 import { escapeRegExp } from "$app/utils";
 import { asyncVoid } from "$app/utils/promise";
@@ -17,7 +18,6 @@ type NavLinkProps = {
   badge?: React.ReactNode;
   href: string;
   exactHrefMatch?: boolean;
-  dataTurbo?: boolean;
   additionalPatterns?: string[];
   onClick?: (ev: React.MouseEvent<HTMLAnchorElement>) => void;
 };
@@ -36,7 +36,6 @@ export const NavLink = ({
   badge,
   href,
   exactHrefMatch,
-  dataTurbo = false,
   additionalPatterns = [],
   onClick,
 }: NavLinkProps) =>  {
@@ -55,7 +54,6 @@ export const NavLink = ({
       title={text}
       onClick={onClick}
       className="flex items-center"
-      data-turbo={dataTurbo}
     >
       {icon ? <Icon name={icon} /> : null}
       {text}
@@ -66,6 +64,53 @@ export const NavLink = ({
         </>
       ) : null}
     </a>
+  );
+};
+
+type InertiaNavLinkProps = {
+  text: string;
+  icon?: IconName;
+  badge?: React.ReactNode;
+  href: string;
+  exactHrefMatch?: boolean;
+  additionalPatterns?: string[];
+  prefetch?: boolean
+};
+
+export const InertiaNavLink =  ({
+  text,
+  icon,
+  badge,
+  href,
+  exactHrefMatch,
+  additionalPatterns = [],
+  prefetch = false
+}: InertiaNavLinkProps) =>  {
+  const { href: originalHref } = new URL(useOriginalLocation());
+  const ariaCurrent = [href, ...additionalPatterns].some((pattern) => {
+    const escaped = escapeRegExp(pattern);
+    return new RegExp(exactHrefMatch ? `^${escaped}/?$` : escaped, "u").test(originalHref);
+  })
+    ? "page"
+    : undefined;
+
+  return (
+    <Link
+      aria-current={ariaCurrent}
+      href={href}
+      title={text}
+      className="flex items-center"
+      prefetch={prefetch}
+    >
+      {icon ? <Icon name={icon} /> : null}
+      {text}
+      {badge ? (
+        <>
+          <span className="flex-1" />
+          {badge}
+        </>
+      ) : null}
+    </Link>
   );
 };
 
