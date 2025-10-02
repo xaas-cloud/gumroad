@@ -237,8 +237,6 @@ class Admin::PurchasesController < Admin::BaseController
         :offer_code,
         :purchase_custom_fields,
         :license,
-        :gift_given,
-        :gift_received,
         affiliate: { affiliate_user: :form_email }
       )
     end

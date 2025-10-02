@@ -33,11 +33,11 @@ class MerchantAccount < ApplicationRecord
   #
   # Returns a MerchantAccount which is Gumroad's merchant account on the given charge processor.
   def self.gumroad(charge_processor_id)
-    where(user_id: nil, charge_processor_id:).first
+    find_by(user_id: nil, charge_processor_id:)
   end
 
   def is_managed_by_gumroad?
-    !user_id
+    !user_id?
   end
 
   def can_accept_charges?
@@ -138,5 +138,16 @@ class MerchantAccount < ApplicationRecord
       parsed_response["country"] = "CN" if paypal_response["country"] == "C2"
       parsed_response
     end
+  end
+
+  def country_name
+    country.presence && ISO3166::Country[country]&.common_name
+  end
+
+  def stripe_account_url
+    return unless charge_processor_merchant_id?
+    return unless stripe_charge_processor?
+
+    StripeUrl.connected_account_url(charge_processor_merchant_id)
   end
 end

@@ -1,0 +1,152 @@
+import React from "react";
+import { Link } from "@inertiajs/react";
+import { capitalize } from "lodash";
+import DateTimeWithRelativeTooltip from "$app/components/Admin/DateTimeWithRelativeTooltip";
+import { BooleanIcon, NoIcon } from "$app/components/Icons";
+
+
+export type AdminMerchantAccountProps = {
+  id: number;
+  charge_processor_id: string;
+  charge_processor_merchant_id: string;
+  created_at: string;
+  external_id: string;
+  user_id: number;
+  country: string;
+  country_name: string;
+  currency: string;
+  holder_of_funds: string;
+  stripe_account_url: string;
+  charge_processor_alive_at: string;
+  charge_processor_verified_at: string;
+  charge_processor_deleted_at: string;
+  updated_at: string;
+  deleted_at: string;
+};
+
+export type LiveAttributesProps = {
+  [key: string]: any;
+};
+
+type Props = {
+  merchant_account: AdminMerchantAccountProps;
+  live_attributes: LiveAttributesProps;
+}
+
+const AdminMerchantAccount = ({
+  merchant_account,
+  live_attributes,
+}: Props) => {
+  const liveAttributes = Object.entries(live_attributes);
+
+  return (
+    <div className="card">
+      <div>
+        <h2>
+          Merchant Account {merchant_account.id}
+        </h2>
+        <DateTimeWithRelativeTooltip date={merchant_account.created_at} utc />
+      </div>
+
+      <hr />
+      <div>
+        <dl>
+          <dt>ID</dt>
+          <dd>{merchant_account.id}</dd>
+
+          <dt>External ID</dt>
+          <dd>{merchant_account.external_id}</dd>
+
+          <dt>User</dt>
+          <dd>
+            {
+              merchant_account.user_id ?
+                <Link href={Routes.admin_user_path(merchant_account.user_id)}>{merchant_account.user_id}</Link> :
+                "none"
+            }
+          </dd>
+
+          <dt>Country</dt>
+          <dd>{merchant_account.country_name} ({merchant_account.country})</dd>
+
+          <dt>Currency</dt>
+          <dd>{merchant_account.currency.toUpperCase()}</dd>
+
+          <dt>Active</dt>
+          <dd><BooleanIcon value={!!merchant_account.deleted_at} /></dd>
+
+          <dt>Funds are held by</dt>
+          <dd>{capitalize(merchant_account.holder_of_funds)}</dd>
+
+          <dt>Charge Processor</dt>
+          <dd>
+            {capitalize(merchant_account.charge_processor_id)}
+            {merchant_account.charge_processor_merchant_id && (
+              <a
+                href={merchant_account.stripe_account_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {merchant_account.charge_processor_merchant_id}
+              </a>
+            )}
+          </dd>
+
+          <dt>{capitalize(merchant_account.charge_processor_id)} Alive</dt>
+          <dd>
+            <BooleanIcon value={!!merchant_account.charge_processor_alive_at} />
+            <DateTimeWithRelativeTooltip date={merchant_account.charge_processor_alive_at} utc />
+          </dd>
+
+          <dt>{capitalize(merchant_account.charge_processor_id)} Verified</dt>
+          <dd>
+            <BooleanIcon value={!!merchant_account.charge_processor_verified_at} />
+            <DateTimeWithRelativeTooltip date={merchant_account.charge_processor_verified_at} utc />
+          </dd>
+
+          <dt>{capitalize(merchant_account.charge_processor_id)} Deleted</dt>
+          <dd>
+            <BooleanIcon value={!!merchant_account.charge_processor_deleted_at} />
+            <DateTimeWithRelativeTooltip date={merchant_account.charge_processor_deleted_at} utc />
+          </dd>
+        </dl>
+      </div>
+
+      <hr />
+      <div className="paragraphs">
+        <h3>Charge Processor live attributes</h3>
+        {
+          liveAttributes.length > 0 ? (
+            <dl>
+              {liveAttributes.map(([key, value]) => (
+                <dl>
+                  <dt>{key}</dt>
+                  <dd>
+                    <code>{JSON.stringify(value)}</code>
+                  </dd>
+                </dl>
+              ))}
+            </dl>
+          ) : (
+            <div role="alert" className="info">Charge Processor Merchant information is missing.</div>
+          )
+        }
+      </div>
+
+      <hr />
+      <div>
+        <dl>
+          <dt>Updated</dt>
+          <dd><DateTimeWithRelativeTooltip date={merchant_account.updated_at} utc /></dd>
+        </dl>
+
+        <dl>
+          <dt>Deleted</dt>
+          <dd><DateTimeWithRelativeTooltip date={merchant_account.deleted_at} utc placeholder={<NoIcon />} /></dd>
+        </dl>
+      </div>
+    </div>
+  );
+};
+
+export default AdminMerchantAccount;
