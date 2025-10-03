@@ -1,6 +1,6 @@
 import React from "react";
 import { usePage } from "@inertiajs/react";
-import Purchase, { type Purchase as PurchaseType } from "$app/components/Admin/Purchases/Purchase";
+import PurchaseDetails, { type Purchase as PurchaseType } from "$app/components/Admin/Purchases/PurchaseDetails";
 import Product, { type Product as ProductType } from "$app/components/Admin/Products/Product";
 import User, { type User as UserType } from "$app/components/Admin/Users/User";
 
@@ -15,7 +15,7 @@ const AdminPurchasesShow = () => {
 
   return (
     <div className="paragraphs">
-      <Purchase purchase={purchase} />
+      <PurchaseDetails purchase={purchase} />
       <Product product={product} is_affiliate_user={false} />
       <User user={user} is_affiliate_user={false} />
     </div>

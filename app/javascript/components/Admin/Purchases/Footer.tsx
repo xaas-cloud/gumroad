@@ -1,6 +1,6 @@
 import React from "react";
 
-import type { Purchase } from "$app/components/Admin/Purchases/Purchase";
+import type { Purchase } from "$app/components/Admin/Purchases/PurchaseDetails";
 import DateTimeWithRelativeTooltip from "$app/components/Admin/DateTimeWithRelativeTooltip";
 import { NoIcon } from "$app/components/Icons";
 

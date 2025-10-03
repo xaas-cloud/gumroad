@@ -1,7 +1,7 @@
 import React from "react";
 import { WithTooltip } from "$app/components/WithTooltip";
 import { Icon } from "$app/components/Icons";
-import { type Purchase } from "$app/components/Admin/Purchases/Purchase";
+import { type Purchase } from "$app/components/Admin/Purchases/PurchaseDetails";
 
 type Props = {
   purchase: Purchase;

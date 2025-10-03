@@ -3,7 +3,7 @@ import React from "react";
 import { router } from "@inertiajs/react";
 import AdminPurchasesFilterForm from "$app/components/Admin/Purchases/FilterForm";
 import AdminPurchasesPurchase from "$app/components/Admin/Purchases/Purchase";
-import { type Purchase } from "$app/components/Admin/Purchases/Purchase";
+import { type Purchase } from "$app/components/Admin/Purchases/PurchaseDetails";
 import { type Pagination as PaginationProps } from "$app/hooks/useLazyFetch";
 import { Pagination } from "$app/components/Pagination";
 import AdminEmptyState from "$app/components/Admin/EmptyState";

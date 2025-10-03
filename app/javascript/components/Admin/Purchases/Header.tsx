@@ -1,5 +1,5 @@
 import React from "react";
-import { type Purchase } from "$app/components/Admin/Purchases/Purchase";
+import { type Purchase } from "$app/components/Admin/Purchases/PurchaseDetails";
 import { Link } from "@inertiajs/react";
 import { Icon } from "$app/components/Icons";
 

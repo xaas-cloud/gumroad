@@ -2,7 +2,7 @@ import React from "react";
 import { capitalize } from "lodash";
 import { formatDate } from "$app/utils/date";
 
-import { type EmailInfo } from "$app/components/Admin/Purchases/Purchase";
+import { type EmailInfo } from "$app/components/Admin/Purchases/PurchaseDetails";
 
 type Props = {
   email_infos: EmailInfo[],

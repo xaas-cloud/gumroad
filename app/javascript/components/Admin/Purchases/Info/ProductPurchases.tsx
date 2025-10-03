@@ -1,5 +1,5 @@
 import React from "react";
-import { type ProductPurchase } from "$app/components/Admin/Purchases/Purchase";
+import { type ProductPurchase } from "$app/components/Admin/Purchases/PurchaseDetails";
 import AdminPurchaseInfoUrlRedirect from "$app/components/Admin/Purchases/Info/UrlRedirect";
 
 const AdminPurchaseInfoProductPurchases = ({

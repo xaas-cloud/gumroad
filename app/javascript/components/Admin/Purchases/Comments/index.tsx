@@ -1,6 +1,6 @@
 import React from "react";
 
-import type { Purchase } from "$app/components/Admin/Purchases/Purchase";
+import type { Purchase } from "$app/components/Admin/Purchases/PurchaseDetails";
 import AdminCommentableComments from "$app/components/Admin/Commentable";
 
 type AdminPurchaseCommentsProps = {

@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "@inertiajs/react";
 import { capitalize } from "lodash";
 
-import { type Purchase } from "$app/components/Admin/Purchases/Purchase";
+import { type Purchase } from "$app/components/Admin/Purchases/PurchaseDetails";
 import { CopyToClipboard } from "$app/components/CopyToClipboard";
 import { BooleanIcon, Icon } from "$app/components/Icons";
 import AdminPurchasesState from "$app/components/Admin/Purchases/State";
@@ -144,7 +144,7 @@ const AdminPurchasesInfo = ({ purchase }: Props) => {
         </dd>
 
         {
-          purchase.refunds.length > 0 && (
+          purchase.refunds && purchase.refunds.length > 0 && (
             <>
               <dt>Refunds</dt>
               <dd>
@@ -257,7 +257,7 @@ const AdminPurchasesInfo = ({ purchase }: Props) => {
       }
 
       {
-        purchase.purchase_custom_fields.length > 0 && (
+        purchase.purchase_custom_fields && purchase.purchase_custom_fields.length > 0 && (
           <>
             {purchase.purchase_custom_fields.map((field: any) => (
               <React.Fragment key={field.name}>

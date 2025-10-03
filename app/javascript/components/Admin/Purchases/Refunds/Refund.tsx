@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "@inertiajs/react";
 import { capitalize } from "lodash";
-import { type Refund } from "$app/components/Admin/Purchases/Purchase";
+import { type Refund } from "$app/components/Admin/Purchases/PurchaseDetails";
 import DateTimeWithRelativeTooltip from "$app/components/Admin/DateTimeWithRelativeTooltip";
 
 type Props = {

@@ -22,7 +22,6 @@ class Admin::Search::PurchasesService < Admin::Search::BaseService
 
     def search
       purchases = Purchase.order(created_at: :desc)
-      # return purchases
 
       if query.present?
         unions = [
@@ -41,12 +40,6 @@ class Admin::Search::PurchasesService < Admin::Search::BaseService
         SQL
         purchases = purchases.where("purchases.id IN (#{union_sql})")
 
-        # To be used only when query is set, as that uses an index to select purchases
-        if product_title_query.present?
-          raise ArgumentError, "product_title_query requires query parameter to be set" unless query.present?
-          purchases = purchases.joins(:link).where("links.name LIKE ?", "%#{product_title_query}%")
-        end
-
         if purchase_status.present?
           case purchase_status
           when "successful"
@@ -62,6 +55,10 @@ class Admin::Search::PurchasesService < Admin::Search::BaseService
             purchases = purchases.where(stripe_refunded: true)
           end
         end
+      end
+
+      if product_title_query.present?
+        purchases = purchases.joins(:link).where("links.name LIKE ?", "%#{product_title_query}%")
       end
 
       if creator_email.present?

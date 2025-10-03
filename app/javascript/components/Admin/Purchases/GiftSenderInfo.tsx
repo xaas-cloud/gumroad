@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "@inertiajs/react";
-import { type Gift } from "$app/components/Admin/Purchases/Purchase";
+import { type Gift } from "$app/components/Admin/Purchases/PurchaseDetails";
 
 type Props = {
   gift: Gift;
