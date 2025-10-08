@@ -1,15 +1,22 @@
 # frozen_string_literal: true
 
 module WithProductFiles
-  extend ActiveSupport::Concern
+  def self.included(base)
+    base.class_eval do
+      has_many :product_files
+      has_many :product_files_archives
+      has_many :product_folders, -> { alive }, foreign_key: :product_id
+      attr_accessor :cached_alive_product_files, :cached_rich_content_files_and_folders
+    end
+  end
 
-  included do
-    has_many :product_files
-    has_many :alive_product_files, -> { alive.in_order }, class_name: "ProductFile"
-    has_many :product_files_archives
-    has_many :product_folders, -> { alive }, foreign_key: :product_id
-
-    attr_accessor :cached_rich_content_files_and_folders
+  # Public: Returns a potentially cached list of alive files associated with the product.
+  #
+  # Retrieving the list of files from the same Link object happens often within certain controller actions.
+  # Use this method in order to hit the db once and cache the results on the Link object and reuse them later.
+  # Call this method only if you're sure that you're not changing the files within the same action.
+  def alive_product_files
+    cached_alive_product_files || self.cached_alive_product_files = product_files.alive.in_order.to_a
   end
 
   def has_files?
@@ -65,6 +72,7 @@ module WithProductFiles
     end
 
     (existing_files - files_to_keep).each(&:mark_deleted)
+    self.cached_alive_product_files = nil
     generate_entity_archive! if is_a?(Installment) && needs_updated_entity_archive?
 
     link.content_updated_at = Time.current if new_product_files.any?(&:link_id?)
