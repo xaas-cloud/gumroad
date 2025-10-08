@@ -14,6 +14,8 @@ describe Api::V2::PayoutsController do
     # Ensure payments are created after the displayable date and with recent timestamps
     @payout = create(:payment_completed, user: @seller, amount_cents: 150_00, currency: "USD", created_at: 1.day.ago)
     @payout_by_other_seller = create(:payment_completed, user: @other_seller, amount_cents: 100_00, currency: "USD", created_at: 1.day.ago)
+
+    create(:gumroad_merchant_account)
   end
 
   describe "GET 'index'" do
