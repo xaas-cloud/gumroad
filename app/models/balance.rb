@@ -6,6 +6,7 @@ class Balance < ApplicationRecord
   include Balance::RefundEligibilityUnderwriter
 
   belongs_to :user, optional: true
+  # TODO: make this required since we validate its presence
   belongs_to :merchant_account, optional: true
 
   has_many :balance_transactions
