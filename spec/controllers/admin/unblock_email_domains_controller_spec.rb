@@ -19,7 +19,15 @@ describe Admin::UnblockEmailDomainsController do
     it "renders the page to unsuspend users if admin" do
       get :show
       expect(response).to be_successful
-      expect(response).to render_template(:show)
+      expect(response.body).to include("data-page")
+      expect(response.body).to include("Admin/UnblockEmailDomains/Show")
+
+      data_page = response.body.match(/data-page="([^"]+)"/)[1]
+      json_object = JSON.parse(CGI.unescapeHTML(data_page))
+      props = json_object["props"]
+
+      expect(props["title"]).to eq("Mass-unblock email domains")
+      expect(props["authenticity_token"]).to be_present
     end
   end
 
