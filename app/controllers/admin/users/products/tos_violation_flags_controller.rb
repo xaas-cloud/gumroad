@@ -1,20 +1,17 @@
 # frozen_string_literal: true
 
 class Admin::Users::Products::TosViolationFlagsController < Admin::Users::Products::BaseController
-  include AdminHelper
-
   def index
-    if !@user.flagged_for_tos_violation?
-      render json: {
-        error: "User is not flagged for TOS violation",
-        status: :bad_request
-      }
-    else
+    if @user.flagged_for_tos_violation?
       render json: {
         tos_violation_flags: @product.comments.with_type_flagged.as_json(
           only: %i[id content]
         )
       }
+    else
+      render json: {
+        error: "User is not flagged for TOS violation",
+      }, status: :bad_request
     end
   end
 
