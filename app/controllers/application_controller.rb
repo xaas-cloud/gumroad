@@ -25,6 +25,12 @@ class ApplicationController < ActionController::Base
   before_action :invalidate_session_if_necessary
   before_action :redirect_to_custom_subdomain
 
+  inertia_share do
+    context = RenderingExtension.custom_context(view_context)
+    context[:title] = @title if @title.present?
+    context
+  end
+
   before_action :set_signup_referrer, if: -> { logged_in_user.nil? }
   before_action :check_suspended, if: -> { logged_in_user.present? && logged_in_user.suspended? }
 

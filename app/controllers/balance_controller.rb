@@ -26,7 +26,7 @@ class BalanceController < Sellers::BaseController
     )
 
     render inertia: "Payouts/index",
-           props: inertia_props(payout_presenter: @payout_presenter.props)
+           props: { payout_presenter: @payout_presenter.props }
   end
 
   def payments_paged

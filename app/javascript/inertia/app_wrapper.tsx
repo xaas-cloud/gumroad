@@ -3,15 +3,13 @@ import React from "react";
 import { DomainSettings } from "$app/types/domain_settings";
 import { LoggedInUser, Seller } from "$app/types/user";
 
+import { ClientAlertProvider } from "$app/components/ClientAlertProvider";
 import { CurrentSellerProvider, parseCurrentSeller } from "$app/components/CurrentSeller";
 import { DesignContextProvider, DesignSettings } from "$app/components/DesignSettings";
 import { DomainSettingsProvider } from "$app/components/DomainSettings";
-import LoadingSkeleton from "$app/components/LoadingSkeleton";
 import { LoggedInUserProvider, parseLoggedInUser } from "$app/components/LoggedInUser";
-import { Nav } from "$app/components/Nav";
 import { SSRLocationProvider } from "$app/components/useOriginalLocation";
 import { UserAgentProvider } from "$app/components/UserAgent";
-import useRouteLoading from "$app/components/useRouteLoading";
 
 type GlobalProps = {
   design_settings: DesignSettings;
@@ -26,8 +24,6 @@ type GlobalProps = {
 };
 
 export default function AppWrapper({ children, global }: { children: React.ReactNode; global: GlobalProps }) {
-  const isRouteLoading = useRouteLoading();
-
   return (
     <DesignContextProvider value={global.design_settings}>
       <DomainSettingsProvider
@@ -50,11 +46,7 @@ export default function AppWrapper({ children, global }: { children: React.React
           <LoggedInUserProvider value={parseLoggedInUser(global.logged_in_user)}>
             <CurrentSellerProvider value={parseCurrentSeller(global.current_seller)}>
               <SSRLocationProvider value={global.href}>
-                <div id="inertia-shell" className="flex h-screen flex-col lg:flex-row">
-                  <Nav title="Dashboard" />
-                  {isRouteLoading ? <LoadingSkeleton /> : null}
-                  <main className={isRouteLoading ? "hidden" : "flex-1 overflow-y-auto"}>{children}</main>
-                </div>
+                <ClientAlertProvider>{children}</ClientAlertProvider>
               </SSRLocationProvider>
             </CurrentSellerProvider>
           </LoggedInUserProvider>

@@ -9,8 +9,7 @@ class CollaboratorsController < ApplicationController
 
   def index
     authorize Collaborator
-    render inertia: "Collaborators/index",
-           props: inertia_props
+    render inertia: "Collaborators/index"
   end
 
   private
