@@ -65,7 +65,6 @@ class User < ApplicationRecord
   has_many :credits
   has_many :credits_given, class_name: "Credit", foreign_key: :crediting_user_id
   has_many :bank_accounts
-  has_one :active_bank_account, -> { alive }, class_name: "BankAccount"
   has_many :installments, foreign_key: :seller_id
   has_many :imported_customers, foreign_key: :importing_user_id
   has_many :invites, foreign_key: :sender_id
@@ -707,6 +706,10 @@ class User < ApplicationRecord
     country = Country.new(country_code) if country_code.present?
 
     [Payouts::MIN_AMOUNT_CENTS, country&.min_cross_border_payout_amount_usd_cents].compact.max
+  end
+
+  def active_bank_account
+    bank_accounts.alive.first
   end
 
   def active_ach_account
