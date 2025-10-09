@@ -5,7 +5,7 @@ class Admin::Search::UsersController < Admin::Search::BaseController
 
   private
     def page_title
-      "Search for #{params[:query] ? params[:query].strip : "users"}"
+      "Search for #{params[:query].present? ? params[:query].strip : "users"}"
     end
 
     def users_scope
