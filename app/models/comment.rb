@@ -66,7 +66,9 @@ class Comment < ApplicationRecord
   end
 
   def content_formatted
-    self.class.extending(AdminHelper).markdown(content)
+    renderer = Redcarpet::Render::HTML.new(filter_html: true, safe_links_only: true)
+    md = Redcarpet::Markdown.new(renderer, no_intra_emphasis: true)
+    md.render(content).html_safe
   end
 
   private

@@ -10,6 +10,7 @@ module Product::AsJson
   def as_json(options = {})
     return super(options) if options.delete(:original)
     return as_json_for_admin_multiple_matches(**options) if options.delete(:admin_multiple_matches)
+    return as_json_for_admin_info if options.delete(:admin_info)
     return as_json_for_admin(**options) if options.delete(:admin)
     return as_json_for_api(options) if options[:api_scopes].present?
     return as_json_for_mobile_api if options.delete(:mobile)
@@ -63,6 +64,37 @@ module Product::AsJson
         alive_product_files: ordered_alive_product_files.as_json(original: true, methods: %i[external_id s3_filename]),
         admins_can_mark_as_staff_picked: admins_can_mark_as_staff_picked.call(self),
         admins_can_unmark_as_staff_picked: admins_can_unmark_as_staff_picked.call(self)
+      )
+    end
+
+    def as_json_for_admin_info
+      as_json(
+        original: true,
+        only: %i[
+          purchase_type
+        ],
+        methods: %i[
+          external_id
+          alive
+          recommendable
+          staff_picked
+          is_in_preorder_state
+          has_stampable_pdfs
+          streamable
+          is_physical
+          is_licensed
+          is_adult
+          user_all_adult_products
+          has_adult_keywords
+        ],
+        include: {
+          tags: { methods: :humanized_name },
+          active_integrations: { only: :type }
+        }
+      ).merge(
+        taxonomy: taxonomy.as_json(methods: :ancestry_path),
+        type: product_type_label,
+        formatted_rental_price_cents: MoneyFormatter.format(rental_price_cents, price_currency_type.to_sym, no_cents_if_whole: true, symbol: true),
       )
     end
 
@@ -186,5 +218,14 @@ module Product::AsJson
       end
 
       variants
+    end
+
+    private
+
+    def product_type_label
+      return "Product" unless is_recurring_billing?
+      return "Membership" if is_tiered_membership?
+
+      "Subscription"
     end
 end

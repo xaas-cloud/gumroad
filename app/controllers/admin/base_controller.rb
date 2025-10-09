@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class Admin::BaseController < ApplicationController
-  include ActionView::Helpers::DateHelper, ActionView::Helpers::NumberHelper, AdminActionTracker, Impersonate, AdminHelper
+  include ActionView::Helpers::DateHelper, ActionView::Helpers::NumberHelper, AdminActionTracker, Impersonate
 
   layout "admin"
 
   inertia_share do
     RenderingExtension.custom_context(view_context).merge(
-      card_types: card_types_for_react,
+      card_types: CreditCardUtility.card_types_for_react,
       title: @title,
       compliance: {
         reasons: Compliance::TOS_VIOLATION_REASONS,
