@@ -385,24 +385,26 @@ export const DashboardPage = ({
       <div className="grid gap-4 p-4 md:p-8">
         <h2>Activity</h2>
 
-        <div className="stats-grid">
-          <Stats title="Balance" description="Your current balance available for payout" value={balances.balance} />
-          <Stats
-            title="Last 7 days"
-            description="Your total sales in the last 7 days"
-            value={balances.last_seven_days_sales_total}
-          />
-          <Stats
-            title="Last 28 days"
-            description="Your total sales in the last 28 days"
-            value={balances.last_28_days_sales_total}
-          />
-          <Stats
-            title="Total earnings"
-            description="Your all-time net earnings from all products, excluding refunds and chargebacks"
-            value={balances.total}
-          />
-        </div>
+        <Stats
+          values={[
+            { title: "Balance", description: "Your current balance available for payout", value: balances.balance },
+            {
+              title: "Last 7 days",
+              description: "Your total sales in the last 7 days",
+              value: balances.last_seven_days_sales_total,
+            },
+            {
+              title: "Last 28 days",
+              description: "Your total sales in the last 28 days",
+              value: balances.last_28_days_sales_total,
+            },
+            {
+              title: "Total earnings",
+              description: "Your all-time net earnings from all products, excluding refunds and chargebacks",
+              value: balances.total,
+            },
+          ]}
+        />
 
         <ActivityFeed items={activity_items} />
       </div>

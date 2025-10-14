@@ -9,6 +9,7 @@ import {
   fetchAnalyticsDataByState,
 } from "$app/data/analytics";
 import { assertDefined } from "$app/utils/assert";
+import { formatPriceCentsWithCurrencySymbol } from "$app/utils/currency";
 import { AbortError } from "$app/utils/request";
 
 import { AnalyticsLayout } from "$app/components/Analytics/AnalyticsLayout";
@@ -16,11 +17,12 @@ import { LocationsTable } from "$app/components/Analytics/LocationsTable";
 import { ProductsPopover } from "$app/components/Analytics/ProductsPopover";
 import { ReferrersTable } from "$app/components/Analytics/ReferrersTable";
 import { SalesChart } from "$app/components/Analytics/SalesChart";
-import { SalesQuickStats } from "$app/components/Analytics/SalesQuickStats";
 import { useAnalyticsDateRange } from "$app/components/Analytics/useAnalyticsDateRange";
 import { DateRangePicker } from "$app/components/DateRangePicker";
+import { Icon } from "$app/components/Icons";
 import { Progress } from "$app/components/Progress";
 import { showAlert } from "$app/components/server-components/Alert";
+import { Stats } from "$app/components/Stats";
 
 import placeholder from "$assets/images/placeholders/sales.png";
 
@@ -165,9 +167,43 @@ const Analytics = ({ products: initialProducts, country_codes, state_names }: An
     >
       {hasContent ? (
         <div className="space-y-8 p-4 md:p-8">
-          <SalesQuickStats total={mainData?.total} />
           {mainData ? (
             <>
+              <Stats
+                className="md:grid-flow-col"
+                values={[
+                  {
+                    title: (
+                      <>
+                        <Icon name="circle-fill" className="text-foreground" />
+                        Sales
+                      </>
+                    ),
+                    value: mainData.total.sales,
+                  },
+                  {
+                    title: (
+                      <>
+                        <Icon name="circle-fill" className="text-muted-foreground" />
+                        Views
+                      </>
+                    ),
+                    value: mainData.total.views,
+                  },
+                  {
+                    title: (
+                      <>
+                        <Icon name="circle-fill" className="text-accent" />
+                        Total
+                      </>
+                    ),
+                    value: formatPriceCentsWithCurrencySymbol("usd", mainData.total.totals, {
+                      symbolFormat: "short",
+                      noCentsIfWhole: true,
+                    }),
+                  },
+                ]}
+              />
               <SalesChart
                 data={mainData.dailyTotal}
                 startDate={mainData.startDate}
