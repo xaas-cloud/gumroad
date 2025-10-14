@@ -3,9 +3,9 @@ name: Tests
 on:
   push:
     branches:
-      - '**'
+      - "**"
     tags-ignore:
-      - 'production-*'
+      - "production-*"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -178,6 +178,10 @@ jobs:
           docker run --rm --network ${{ env.COMPOSE_PROJECT_NAME }}_default \
             $WEB_REPO:test-${{ github.sha }} \
             docker/ci/wait_on_connection.sh db_test 3306
+
+          docker run --rm --network ${{ env.COMPOSE_PROJECT_NAME }}_default \
+            $WEB_REPO:test-${{ github.sha }} \
+            docker/ci/wait_on_connection.sh minio 9000
         timeout-minutes: 5
 
       - name: Setup test database
@@ -303,6 +307,10 @@ jobs:
           docker run --rm --network ${{ env.COMPOSE_PROJECT_NAME }}_default \
             $WEB_REPO:test-${{ github.sha }} \
             docker/ci/wait_on_connection.sh db_test 3306
+
+          docker run --rm --network ${{ env.COMPOSE_PROJECT_NAME }}_default \
+            $WEB_REPO:test-${{ github.sha }} \
+            docker/ci/wait_on_connection.sh minio 9000
         timeout-minutes: 5
       - name: Setup test database
         env:
