@@ -17,7 +17,7 @@ services:
 
   redis:
     image: redis:7.0.7
-    command: ["redis-server", "--appendonly", "yes"]
+    command: [ "redis-server", "--appendonly", "yes" ]
     ports:
       - "6379:6379"
     volumes:
@@ -41,6 +41,43 @@ services:
     volumes:
       - elasticsearch7data:/data
 
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000" # API port
+      - "9001:9001" # Console port
+    volumes:
+      - minio_data:/data
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: [ "CMD", "mc", "ready", "local" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 30s
+
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c " /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin; for bucket in gumroad-development-private gumroad-development-public gumroad-test-private gumroad-test-public; do
+        if ! /usr/bin/mc ls myminio/$$bucket > /dev/null 2>&1; then
+          echo \"Bucket $$bucket does not exist. Creating...\";
+          /usr/bin/mc mb myminio/$$bucket;
+          if [[ $$bucket == *-public ]]; then
+            echo \"Setting public read policy for $$bucket\";
+            /usr/bin/mc anonymous set public myminio/$$bucket;
+          fi;
+        else
+          echo \"Bucket $$bucket already exists.\";
+        fi;
+      done; exit 0; "
+
   nginx:
     image: nginx:1.23.3
     volumes:
@@ -61,3 +98,4 @@ volumes:
   mysql_data:
   redis_data:
   mongo_data:
+  minio_data:
