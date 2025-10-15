@@ -8,7 +8,7 @@ s3_base: &s3_base
 
 test:
   <<: *s3_base
-  endpoint: http://127.0.0.1:9000
+  endpoint: <%= GlobalConfig.get("AWS_S3_ENDPOINT") %>
   force_path_style: true
   access_key_id: minioadmin
   secret_access_key: minioadmin

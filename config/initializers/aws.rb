@@ -32,6 +32,8 @@ S3_BUCKET = {
 
 S3_BASE_URL = GlobalConfig.get("S3_BASE_URL_TEMPLATE", "https://s3.amazonaws.com/#{S3_BUCKET}/")
 
+AWS_S3_ENDPOINT = GlobalConfig.get("AWS_S3_ENDPOINT")
+
 PUBLIC_STORAGE_S3_BUCKET = {
   development: "gumroad-dev-public-storage",
   staging: "gumroad-dev-public-storage",
