@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :product_file do
     association :link, factory: :product
-    url { "https://s3.amazonaws.com/gumroad-specs/#{SecureRandom.hex}.pdf" }
+    url { "#{S3_BASE_URL}/specs/#{SecureRandom.hex}.pdf" }
 
     trait :analyze do
       after(:create) { |file| file.analyze }
