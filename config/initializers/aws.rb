@@ -11,6 +11,7 @@ aws_config = {
   credentials: Aws::Credentials.new(AWS_ACCESS_KEY, AWS_SECRET_KEY)
 }
 aws_config[:endpoint] = AWS_S3_ENDPOINT if AWS_S3_ENDPOINT.present?
+aws_config[:force_path_style] = true if Rails.env.test?
 
 Aws.config.update(aws_config)
 
