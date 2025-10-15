@@ -14,10 +14,10 @@ import { Popover } from "$app/components/Popover";
 import { Progress } from "$app/components/Progress";
 import { showAlert } from "$app/components/server-components/Alert";
 import { ExportSubscribersPopover } from "$app/components/server-components/FollowersPage/ExportSubscribersPopover";
+import { Aside } from "$app/components/ui/Aside";
 import { PageHeader } from "$app/components/ui/PageHeader";
 import Placeholder from "$app/components/ui/Placeholder";
 import { Tabs, Tab } from "$app/components/ui/Tabs";
-import { Aside } from "$app/components/ui/Aside";
 import { useUserAgentInfo } from "$app/components/UserAgent";
 import { WithTooltip } from "$app/components/WithTooltip";
 
@@ -210,11 +210,7 @@ export const FollowersPage = ({ followers: initialFollowers, per_page, total }: 
                 ariaLabel="Follower Details"
                 onClose={() => setSelectedFollowerId(null)}
                 className={selectedFollower.can_update ? "" : "js-team-member-read-only"}
-                header={
-                  <>
-                    <h2 className="text-singleline">Details</h2>
-                  </>
-                }
+                header={<h2 className="text-singleline">Details</h2>}
               >
                 <div className="stack">
                   <div>
