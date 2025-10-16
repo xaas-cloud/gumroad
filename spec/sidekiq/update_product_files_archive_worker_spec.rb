@@ -13,12 +13,12 @@ describe UpdateProductFilesArchiveWorker, :vcr do
     context "when rich content provider is not present" do
       before do
         installment = create(:installment)
-        installment.product_files << create(:product_file, url: "#{S3_BASE_URL}/specs/magic.mp3")
-        installment.product_files << create(:product_file, url: "#{S3_BASE_URL}/specs/magic.mp3")
-        installment.product_files << create(:product_file, url: "#{S3_BASE_URL}/specs/#{@long_file_name}.csv")
-        installment.product_files << create(:product_file, url: "#{S3_BASE_URL}/specs/#{@long_file_name}.csv")
-        installment.product_files << create(:product_file, url: "#{S3_BASE_URL}/specs/#{@long_file_name}.csv")
-        installment.product_files << create(:product_file, url: "#{S3_BASE_URL}/specs/#{@long_file_name}.csv")
+        installment.product_files << create(:product_file, url: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/magic.mp3")
+        installment.product_files << create(:product_file, url: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/magic.mp3")
+        installment.product_files << create(:product_file, url: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/#{@long_file_name}.csv")
+        installment.product_files << create(:product_file, url: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/#{@long_file_name}.csv")
+        installment.product_files << create(:product_file, url: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/#{@long_file_name}.csv")
+        installment.product_files << create(:product_file, url: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/#{@long_file_name}.csv")
         installment.product_files << create(:streamable_video)
         installment.product_files << create(:streamable_video, stream_only: true)
         installment.product_files << create(:product_file, url: "https://www.gumroad.com", filetype: "link")

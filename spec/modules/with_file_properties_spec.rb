@@ -45,36 +45,36 @@ describe WithFileProperties do
     end
   end
 
-  { audio: { fake_uri: "#{S3_BASE_URL}/specs/magic.mp3",
+  { audio: { fake_uri: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/magic.mp3",
              filename: "magic.mp3", filegroup: "audio", constraints: { size: 466_312, duration: 46, bitrate: 128 } },
-    exe: { fake_uri: "#{S3_BASE_URL}/specs/test.exe",
+    exe: { fake_uri: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/test.exe",
            filename: "test.exe", filegroup: "executable", constraints: { size: 118 } },
-    archive: { fake_uri: "#{S3_BASE_URL}/specs/test.zip",
+    archive: { fake_uri: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/test.zip",
                filename: "test.zip", filegroup: "archive", constraints: { size: 67_852 } },
-    psd: { fake_uri: "#{S3_BASE_URL}/specs/index.psd",
+    psd: { fake_uri: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/index.psd",
            filename: "index.psd", filegroup: "image", constraints: { size: 132_284 } },
-    text: { fake_uri: "#{S3_BASE_URL}/specs/blah.txt",
+    text: { fake_uri: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/blah.txt",
             filename: "blah.txt", filegroup: "document", constraints: { size: 52 } },
-    video: { fake_uri: "#{S3_BASE_URL}/specs/small.m4v",
+    video: { fake_uri: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/small.m4v",
              filename: "small.m4v", filegroup: "video",
              constraints: { size: 208_857, width: 320, height: 240, duration: 13, framerate: 60, bitrate: 125_779 } },
-    image: { fake_uri: "#{S3_BASE_URL}/specs/kFDzu.png",
+    image: { fake_uri: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/kFDzu.png",
              filename: "kFDzu.png", filegroup: "image", constraints: { size: 47_684, width: 1633, height: 512 } },
-    pdf_document: { fake_uri: "#{S3_BASE_URL}/specs/billion-dollar-company-chapter-0.pdf",
+    pdf_document: { fake_uri: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/billion-dollar-company-chapter-0.pdf",
                     filename: "billion-dollar-company-chapter-0.pdf", filegroup: "document",
                     constraints: { size: 111_237, pagelength: 6 }, stubbing_method: :stub_for_pdf },
-    word_document_docx: { fake_uri: "#{S3_BASE_URL}/specs/sample_doc.docx",
+    word_document_docx: { fake_uri: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/sample_doc.docx",
                           filename: "sample_doc.docx", filegroup: "document",
                           constraints: { size: 156_126, pagelength: 4 } },
-    word_document: { fake_uri: "#{S3_BASE_URL}/specs/test_doc.doc",
+    word_document: { fake_uri: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/test_doc.doc",
                      filename: "test_doc.doc", filegroup: "document", constraints: { size: 28_672, pagelength: 2 },
                      stubbing_method: :stub_for_word_doc },
-    epub: { fake_uri: "#{S3_BASE_URL}/specs/sample.epub",
+    epub: { fake_uri: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/sample.epub",
             filename: "test.epub", filegroup: "document", constraints: { size: 881_436, pagelength: 13 } },
-    powerpoint: { fake_uri: "#{S3_BASE_URL}/specs/test.ppt",
+    powerpoint: { fake_uri: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/test.ppt",
                   filename: "test.ppt", filegroup: "document",
                   constraints: { size: 954_368, pagelength: 7 }, stubbing_method: :stub_for_ppt },
-    powerpoint_pptx: { fake_uri: "#{S3_BASE_URL}/specs/test.pptx",
+    powerpoint_pptx: { fake_uri: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/test.pptx",
                        filename: "test.pptx", filegroup: "document",
                        constraints: { size: 1_346_541, pagelength: 2 } } }.each do |file_type, properties|
     describe "#{file_type} files" do
@@ -107,7 +107,7 @@ describe WithFileProperties do
 
   describe "videos" do
     before do
-      @video_file = create(:product_file, url: "#{S3_BASE_URL}/specs/sample.mov")
+      @video_file = create(:product_file, url: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/sample.mov")
       @file_path = file_fixture("sample.mov").to_s
     end
 

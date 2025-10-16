@@ -143,7 +143,7 @@ describe AssetPreview, :vcr do
 
     it "works as expected with a public URL" do
       expect do
-        asset_preview.url = "#{S3_BASE_URL}/specs/test.png"
+        asset_preview.url = "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/test.png"
         asset_preview.analyze_file
         asset_preview.save!
       end.to_not raise_error
@@ -154,7 +154,7 @@ describe AssetPreview, :vcr do
 
     it "works as expected when a URL with square brackets is encoded and passed as an argument" do
       expect do
-        asset_preview.url = "#{S3_BASE_URL}/specs/test-small+with+%5Bsquare+brackets%5D.jpg"
+        asset_preview.url = "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/specs/test-small+with+%5Bsquare+brackets%5D.jpg"
         asset_preview.analyze_file
         asset_preview.save!
       end.to_not raise_error

@@ -11,8 +11,8 @@ describe ProductDuplicatesController do
   let(:product) { create(:product, user: seller) }
   let(:file_params) do
     [
-      { external_id: SecureRandom.uuid, url: "#{S3_BASE_URL}/attachment/pencil.png" },
-      { external_id: SecureRandom.uuid, url: "#{S3_BASE_URL}/attachment/manual.pdf" }
+      { external_id: SecureRandom.uuid, url: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/attachment/pencil.png" },
+      { external_id: SecureRandom.uuid, url: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/attachment/manual.pdf" }
     ]
   end
 

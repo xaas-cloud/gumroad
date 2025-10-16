@@ -4,6 +4,6 @@ FactoryBot.define do
   factory :stamped_pdf do
     url_redirect
     product_file
-    url { "#{S3_BASE_URL}/attachment/manual_stamped.pdf" }
+    url { "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/attachment/manual_stamped.pdf" }
   end
 end

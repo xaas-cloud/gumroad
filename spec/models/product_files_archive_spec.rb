@@ -189,9 +189,9 @@ describe ProductFilesArchive do
         folder_1 = create(:product_folder, link: product, name: "folder 1")
         folder_2 = create(:product_folder, link: product, name: "folder 2")
 
-        file_1 = create(:product_file, link: product, description: "pencil", url: "#{S3_BASE_URL}/attachment/pencil.png", folder_id: folder_1.id)
-        file_2 = create(:product_file, link: product, description: "manual", url: "#{S3_BASE_URL}/attachment/manual.pdf", folder_id: folder_2.id)
-        file_3 = create(:product_file, link: product, description: "file without a folder", url: "#{S3_BASE_URL}/attachment/manual.pdf", folder_id: nil)
+        file_1 = create(:product_file, link: product, description: "pencil", url: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/attachment/pencil.png", folder_id: folder_1.id)
+        file_2 = create(:product_file, link: product, description: "manual", url: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/attachment/manual.pdf", folder_id: folder_2.id)
+        file_3 = create(:product_file, link: product, description: "file without a folder", url: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/attachment/manual.pdf", folder_id: nil)
 
         archive = product.product_files_archives.create!(product_files: product.product_files)
 

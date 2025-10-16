@@ -13,7 +13,7 @@ RSpec.describe VideoFile, type: :model do
     it "must startwith S3_BASE_URL" do
       video_file = build(:video_file)
 
-      video_file.url = "#{S3_BASE_URL}/video.mp4"
+      video_file.url = "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/video.mp4"
       video_file.validate
       expect(video_file.errors[:url]).to be_empty
 
@@ -43,13 +43,13 @@ RSpec.describe VideoFile, type: :model do
 
   describe "#set_filetype" do
     it "sets filetype based on the file extension" do
-      video_file = create(:video_file, url: "#{S3_BASE_URL}/video.mp4", filetype: nil)
+      video_file = create(:video_file, url: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/video.mp4", filetype: nil)
       expect(video_file.filetype).to eq("mp4")
 
-      video_file.update!(url: "#{S3_BASE_URL}/video.mov")
+      video_file.update!(url: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/video.mov")
       expect(video_file.filetype).to eq("mov")
 
-      video_file.update!(url: "#{S3_BASE_URL}/video.webm")
+      video_file.update!(url: "#{AWS_S3_ENDPOINT}/#{S3_BUCKET}/video.webm")
       expect(video_file.filetype).to eq("webm")
     end
   end
