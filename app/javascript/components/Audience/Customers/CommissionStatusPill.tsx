@@ -1,4 +1,6 @@
 import cx from "classnames";
+import * as React from "react";
+
 import { Commission } from "$app/data/customers";
 
 type CommissionStatusPillProps = {

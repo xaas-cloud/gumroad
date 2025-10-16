@@ -1,10 +1,6 @@
 import * as React from "react";
 
-import {
-  revokeAccess,
-  undoRevokeAccess,
-} from "$app/data/customers";
-
+import { revokeAccess, undoRevokeAccess } from "$app/data/customers";
 import { assertResponseError } from "$app/utils/request";
 
 import { Button } from "$app/components/Button";

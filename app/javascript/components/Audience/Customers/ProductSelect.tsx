@@ -1,10 +1,7 @@
-
 import * as React from "react";
 
+import type { Item, Product } from "$app/components/Audience/Customers";
 import { Select } from "$app/components/Select";
-
-import type { Item } from "$app/components/Audience/Customers";
-import type { Product } from "$app/components/Audience/Customers";
 
 const ProductSelect = ({
   label,

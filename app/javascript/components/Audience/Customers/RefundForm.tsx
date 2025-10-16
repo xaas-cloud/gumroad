@@ -2,17 +2,14 @@ import cx from "classnames";
 import * as React from "react";
 
 import { refund } from "$app/data/customers";
-import {
-  CurrencyCode,
-  formatPriceCentsWithoutCurrencySymbol,
-} from "$app/utils/currency";
+import { CurrencyCode, formatPriceCentsWithoutCurrencySymbol } from "$app/utils/currency";
 import { assertResponseError } from "$app/utils/request";
 
 import { Button } from "$app/components/Button";
+import { useClientAlert } from "$app/components/ClientAlertProvider";
 import { Modal } from "$app/components/Modal";
 import { PriceInput } from "$app/components/PriceInput";
 import { WithTooltip } from "$app/components/WithTooltip";
-import { useClientAlert } from "$app/components/ClientAlertProvider";
 
 const RefundForm = ({
   purchaseId,

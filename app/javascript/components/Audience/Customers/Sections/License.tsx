@@ -1,6 +1,8 @@
 import * as React from "react";
-import { Button } from "$app/components/Button";
+
 import { License } from "$app/data/customers";
+
+import { Button } from "$app/components/Button";
 
 type LicenseSectionProps = {
   license: License;

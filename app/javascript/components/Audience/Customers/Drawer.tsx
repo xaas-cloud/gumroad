@@ -1,7 +1,5 @@
 import * as React from "react";
 
-import { CurrencyCode, formatPriceCentsWithCurrencySymbol } from "$app/utils/currency";
-
 import {
   Customer,
   CustomerEmail,
@@ -20,34 +18,33 @@ import {
   getCharges,
   Discount,
 } from "$app/data/customers";
+import { CurrencyCode, formatPriceCentsWithCurrencySymbol } from "$app/utils/currency";
 import { assertResponseError } from "$app/utils/request";
 
+import { formatPrice } from "$app/components/Audience/Customers";
+import CommissionStatusPill from "$app/components/Audience/Customers/CommissionStatusPill";
+import PingButton from "$app/components/Audience/Customers/PingButton";
+import RefundForm from "$app/components/Audience/Customers/RefundForm";
+import AccessSection from "$app/components/Audience/Customers/Sections/Access";
+import AddressSection from "$app/components/Audience/Customers/Sections/Address";
+import CallSection from "$app/components/Audience/Customers/Sections/Call";
+import ChargesSection from "$app/components/Audience/Customers/Sections/Charges";
+import CommissionSection from "$app/components/Audience/Customers/Sections/Commission";
+import EmailSection from "$app/components/Audience/Customers/Sections/Email";
+import FileRow from "$app/components/Audience/Customers/Sections/FileRow";
+import LicenseSection from "$app/components/Audience/Customers/Sections/License";
+import OptionSection from "$app/components/Audience/Customers/Sections/Option";
+import ReviewSection from "$app/components/Audience/Customers/Sections/Review";
+import SeatSection from "$app/components/Audience/Customers/Sections/Seat";
+import SubscriptionCancellationSection from "$app/components/Audience/Customers/Sections/SubscriptionCancellation";
+import TrackingSection from "$app/components/Audience/Customers/Sections/Tracking";
+import UtmLinkStack from "$app/components/Audience/Customers/UtmLinkStack";
 import { Button } from "$app/components/Button";
+import { useClientAlert } from "$app/components/ClientAlertProvider";
 import { Icon } from "$app/components/Icons";
 import { Progress } from "$app/components/Progress";
 import { useUserAgentInfo } from "$app/components/UserAgent";
 import { useRunOnce } from "$app/components/useRunOnce";
-import { useClientAlert } from "$app/components/ClientAlertProvider";
-
-import FileRow from "$app/components/Audience/Customers/Sections/FileRow";
-import CallSection from "$app/components/Audience/Customers/Sections/Call";
-import CommissionSection from "$app/components/Audience/Customers/Sections/Commission";
-import PingButton from "$app/components/Audience/Customers/PingButton";
-import RefundForm from "$app/components/Audience/Customers/RefundForm";
-import AccessSection from "$app/components/Audience/Customers/Sections/Access";
-import ChargesSection from "$app/components/Audience/Customers/Sections/Charges";
-import LicenseSection from "$app/components/Audience/Customers/Sections/License";
-import SubscriptionCancellationSection from "$app/components/Audience/Customers/Sections/SubscriptionCancellation";
-import SeatSection from "$app/components/Audience/Customers/Sections/Seat";
-import UtmLinkStack from "$app/components/Audience/Customers/UtmLinkStack";
-import OptionSection from "$app/components/Audience/Customers/Sections/Option";
-import ReviewSection from "$app/components/Audience/Customers/Sections/Review";
-import EmailSection from "$app/components/Audience/Customers/Sections/Email";
-import TrackingSection from "$app/components/Audience/Customers/Sections/Tracking";
-import AddressSection from "$app/components/Audience/Customers/Sections/Address";
-import CommissionStatusPill from "$app/components/Audience/Customers/CommissionStatusPill";
-
-import { formatPrice } from "$app/components/Audience/Customers";
 
 const PAGE_SIZE = 10;
 

@@ -2,15 +2,12 @@ import * as React from "react";
 
 import { Charge } from "$app/data/customers";
 
-import { Icon } from "$app/components/Icons";
-
-import { useUserAgentInfo } from "$app/components/UserAgent";
-import { WithTooltip } from "$app/components/WithTooltip";
-
 import { formatPrice } from "$app/components/Audience/Customers";
-
 import PingButton from "$app/components/Audience/Customers/PingButton";
 import RefundForm from "$app/components/Audience/Customers/RefundForm";
+import { Icon } from "$app/components/Icons";
+import { useUserAgentInfo } from "$app/components/UserAgent";
+import { WithTooltip } from "$app/components/WithTooltip";
 
 type ChargeRowProps = {
   purchase: Charge;
@@ -20,13 +17,7 @@ type ChargeRowProps = {
   canPing: boolean;
 };
 
-const ChargeRow = ({
-  purchase,
-  customerEmail,
-  onChange,
-  showRefundFeeNotice,
-  canPing,
-}: ChargeRowProps) => {
+const ChargeRow = ({ purchase, customerEmail, onChange, showRefundFeeNotice, canPing }: ChargeRowProps) => {
   const [isRefunding, setIsRefunding] = React.useState(false);
   const userAgentInfo = useUserAgentInfo();
 

@@ -1,5 +1,7 @@
 import * as React from "react";
+
 import { Tracking } from "$app/data/customers";
+
 import { Button, NavigationButton } from "$app/components/Button";
 
 type TrackingSectionProps = {
@@ -7,10 +9,7 @@ type TrackingSectionProps = {
   onMarkShipped: (url: string) => Promise<void>;
 };
 
-const TrackingSection = ({
-  tracking,
-  onMarkShipped,
-}: TrackingSectionProps) => {
+const TrackingSection = ({ tracking, onMarkShipped }: TrackingSectionProps) => {
   const [url, setUrl] = React.useState((tracking.shipped ? tracking.url : "") ?? "");
   const [isLoading, setIsLoading] = React.useState(false);
 

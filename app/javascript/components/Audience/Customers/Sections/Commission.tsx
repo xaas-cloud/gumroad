@@ -1,20 +1,15 @@
 import { DirectUpload, Blob } from "@rails/activestorage";
 import * as React from "react";
 
-import {
-  Commission,
-  updateCommission,
-  completeCommission,
-} from "$app/data/customers";
+import { Commission, updateCommission, completeCommission } from "$app/data/customers";
 import FileUtils from "$app/utils/file";
 import { asyncVoid } from "$app/utils/promise";
 import { assertResponseError } from "$app/utils/request";
 
-import { Button } from "$app/components/Button";
-import { Icon } from "$app/components/Icons";
-import { useClientAlert } from "$app/components/ClientAlertProvider";
-
 import FileRow from "$app/components/Audience/Customers/Sections/FileRow";
+import { Button } from "$app/components/Button";
+import { useClientAlert } from "$app/components/ClientAlertProvider";
+import { Icon } from "$app/components/Icons";
 
 type CommissionSectionProps = {
   commission: Commission;

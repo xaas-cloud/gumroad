@@ -1,13 +1,12 @@
 import * as React from "react";
 
 import { Call, updateCallUrl } from "$app/data/customers";
-
 import { formatCallDate } from "$app/utils/date";
 import { assertResponseError } from "$app/utils/request";
 
 import { Button } from "$app/components/Button";
-import { useCurrentSeller } from "$app/components/CurrentSeller";
 import { useClientAlert } from "$app/components/ClientAlertProvider";
+import { useCurrentSeller } from "$app/components/CurrentSeller";
 
 type CallSectionProps = {
   call: Call;

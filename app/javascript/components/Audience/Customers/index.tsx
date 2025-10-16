@@ -2,21 +2,17 @@ import { lightFormat, subMonths } from "date-fns";
 import { format } from "date-fns-tz";
 import * as React from "react";
 
-import {
-  Customer,
-  Query,
-  SortKey,
-  getPagedCustomers,
-} from "$app/data/customers";
-import {
-  CurrencyCode,
-  formatPriceCentsWithCurrencySymbol,
-} from "$app/utils/currency";
+import { Customer, Query, SortKey, getPagedCustomers } from "$app/data/customers";
+import { CurrencyCode, formatPriceCentsWithCurrencySymbol } from "$app/utils/currency";
 import { asyncVoid } from "$app/utils/promise";
 import { RecurrenceId, recurrenceLabels } from "$app/utils/recurringPricing";
 import { AbortError, assertResponseError } from "$app/utils/request";
 
+import CustomerDrawer from "$app/components/Audience/Customers/Drawer";
+import ProductSelect from "$app/components/Audience/Customers/ProductSelect";
+import UtmLinkStack from "$app/components/Audience/Customers/UtmLinkStack";
 import { NavigationButton } from "$app/components/Button";
+import { useClientAlert } from "$app/components/ClientAlertProvider";
 import { useCurrentSeller } from "$app/components/CurrentSeller";
 import { DateInput } from "$app/components/DateInput";
 import { DateRangePicker } from "$app/components/DateRangePicker";
@@ -32,11 +28,7 @@ import { useOnChange } from "$app/components/useOnChange";
 import { useUserAgentInfo } from "$app/components/UserAgent";
 import { useSortingTableDriver } from "$app/components/useSortingTableDriver";
 import { WithTooltip } from "$app/components/WithTooltip";
-import { useClientAlert } from "$app/components/ClientAlertProvider";
 
-import UtmLinkStack from "$app/components/Audience/Customers/UtmLinkStack";
-import CustomerDrawer from "$app/components/Audience/Customers/Drawer";
-import ProductSelect from "$app/components/Audience/Customers/ProductSelect";
 import placeholder from "$assets/images/placeholders/customers.png";
 
 export type Item = { type: "product"; id: string } | { type: "variant"; id: string; productId: string };

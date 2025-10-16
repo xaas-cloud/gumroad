@@ -2,10 +2,9 @@ import * as React from "react";
 
 import { Review } from "$app/data/customers";
 
+import ReviewVideosSubsections from "$app/components/Audience/Customers/Sections/ReviewVideosSubsections";
 import { RatingStars } from "$app/components/RatingStars";
 import { ReviewResponseForm } from "$app/components/ReviewResponseForm";
-
-import ReviewVideosSubsections from "$app/components/Audience/Customers/Sections/ReviewVideosSubsections";
 
 type ReviewSectionProps = {
   review: Review;
@@ -13,11 +12,7 @@ type ReviewSectionProps = {
   onChange: (review: Review) => void;
 };
 
-const ReviewSection = ({
-  review,
-  purchaseId,
-  onChange,
-}: ReviewSectionProps) => (
+const ReviewSection = ({ review, purchaseId, onChange }: ReviewSectionProps) => (
   <section className="stack">
     <h3>Review</h3>
     <section>

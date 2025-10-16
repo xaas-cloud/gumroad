@@ -1,9 +1,9 @@
 import * as React from "react";
 
 import { type Charge } from "$app/data/customers";
-import { Progress } from "$app/components/Progress";
 
 import ChargeRow from "$app/components/Audience/Customers/Sections/Charges/Row";
+import { Progress } from "$app/components/Progress";
 
 type ChargesSectionProps = {
   charges: Charge[];
@@ -15,7 +15,15 @@ type ChargesSectionProps = {
   loading: boolean;
 };
 
-const ChargesSection = ({ charges, remainingCharges, onChange, showRefundFeeNotice, canPing, customerEmail, loading }: ChargesSectionProps) => {
+const ChargesSection = ({
+  charges,
+  remainingCharges,
+  onChange,
+  showRefundFeeNotice,
+  canPing,
+  customerEmail,
+  loading,
+}: ChargesSectionProps) => {
   const updateCharge = (id: string, update: Partial<Charge>) =>
     onChange(charges.map((charge) => (charge.id === id ? { ...charge, ...update } : charge)));
 

@@ -1,18 +1,13 @@
 import cx from "classnames";
 import * as React from "react";
 
-import {
-  Option,
-  getOptions,
-  updateOption,
-} from "$app/data/customers";
-
+import { Option, getOptions, updateOption } from "$app/data/customers";
 import { assertResponseError } from "$app/utils/request";
 
 import { Button } from "$app/components/Button";
+import { useClientAlert } from "$app/components/ClientAlertProvider";
 import { Progress } from "$app/components/Progress";
 import { useRunOnce } from "$app/components/useRunOnce";
-import { useClientAlert } from "$app/components/ClientAlertProvider";
 
 type OptionSectionProps = {
   option: Option | null;

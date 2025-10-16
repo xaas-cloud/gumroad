@@ -1,18 +1,12 @@
 import * as React from "react";
 
-import {
-  Review,
-  ReviewVideo,
-  approveReviewVideo,
-  rejectReviewVideo,
-} from "$app/data/customers";
-
+import { Review, ReviewVideo, approveReviewVideo, rejectReviewVideo } from "$app/data/customers";
 import { assertResponseError } from "$app/utils/request";
 
 import { Button } from "$app/components/Button";
+import { useClientAlert } from "$app/components/ClientAlertProvider";
 import { Modal } from "$app/components/Modal";
 import { ReviewVideoPlayer } from "$app/components/ReviewVideoPlayer";
-import { useClientAlert } from "$app/components/ClientAlertProvider";
 
 type ReviewVideosSubsectionsProps = {
   review: Review;

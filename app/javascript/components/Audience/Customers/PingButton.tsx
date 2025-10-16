@@ -1,8 +1,10 @@
-import React from 'react';
-import { useClientAlert } from '$app/components/ClientAlertProvider';
-import { assertResponseError } from '$app/utils/request';
-import { Button } from '$app/components/Button';
+import React from "react";
+
 import { resendPing } from "$app/data/customers";
+import { assertResponseError } from "$app/utils/request";
+
+import { Button } from "$app/components/Button";
+import { useClientAlert } from "$app/components/ClientAlertProvider";
 
 type PingButtonProps = {
   purchaseId: string;
