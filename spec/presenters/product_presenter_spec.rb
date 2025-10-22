@@ -244,7 +244,7 @@ describe ProductPresenter do
       product.user.reload
     end
 
-    fit "returns the properties for the product edit page" do
+    it "returns the properties for the product edit page" do
       expect(presenter.edit_props).to eq(
         {
           product: {
