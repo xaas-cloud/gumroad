@@ -2,15 +2,11 @@ import { WhenVisible } from "@inertiajs/react";
 import React from "react";
 
 import { LoadingSpinner } from "$app/components/LoadingSpinner";
-
-export type Pagination = {
-  page: number;
-  limit: number;
-};
+import { type CountlessPagination } from "$app/hooks/useLazyFetch";
 
 type PaginatedLoaderProps = {
   itemsLength: number;
-  pagination: Pagination;
+  pagination: CountlessPagination;
   only: string[];
 };
 

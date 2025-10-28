@@ -10,12 +10,13 @@ class Admin::AffiliatesController < Admin::BaseController
   RECORDS_PER_PAGE = 25
 
   def index
-    super do |pagination, users|
-      if users.one? && params[:page].blank? && !request.format.json?
-        redirect_to admin_affiliate_path(users.first)
-        return
-      end
+    @title = "Search for #{params[:query].present? ? params[:query].strip : "affiliates"}"
+    users = User.admin_search(params[:query]).joins(:direct_affiliate_accounts).distinct
+    if users.one? && params[:page].blank? && !request.format.json?
+      redirect_to admin_affiliate_path(users.first)
+      return
     end
+    list_paginated_users users:, template: "Admin/Affiliates/Index"
   end
 
   def show
@@ -30,17 +31,4 @@ class Admin::AffiliatesController < Admin::BaseController
              }
     end
   end
-
-  private
-    def page_title
-      "Search for #{params[:query].present? ? params[:query].strip : "affiliates"}"
-    end
-
-    def users_scope
-      User.admin_search(params[:query]).joins(:direct_affiliate_accounts).distinct
-    end
-
-    def inertia_template
-      "Admin/Affiliates/Index"
-    end
 end

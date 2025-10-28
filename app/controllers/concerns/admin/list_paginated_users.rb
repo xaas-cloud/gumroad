@@ -11,7 +11,7 @@ module Admin::ListPaginatedUsers
   RECORDS_PER_PAGE = 5
 
   private
-    def list_paginated_users(users:, template:, legacy_template:)
+    def list_paginated_users(users:, template:)
       pagination, users = pagy_countless(
         users,
         limit: params[:per_page] || RECORDS_PER_PAGE,
@@ -33,8 +33,7 @@ module Admin::ListPaginatedUsers
                 end
               end,
               pagination:
-            },
-            legacy_template: legacy_template
+            }
           )
         end
         format.json { render json: { users:, pagination: } }

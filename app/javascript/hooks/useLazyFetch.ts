@@ -23,10 +23,16 @@ interface UseLazyFetchResult<T> {
 
 type QueryParams = Record<string, string | number>;
 
-export type Pagination = {
+export interface Pagination {
+  page: number;
   count: number;
   next: number | null;
+  limit: number;
+};
+
+export interface CountlessPagination {
   page: number;
+  limit: number;
 };
 
 type PaginatedResponse = {
@@ -133,17 +139,17 @@ export const useLazyPaginatedFetch = <T>(
   initialData: T,
   options: UseLazyPaginatedFetchOptions<T>,
 ): UseLazyPaginatedFetchResult<T> => {
+  const mode = options.mode ?? "append";
+  const perPage = options.perPage ?? 20;
+
   const [hasMore, setHasMore] = React.useState(false);
   const [pagination, setPagination] = React.useState<Pagination>({
     count: 0,
     next: null,
     page: 0,
+    limit: perPage,
   });
   const [currentData, setCurrentData] = React.useState<T>(initialData);
-
-  const mode = options.mode || "replace";
-  const perPage = options.perPage ?? 20;
-
   const core = useLazyFetchCore(initialData, options, (responseData, parsedData) => {
     const { pagination: paginationData } = cast<PaginatedResponse>(responseData);
     setPagination(paginationData);

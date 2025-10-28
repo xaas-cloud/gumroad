@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { Form } from "$app/components/server-components/Admin/Form";
 import { showAlert } from "$app/components/server-components/Alert";
+import { type Purchase } from "$app/components/Admin/Purchases/PurchaseDetails";
 
 export const AdminResendReceiptForm = ({ purchase: { id, email } }: { purchase: Purchase }) => (
   <Form

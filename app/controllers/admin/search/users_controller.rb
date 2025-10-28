@@ -3,16 +3,9 @@
 class Admin::Search::UsersController < Admin::Search::BaseController
   include Admin::ListPaginatedUsers
 
-  private
-    def page_title
-      "Search for #{params[:query].present? ? params[:query].strip : "users"}"
-    end
-
-    def users_scope
-      User.admin_search(params[:query]).order(created_at: :desc)
-    end
-
-    def inertia_template
-      "Admin/Search/Users/Index"
-    end
+  def index
+    @title = "Search for #{params[:query].present? ? params[:query].strip : "users"}"
+    users = User.admin_search(params[:query]).order(created_at: :desc)
+    list_paginated_users(users:, template: "Admin/Search/Users/Index")
+  end
 end
