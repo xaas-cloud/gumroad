@@ -56,6 +56,10 @@ def configure_vcr
     config.ignore_hosts "api.knapsackpro.com"
     config.ignore_hosts "googlechromelabs.github.io"
     config.ignore_hosts "storage.googleapis.com"
+    config.ignore_hosts "js.stripe.com"
+    config.ignore_request do |request|
+      request.uri.match?(/test\.gumroad\.com/)
+    end
     config.ignore_localhost = true
     config.configure_rspec_metadata!
     config.debug_logger = $stdout if ENV["VCR_DEBUG"]
@@ -347,7 +351,8 @@ end
 
 def setup_js(val = false)
   VCR.turn_on!
-  WebMock.disable_net_connect!(allow_localhost: true, allow: ["api.knapsackpro.com"])
+  # WebMock.disable_net_connect!(allow_localhost: true, allow: ["api.knapsackpro.com"])
+  WebMock.allow_net_connect!(net_http_connect_on_start: true)
 end
 
 def teardown_caching(val = false)

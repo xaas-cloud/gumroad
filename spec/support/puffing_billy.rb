@@ -3,7 +3,6 @@
 Billy.configure do |c|
   c.cache = true
   c.cache_request_headers = false
-  c.ignore_params = ["https://js.stripe.com/v3/fingerprinted"]
   c.persist_cache = true
   c.cache_path = "spec/support/fixtures/billy_cache/"
   c.non_successful_cache_disabled = false
@@ -12,6 +11,7 @@ Billy.configure do |c|
 
   # Don't cache requests to the app itself (localhost/test domain)
   c.whitelist << /test\.gumroad\.com/
+  c.whitelist << /js\.stripe\.com/
 end
 
 # From https://knapsackpro.com/faq/question/how-to-configure-puffing-billy-gem-with-knapsack-pro-queue-mode
