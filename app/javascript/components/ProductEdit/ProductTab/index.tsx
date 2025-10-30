@@ -210,7 +210,7 @@ export const ProductTab = () => {
                 />
               </section>
               <section className="p-4! md:p-8!">
-                <h2>Customize Receipt</h2>
+                <h2>Receipt</h2>
                 <CustomViewContentButtonTextInput
                   value={product.custom_view_content_button_text}
                   onChange={(value) => updateProduct({ custom_view_content_button_text: value })}

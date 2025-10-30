@@ -1144,8 +1144,8 @@ describe("Product Edit Scenario", type: :system, js: true) do
     it "allows updating custom view content button text" do
       visit edit_link_path(product.unique_permalink)
 
-      within_section "Customize Receipt" do
-        fill_in "View content button text", with: "Download Now!"
+      within_section "Receipt" do
+        fill_in "Button text", with: "Download Now!"
       end
 
       expect do
@@ -1153,7 +1153,7 @@ describe("Product Edit Scenario", type: :system, js: true) do
         product.reload
       end.to change { product.custom_view_content_button_text }.from(nil).to("Download Now!")
 
-      expect(find_field("View content button text").value).to eq("Download Now!")
+      expect(find_field("Button text").value).to eq("Download Now!")
     end
 
     it "allows updating custom receipt text" do
@@ -1161,8 +1161,8 @@ describe("Product Edit Scenario", type: :system, js: true) do
 
       custom_text = "Thank you for your purchase! Please check your email for download instructions."
 
-      within_section "Customize Receipt" do
-        fill_in "Additional text on receipt", with: custom_text
+      within_section "Receipt" do
+        fill_in "Custom message", with: custom_text
       end
 
       expect do
@@ -1170,7 +1170,7 @@ describe("Product Edit Scenario", type: :system, js: true) do
         product.reload
       end.to change { product.custom_receipt_text }.from(nil).to(custom_text)
 
-      expect(find_field("Additional text on receipt").value).to eq(custom_text)
+      expect(find_field("Custom message").value).to eq(custom_text)
     end
   end
 
