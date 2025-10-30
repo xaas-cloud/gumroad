@@ -8,7 +8,7 @@ class Admin::ProductsController < Admin::BaseController
   def show
     @title = @product.name
 
-    render inertia: "Admin/Products/Show", legacy_template: "admin/links/show", props: {
+    render inertia: "Admin/Products/Show", props: {
       product: @product.as_json(
         admin: true,
         admins_can_mark_as_staff_picked: ->(product) { policy([:admin, :products, :staff_picked, product]).create? },
