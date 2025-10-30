@@ -210,19 +210,6 @@ export const ProductTab = () => {
                 />
               </section>
               <section className="p-4! md:p-8!">
-                <h2>Receipt</h2>
-                <CustomViewContentButtonTextInput
-                  value={product.custom_view_content_button_text}
-                  onChange={(value) => updateProduct({ custom_view_content_button_text: value })}
-                  maxLength={product.custom_view_content_button_text_max_length}
-                />
-                <CustomReceiptTextInput
-                  value={product.custom_receipt_text}
-                  onChange={(value) => updateProduct({ custom_receipt_text: value })}
-                  maxLength={product.custom_receipt_text_max_length}
-                />
-              </section>
-              <section className="p-4! md:p-8!">
                 <h2>Integrations</h2>
                 <fieldset>
                   {product.community_chat_enabled === null ? null : (
@@ -381,6 +368,19 @@ export const ProductTab = () => {
                   onChange={(shipping_destinations) => updateProduct({ shipping_destinations })}
                 />
               ) : null}
+              <section className="p-4! md:p-8!">
+                <h2>Receipt</h2>
+                <CustomViewContentButtonTextInput
+                  value={product.custom_view_content_button_text}
+                  onChange={(value) => updateProduct({ custom_view_content_button_text: value })}
+                  maxLength={product.custom_view_content_button_text_max_length}
+                />
+                <CustomReceiptTextInput
+                  value={product.custom_receipt_text}
+                  onChange={(value) => updateProduct({ custom_receipt_text: value })}
+                  maxLength={product.custom_receipt_text_max_length}
+                />
+              </section>
               <section className="p-4! md:p-8!">
                 <h2>Settings</h2>
                 <fieldset>
