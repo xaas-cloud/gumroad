@@ -23,9 +23,8 @@ class Api::Internal::ReceiptPreviewController < Api::Internal::BaseController
     )
 
     premailer = Premailer::Rails::CustomizedPremailer.new(rendered_html)
-    inlined_html = premailer.to_inline_css
 
-    render html: inlined_html.html_safe, layout: false
+    render html: premailer.to_inline_css.html_safe, layout: false
   end
 
   private
