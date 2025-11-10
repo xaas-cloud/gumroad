@@ -125,16 +125,16 @@ export const Layout = ({
   isLoading = false,
   headerActions,
   previewScaleFactor = 0.4,
-  withBorder = true,
-  withNavigationButton = true,
+  showBorder = true,
+  showNavigationButton = true,
 }: {
   children: React.ReactNode;
   preview?: React.ReactNode;
   isLoading?: boolean;
   headerActions?: React.ReactNode;
   previewScaleFactor?: number;
-  withBorder?: boolean;
-  withNavigationButton?: boolean;
+  showBorder?: boolean;
+  showNavigationButton?: boolean;
 }) => {
   const { id, product, updateProduct, uniquePermalink, saving, save, currencyType } = useProductEditContext();
   const rootPath = `/products/${uniquePermalink}/edit`;
@@ -318,7 +318,7 @@ export const Layout = ({
           <aside aria-label="Preview" className="sticky! top-0 min-h-screen self-start overflow-y-auto">
             <header>
               <h2>Preview</h2>
-              {Boolean(withNavigationButton) && (
+              {Boolean(showNavigationButton) && (
                 <WithTooltip tip="Preview">
                   <NavigationButton
                     aria-label="Preview"
@@ -337,7 +337,7 @@ export const Layout = ({
             <Preview
               scaleFactor={previewScaleFactor}
               style={
-                withBorder
+                showBorder
                   ? {
                       border: "var(--border)",
                       backgroundColor: "rgb(var(--filled))",
