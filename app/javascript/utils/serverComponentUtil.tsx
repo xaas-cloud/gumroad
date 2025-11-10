@@ -66,7 +66,7 @@ export const register =
         return (
           <React.StrictMode>
             <DesignContextProvider value={global.design_settings}>
-              <TooltipProvider delayDuration={0} disableHoverableContent>
+              <TooltipProvider delayDuration={0}>
                 <DomainSettingsProvider
                   value={{
                     scheme: global.domain_settings.scheme,
