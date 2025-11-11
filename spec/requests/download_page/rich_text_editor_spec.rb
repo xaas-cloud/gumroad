@@ -304,23 +304,20 @@ describe("Download Page – Rich Text Editor Content", type: :system, js: true) 
 
       find("pre", text: "const hello = \"world\";").hover
       within find("pre", text: "const hello = \"world\";") do
-        copy_button = find_button("Copy")
-        copy_button.click
-        expect(copy_button).to have_tooltip(text: "Copied!")
+        click_on "Copy"
+        expect(page).to have_text("Copied!")
       end
 
       find("pre", text: "puts 'Hello, world!'").hover
       within find("pre", text: "puts 'Hello, world!'") do
-        copy_button = find_button("Copy")
-        copy_button.click
-        expect(copy_button).to have_tooltip(text: "Copied!")
+        click_on "Copy"
+        expect(page).to have_text("Copied!")
       end
 
       find("pre", text: "let greeting: string = 'Hello, world!';").hover
       within find("pre", text: "let greeting: string = 'Hello, world!';") do
-        copy_button = find_button("Copy")
-        copy_button.click
-        expect(copy_button).to have_tooltip(text: "Copied!")
+        click_on "Copy"
+        expect(page).to have_text("Copied!")
       end
     end
 

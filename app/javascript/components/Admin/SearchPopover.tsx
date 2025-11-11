@@ -89,9 +89,9 @@ const SearchPopover = () => {
     <Popover
       open={open}
       onToggle={setOpen}
-      aria-label="Search"
+      aria-label="Toggle Search"
       trigger={
-        <WithTooltip tip="Search" side="bottom">
+        <WithTooltip tip="Search" position="bottom">
           <div className="button">
             <Icon name="solid-search" />
           </div>

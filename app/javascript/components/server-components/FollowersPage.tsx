@@ -127,7 +127,7 @@ export const FollowersPage = ({ followers: initialFollowers, per_page, total }: 
               onToggle={setSearchBoxOpen}
               aria-label="Search"
               trigger={
-                <WithTooltip tip="Search" side="bottom">
+                <WithTooltip tip="Search" position="bottom">
                   <div className="button">
                     <Icon name="solid-search" />
                   </div>
@@ -147,7 +147,7 @@ export const FollowersPage = ({ followers: initialFollowers, per_page, total }: 
           <Popover
             aria-label="Export"
             trigger={
-              <WithTooltip tip="Export" side="bottom">
+              <WithTooltip tip="Export" position="bottom">
                 <Button aria-label="Export">
                   <Icon aria-label="Download" name="download" />
                 </Button>

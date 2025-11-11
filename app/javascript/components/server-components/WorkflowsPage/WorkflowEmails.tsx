@@ -645,7 +645,7 @@ const AbandonedCartProductListNodeView = (props: NodeViewProps) => {
 
   return (
     <NodeViewWrapper className="paragraphs" style={isPreview ? {} : { userSelect: "none", cursor: "not-allowed" }}>
-      <WithTooltip tip={isPreview ? null : "This cannot be deleted"}>
+      <WithTooltip position="top" tip={isPreview ? null : "This cannot be deleted"}>
         {abandonedCartProducts.length > 0 ? (
           <div className="cart" role="list">
             {abandonedCartProducts.slice(0, shownProductCount).map((product) => (
@@ -707,7 +707,7 @@ const AbandonedCartProductListNodeView = (props: NodeViewProps) => {
         </button>
       ) : null}
 
-      <WithTooltip tip={isPreview ? null : "This cannot be deleted"} side="top">
+      <WithTooltip tip={isPreview ? null : "This cannot be deleted"} position="top">
         <NavigationButton
           color="primary"
           href={Routes.checkout_index_url({ host: appDomain })}

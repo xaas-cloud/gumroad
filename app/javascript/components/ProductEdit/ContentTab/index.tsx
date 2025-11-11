@@ -789,7 +789,10 @@ const ContentTabContent = ({ selectedVariantId }: { selectedVariantId: string | 
                             />
                           ))}
                           {product.native_type === "commission" ? (
-                            <WithTooltip tip="Commission files will appear on this page upon completion" side="bottom">
+                            <WithTooltip
+                              tip="Commission files will appear on this page upon completion"
+                              position="bottom"
+                            >
                               <PageTab
                                 page={{
                                   id: "",

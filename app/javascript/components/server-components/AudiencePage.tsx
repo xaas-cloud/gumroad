@@ -59,7 +59,7 @@ const AudiencePage = ({ total_follower_count }: { total_follower_count: number }
             <Popover
               aria-label="Export"
               trigger={
-                <WithTooltip tip="Export" side="bottom">
+                <WithTooltip tip="Export" position="bottom">
                   <Button aria-label="Export">
                     <Icon aria-label="Download" name="download" />
                   </Button>

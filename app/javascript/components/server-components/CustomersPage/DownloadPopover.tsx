@@ -18,7 +18,7 @@ export const DownloadPopover = ({ authenticityToken }: Props) => {
     <Popover
       aria-label="Export"
       trigger={
-        <WithTooltip tip="Export" side="bottom">
+        <WithTooltip tip="Export" position="bottom">
           <div className="button js-toggle-download-box">
             <Icon name="download" />
           </div>

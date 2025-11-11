@@ -359,7 +359,7 @@ export const IncomingCollaborators = () => {
       selectedTab="collaborations"
       showTabs
       headerActions={
-        <WithTooltip side="bottom" tip={collaborators_disabled_reason}>
+        <WithTooltip position="bottom" tip={collaborators_disabled_reason}>
           <Link
             to="/collaborators/new"
             className="button accent"

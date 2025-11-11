@@ -202,7 +202,7 @@ const CollaboratorForm = () => {
             <Icon name="x-square" />
             Cancel
           </Link>
-          <WithTooltip side="bottom" tip={formData.collaborators_disabled_reason}>
+          <WithTooltip position="bottom" tip={formData.collaborators_disabled_reason}>
             <Button
               color="accent"
               onClick={handleSubmit}

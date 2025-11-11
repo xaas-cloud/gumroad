@@ -1,4 +1,3 @@
-import { TooltipProvider } from "@radix-ui/react-tooltip";
 import React from "react";
 
 import { DomainSettings } from "$app/types/domain_settings";
@@ -34,32 +33,30 @@ export type GlobalProps = {
 
 const AdminAppWrapper = ({ children, global }: { children: React.ReactNode; global: GlobalProps }) => (
   <DesignContextProvider value={global.design_settings}>
-    <TooltipProvider delayDuration={0}>
-      <DomainSettingsProvider
+    <DomainSettingsProvider
+      value={{
+        scheme: global.domain_settings.scheme,
+        appDomain: global.domain_settings.app_domain,
+        rootDomain: global.domain_settings.root_domain,
+        shortDomain: global.domain_settings.short_domain,
+        discoverDomain: global.domain_settings.discover_domain,
+        thirdPartyAnalyticsDomain: global.domain_settings.third_party_analytics_domain,
+        apiDomain: global.domain_settings.api_domain,
+      }}
+    >
+      <UserAgentProvider
         value={{
-          scheme: global.domain_settings.scheme,
-          appDomain: global.domain_settings.app_domain,
-          rootDomain: global.domain_settings.root_domain,
-          shortDomain: global.domain_settings.short_domain,
-          discoverDomain: global.domain_settings.discover_domain,
-          thirdPartyAnalyticsDomain: global.domain_settings.third_party_analytics_domain,
-          apiDomain: global.domain_settings.api_domain,
+          isMobile: global.user_agent_info.is_mobile,
+          locale: global.locale,
         }}
       >
-        <UserAgentProvider
-          value={{
-            isMobile: global.user_agent_info.is_mobile,
-            locale: global.locale,
-          }}
-        >
-          <LoggedInUserProvider value={parseLoggedInUser(global.logged_in_user)}>
-            <SSRLocationProvider value={global.href}>
-              <ClientAlertProvider>{children}</ClientAlertProvider>
-            </SSRLocationProvider>
-          </LoggedInUserProvider>
-        </UserAgentProvider>
-      </DomainSettingsProvider>
-    </TooltipProvider>
+        <LoggedInUserProvider value={parseLoggedInUser(global.logged_in_user)}>
+          <SSRLocationProvider value={global.href}>
+            <ClientAlertProvider>{children}</ClientAlertProvider>
+          </SSRLocationProvider>
+        </LoggedInUserProvider>
+      </UserAgentProvider>
+    </DomainSettingsProvider>
   </DesignContextProvider>
 );
 

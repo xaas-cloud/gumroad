@@ -257,7 +257,7 @@ const CustomersPage = ({
               onToggle={() => searchInputRef.current?.focus()}
               trigger={
                 <WithTooltip tip="Search">
-                  <div className="button w-full">
+                  <div className="button">
                     <Icon name="solid-search" />
                   </div>
                 </WithTooltip>
@@ -279,7 +279,7 @@ const CustomersPage = ({
               aria-label="Filter"
               trigger={
                 <WithTooltip tip="Filter">
-                  <div className="button w-full">
+                  <div className="button">
                     <Icon name="filter" />
                   </div>
                 </WithTooltip>
@@ -401,7 +401,7 @@ const CustomersPage = ({
               aria-label="Export"
               trigger={
                 <WithTooltip tip="Export">
-                  <div className="button w-full">
+                  <div className="button">
                     <Icon name="download" />
                   </div>
                 </WithTooltip>
@@ -513,7 +513,7 @@ const CustomersPage = ({
                         )}
                         {customer.utm_link ? (
                           <WithTooltip
-                            className="w-80 p-0"
+                            tooltipProps={{ className: "w-80 p-0" }}
                             tip={<UtmLinkStack link={customer.utm_link} showHeader={false} />}
                           >
                             <span className="pill small" style={{ marginLeft: "var(--spacer-2)" }}>
@@ -2200,7 +2200,7 @@ const RefundForm = ({
             </Button>
           ) : null}
           {paypalRefundExpired ? (
-            <WithTooltip tip="PayPal refunds aren't available after 6 months." side="top">
+            <WithTooltip tip="PayPal refunds aren't available after 6 months." position="top">
               {refundButton}
             </WithTooltip>
           ) : (

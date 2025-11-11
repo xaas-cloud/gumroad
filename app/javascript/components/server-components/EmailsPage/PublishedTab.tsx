@@ -107,7 +107,7 @@ export const PublishedTab = () => {
                   <th>Clicks</th>
                   <th>
                     Views{" "}
-                    <WithTooltip side="top" tip="Views only apply to emails published on your profile.">
+                    <WithTooltip position="top" tip="Views only apply to emails published on your profile.">
                       <Icon name="info-circle" />
                     </WithTooltip>
                   </th>
@@ -140,8 +140,7 @@ export const PublishedTab = () => {
                     <td data-label="Clicks" className="whitespace-nowrap">
                       {installment.clicked_urls.length > 0 ? (
                         <WithTooltip
-                          side="top"
-                          className="w-[20rem] p-0"
+                          tooltipProps={{ className: "w-[20rem] p-0" }}
                           tip={
                             <table>
                               <tbody>

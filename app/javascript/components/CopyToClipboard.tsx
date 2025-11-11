@@ -20,7 +20,7 @@ export const CopyToClipboard = ({
   tooltipPosition,
 }: CopyToClipboardProps) => {
   const [status, setStatus] = React.useState<"initial" | "copied">("initial");
-  const ref = React.useRef<HTMLDivElement | null>(null);
+  const ref = React.useRef<HTMLElement | null>(null);
   const latestTextToCopyRef = useRefToLatest(text);
 
   useRunOnce(() => {
@@ -40,13 +40,10 @@ export const CopyToClipboard = ({
   });
 
   return (
-    <WithTooltip
-      tip={status === "initial" ? copyTooltip : copiedTooltip}
-      side={tooltipPosition ?? "top"}
-      // Prevent button clicks from closing the tooltip
-      triggerProps={{ onPointerDown: (e) => e.preventDefault(), onClick: (e) => e.preventDefault() }}
-    >
-      <div ref={ref}>{children}</div>
+    <WithTooltip tip={status === "initial" ? copyTooltip : copiedTooltip} position={tooltipPosition}>
+      <span ref={ref} className="contents">
+        {children}
+      </span>
     </WithTooltip>
   );
 };

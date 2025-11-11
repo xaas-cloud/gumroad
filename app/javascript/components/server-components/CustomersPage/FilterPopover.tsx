@@ -13,7 +13,7 @@ export const FilterPopover = ({ contentHTML }: Props) => (
   <Popover
     aria-label="Filter"
     trigger={
-      <WithTooltip tip="Filter" side="bottom">
+      <WithTooltip tip="Filter" position="bottom">
         <div className="button js-toggle-filter-list">
           <Icon name="filter" />
         </div>

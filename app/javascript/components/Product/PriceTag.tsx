@@ -61,7 +61,7 @@ export const PriceTag = ({
 
   return (
     <div itemScope itemProp="offers" itemType="https://schema.org/Offer" className="flex items-center">
-      <WithTooltip side={tooltipPosition} tip={priceTag}>
+      <WithTooltip position={tooltipPosition} tip={priceTag}>
         <div className="relative grid grid-flow-col border border-r-0 border-border">
           <div
             className="bg-accent px-2 py-1 text-accent-foreground"

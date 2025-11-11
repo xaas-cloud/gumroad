@@ -235,15 +235,17 @@ export const PdfReaderPage = ({
           </div>
         </div>
 
-        <div
-          className="relative z-20 grid"
+        <WithTooltip
+          tip={pageTooltip ? `Page ${pageTooltip.pageNumber}` : null}
+          className="z-20 grid"
+          tooltipProps={{ style: { left: pageTooltip?.left, pointerEvents: "none" } }}
           onMouseMove={(e) => {
             const width = e.currentTarget.offsetWidth;
             const percent = Math.ceil((100 * e.clientX) / width) / 100;
             const pageNumber = Math.floor(percent * (pageCount - 1)) + 1;
             setPageTooltip({ left: e.clientX, pageNumber });
           }}
-          onMouseOut={() => setPageTooltip(null)}
+          onMouseLeave={() => setPageTooltip(null)}
         >
           <input
             type="range"
@@ -253,15 +255,7 @@ export const PdfReaderPage = ({
             onChange={(e) => updatePage(parseInt(e.target.value, 10))}
             style={{ "--progress": `${((pageNumber - 1) / (pageCount - 1)) * 100}%` }}
           />
-          <WithTooltip
-            tip={`Page ${pageTooltip?.pageNumber}`}
-            open={pageTooltip != null}
-            triggerProps={{ className: "absolute h-full", style: { left: pageTooltip?.left ?? 0 } }}
-            side="bottom"
-          >
-            <div />
-          </WithTooltip>
-        </div>
+        </WithTooltip>
 
         <div className="main relative flex-1 overflow-auto bg-background" role="document">
           <div className="pdf-reader-container">

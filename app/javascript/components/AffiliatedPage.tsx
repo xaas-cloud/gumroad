@@ -192,9 +192,9 @@ const Search = ({ onSearch, value }: SearchProps) => {
     <Popover
       open={open}
       onToggle={setOpen}
-      aria-label="Search"
+      aria-label="Toggle Search"
       trigger={
-        <WithTooltip tip="Search" side="bottom">
+        <WithTooltip tip="Search" position="bottom">
           <div className="button">
             <Icon name="solid-search" />
           </div>
@@ -294,7 +294,7 @@ const AffiliatedPage = ({
         ) : (
           <>
             {initialAffiliatedProducts.length > 0 && <Search onSearch={handleSearch} value={state.query} />}
-            <WithTooltip side="bottom" tip={affiliatesDisabledReason}>
+            <WithTooltip position="bottom" tip={affiliatesDisabledReason}>
               <Button color="accent" disabled={affiliatesDisabledReason !== null} onClick={() => toggleOpen(true)}>
                 Gumroad affiliate
               </Button>
@@ -321,7 +321,7 @@ const AffiliatedPage = ({
               <h2>Become an affiliate and earn!</h2>
               Gumroad is a great place for you to make some side income, even if you're not actively creating your own
               products.
-              <WithTooltip side="top" tip={affiliatesDisabledReason}>
+              <WithTooltip position="top" tip={affiliatesDisabledReason}>
                 <Button disabled={affiliatesDisabledReason !== null} color="accent" onClick={() => toggleOpen(true)}>
                   Become an affiliate
                 </Button>

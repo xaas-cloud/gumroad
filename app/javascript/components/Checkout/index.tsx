@@ -268,7 +268,7 @@ export const Checkout = ({
                         !cart.rejectPppDiscount ? (
                           <WithTooltip
                             tip="This discount is applied based on the cost of living in your country."
-                            side="top"
+                            position="top"
                           >
                             <button
                               className="pill small dismissable"

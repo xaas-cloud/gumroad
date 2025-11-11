@@ -164,7 +164,7 @@ const Collaborators = () => {
       selectedTab="collaborators"
       showTabs={has_incoming_collaborators}
       headerActions={
-        <WithTooltip side="bottom" tip={collaborators_disabled_reason}>
+        <WithTooltip position="bottom" tip={collaborators_disabled_reason}>
           <Link
             to="/collaborators/new"
             className="button accent"
@@ -213,7 +213,7 @@ const Collaborators = () => {
                           <small className="line-clamp-1">{collaborator.email}</small>
                         </div>
                         {collaborator.setup_incomplete ? (
-                          <WithTooltip tip="Not receiving payouts" side="top">
+                          <WithTooltip tip="Not receiving payouts" position="top">
                             <Icon
                               name="solid-shield-exclamation"
                               style={{ color: "rgb(var(--warning))" }}

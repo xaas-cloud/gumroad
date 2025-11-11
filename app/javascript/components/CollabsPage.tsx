@@ -51,7 +51,7 @@ const CollabsPage = ({
             </figure>
             <h2>Create your first collab!</h2>
             Offer a product in collaboration with another Gumroad creator to grow your audience.
-            <WithTooltip side="top" tip={collaboratorsDisabledReason}>
+            <WithTooltip position="top" tip={collaboratorsDisabledReason}>
               <NavigationButton
                 disabled={collaboratorsDisabledReason !== null}
                 href="/collaborators/new"

@@ -80,7 +80,7 @@ export const AffiliateSignupForm = () => {
       title="Affiliates"
       actions={
         <>
-          <WithTooltip side="bottom" tip={data.affiliates_disabled_reason}>
+          <WithTooltip position="bottom" tip={data.affiliates_disabled_reason}>
             <Link
               to="/affiliates/new"
               className="button"

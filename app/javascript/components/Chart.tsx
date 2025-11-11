@@ -27,34 +27,23 @@ export const Chart = ({
   containerRef: React.RefObject<HTMLDivElement>;
   tooltipPosition: { left: number; top: number } | null;
   tooltip: React.ReactNode;
-} & React.ComponentPropsWithoutRef<typeof ComposedChart>) => {
-  const uid = React.useId();
-  return (
-    <section
-      className="rounded border border-border bg-background p-6 text-foreground"
-      data-testid="chart"
-      aria-describedby={tooltip ? uid : undefined}
+} & React.ComponentPropsWithoutRef<typeof ComposedChart>) => (
+  <section className="rounded border border-border bg-background p-6 text-foreground" data-testid="chart">
+    <WithTooltip
+      tip={tooltip}
+      className="block"
+      position="top"
+      tooltipProps={{
+        style: { left: tooltipPosition?.left, top: tooltipPosition?.top, bottom: "unset" },
+        className: "-translate-y-full",
+      }}
     >
-      <div className="relative">
-        <ResponsiveContainer aspect={aspect ?? 1092 / 450} maxHeight={650} ref={containerRef}>
-          <ComposedChart margin={{ top: 32, right: 0, bottom: 16, left: 0 }} {...props} />
-        </ResponsiveContainer>
-        {tooltipPosition && tooltip ? (
-          <WithTooltip
-            key={tooltipPosition.left}
-            id={uid}
-            open
-            tip={tooltip}
-            triggerProps={{ className: "absolute", style: tooltipPosition }}
-            side="top"
-          >
-            <div />
-          </WithTooltip>
-        ) : null}
-      </div>
-    </section>
-  );
-};
+      <ResponsiveContainer aspect={aspect ?? 1092 / 450} maxHeight={650} ref={containerRef}>
+        <ComposedChart margin={{ top: 32, right: 0, bottom: 16, left: 0 }} {...props} />
+      </ResponsiveContainer>
+    </WithTooltip>
+  </section>
+);
 
 export const xAxisProps: XAxisProps = {
   tick: ({ x, y, payload }: TickProps) => (
