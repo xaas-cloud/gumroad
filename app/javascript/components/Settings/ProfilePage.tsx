@@ -9,13 +9,13 @@ import { asyncVoid } from "$app/utils/promise";
 import { assertResponseError } from "$app/utils/request";
 
 import { Button } from "$app/components/Button";
-import { useClientAlert } from "$app/components/ClientAlertProvider";
 import { useDomains } from "$app/components/DomainSettings";
 import { Icon } from "$app/components/Icons";
 import { useLoggedInUser } from "$app/components/LoggedInUser";
 import { Preview } from "$app/components/Preview";
 import { Profile, Props as ProfileProps } from "$app/components/Profile/index";
 import { LogoInput } from "$app/components/Profile/Settings/LogoInput";
+import { showAlert } from "$app/components/server-components/Alert";
 import { Layout as SettingsLayout } from "$app/components/Settings/Layout";
 import { SocialAuthButton } from "$app/components/SocialAuthButton";
 import { WithTooltip } from "$app/components/WithTooltip";
@@ -35,7 +35,6 @@ const FONT_DESCRIPTIONS: Record<string, string> = {
 };
 
 const SettingsPage = ({ creator_profile, profile_settings, settings_pages, ...profileProps }: ProfilePageProps) => {
-  const { showAlert } = useClientAlert();
   const { rootDomain, scheme } = useDomains();
   const loggedInUser = useLoggedInUser();
   const [creatorProfile, setCreatorProfile] = React.useState(creator_profile);
@@ -61,7 +60,7 @@ const SettingsPage = ({ creator_profile, profile_settings, settings_pages, ...pr
       onError: (errors) => {
         const errorMessage = Object.values(errors).join(", ");
         showAlert(errorMessage, "error");
-      }
+      },
     });
   };
 

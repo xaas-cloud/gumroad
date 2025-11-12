@@ -12,12 +12,12 @@ import { formatPriceCentsWithCurrencySymbol, formatPriceCentsWithoutCurrencySymb
 import { asyncVoid } from "$app/utils/promise";
 
 import { Button } from "$app/components/Button";
-import { useClientAlert } from "$app/components/ClientAlertProvider";
 import { ConfirmBalanceForfeitOnPayoutMethodChangeModal } from "$app/components/ConfirmBalanceForfeitOnPayoutMethodChangeModal";
 import { CountrySelectionModal } from "$app/components/CountrySelectionModal";
 import { Icon } from "$app/components/Icons";
 import { StripeConnectEmbeddedNotificationBanner } from "$app/components/PayoutPage/StripeConnectEmbeddedNotificationBanner";
 import { PriceInput } from "$app/components/PriceInput";
+import { showAlert } from "$app/components/server-components/Alert";
 import { CreditCardForm } from "$app/components/Settings/AdvancedPage/CreditCardForm";
 import { Layout } from "$app/components/Settings/Layout";
 import AccountDetailsSection from "$app/components/Settings/PaymentsPage/AccountDetailsSection";
@@ -210,7 +210,6 @@ export type ErrorMessageInfo = {
 };
 
 const PaymentsPage = (props: PaymentsPageProps) => {
-  const { showAlert } = useClientAlert();
   const userAgentInfo = useUserAgentInfo();
 
   // Initialize useForm with the main form data

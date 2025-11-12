@@ -4,8 +4,8 @@ import * as React from "react";
 import { SettingPage } from "$app/parsers/settings";
 
 import { Button } from "$app/components/Button";
-import { useClientAlert } from "$app/components/ClientAlertProvider";
 import { PasswordInput } from "$app/components/PasswordInput";
+import { showAlert } from "$app/components/server-components/Alert";
 import { Layout as SettingsLayout } from "$app/components/Settings/Layout";
 
 const MIN_PASSWORD_LENGTH = 4;
@@ -17,7 +17,6 @@ export type PasswordPageProps = {
 };
 
 const PasswordPage = (props: PasswordPageProps) => {
-  const { showAlert } = useClientAlert();
   const uid = React.useId();
   const [requireOldPassword, setRequireOldPassword] = React.useState(props.require_old_password);
 

@@ -8,9 +8,9 @@ import { asyncVoid } from "$app/utils/promise";
 import { ResponseError, request, assertResponseError } from "$app/utils/request";
 
 import { Button } from "$app/components/Button";
-import { useClientAlert } from "$app/components/ClientAlertProvider";
 import { Modal } from "$app/components/Modal";
 import { NumberInput } from "$app/components/NumberInput";
+import { showAlert } from "$app/components/server-components/Alert";
 import { ToggleSettingRow } from "$app/components/SettingRow";
 import { ProductLevelSupportEmailsForm } from "$app/components/Settings/AdvancedPage/ProductLevelSupportEmailsForm";
 import { Layout } from "$app/components/Settings/Layout";
@@ -66,7 +66,6 @@ export type MainPageProps = {
 };
 
 const MainPage = (props: MainPageProps) => {
-  const { showAlert } = useClientAlert();
   const uid = React.useId();
 
   const form = useForm({
@@ -556,7 +555,6 @@ const MainPage = (props: MainPageProps) => {
 const InvalidateActiveSessionsSection = () => {
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = React.useState(false);
   const [isInvalidating, setIsInvalidating] = React.useState(false);
-  const { showAlert } = useClientAlert();
 
   const invalidateActiveSessions = asyncVoid(async () => {
     setIsInvalidating(true);

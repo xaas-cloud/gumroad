@@ -3,7 +3,7 @@ import * as React from "react";
 
 import { SettingPage } from "$app/parsers/settings";
 
-import { useClientAlert } from "$app/components/ClientAlertProvider";
+import { showAlert } from "$app/components/server-components/Alert";
 import AccountDeletionSection from "$app/components/Settings/AdvancedPage/AccountDeletionSection";
 import ApplicationsSection from "$app/components/Settings/AdvancedPage/ApplicationsSection";
 import BlockEmailsSection from "$app/components/Settings/AdvancedPage/BlockEmailsSection";
@@ -30,8 +30,6 @@ export type AdvancedPageProps = {
 };
 
 const AdvancedPage = (props: AdvancedPageProps) => {
-  const { showAlert } = useClientAlert();
-
   const form = useForm({
     domain: props.custom_domain_name,
     blocked_customer_emails: props.blocked_customer_emails,
