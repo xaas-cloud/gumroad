@@ -4,10 +4,8 @@ import { cast } from "ts-safe-cast";
 
 import { default as MainPageComponent, type MainPageProps } from "$app/components/Settings/MainPage";
 
-const MainPage = () => {
+export default function MainPage() {
   const props = cast<MainPageProps>(usePage().props);
 
   return <MainPageComponent {...props} />;
-};
-
-export default MainPage;
+}

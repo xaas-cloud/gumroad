@@ -7,10 +7,8 @@ import {
   type ThirdPartyAnalyticsPageProps,
 } from "$app/components/Settings/ThirdPartyAnalyticsPage";
 
-function ThirdPartyAnalyticsPage() {
+export default function ThirdPartyAnalyticsPage() {
   const props = cast<ThirdPartyAnalyticsPageProps>(usePage().props);
 
   return <ThirdPartyAnalyticsPageComponent {...props} />;
 }
-
-export default ThirdPartyAnalyticsPage;

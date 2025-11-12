@@ -4,10 +4,8 @@ import { cast } from "ts-safe-cast";
 
 import { default as TeamPageComponent, type TeamPageProps } from "$app/components/Settings/TeamPage";
 
-const TeamPage = () => {
+export default function TeamPage() {
   const props = cast<TeamPageProps>(usePage().props);
 
   return <TeamPageComponent {...props} />;
-};
-
-export default TeamPage;
+}
