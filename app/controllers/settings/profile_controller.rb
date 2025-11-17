@@ -14,8 +14,7 @@ class Settings::ProfileController < Settings::BaseController
 
   def update
     unless current_seller.confirmed?
-      message = "You have to confirm your email address before you can do that."
-      return redirect_to(
+      redirect_to(
         settings_profile_path,
         status: :see_other,
         alert: "You have to confirm your email address before you can do that."
@@ -24,7 +23,7 @@ class Settings::ProfileController < Settings::BaseController
 
     if permitted_params[:profile_picture_blob_id].present?
       if ActiveStorage::Blob.find_signed(permitted_params[:profile_picture_blob_id]).nil?
-        return redirect_to(
+        redirect_to(
           settings_profile_path,
           status: :see_other,
           alert: "The logo is already removed. Please refresh the page and try again."
@@ -54,7 +53,7 @@ class Settings::ProfileController < Settings::BaseController
         current_seller.clear_products_cache if permitted_params[:profile_picture_blob_id].present?
       end
     rescue ActiveRecord::RecordInvalid => e
-      return redirect_to(
+      redirect_to(
         settings_profile_path,
         status: :see_other,
         alert: e.record.errors.full_messages.to_sentence
