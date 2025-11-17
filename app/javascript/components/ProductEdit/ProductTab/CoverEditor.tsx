@@ -101,7 +101,7 @@ export const CoverEditor = ({
                 </WithTooltip>
               </PopoverTrigger>
               <PopoverContent>
-                <div className="paragraphs">
+                <div className="flex flex-col gap-4">
                   <CoverUploader
                     permalink={permalink}
                     setCovers={(covers) => {
@@ -210,7 +210,7 @@ const CoverUploader = ({
           hidden={uploader?.type !== "url"}
         >
           {uploader?.type === "url" ? (
-            <div className="input-with-button">
+            <div className="flex gap-2">
               <input
                 type="url"
                 placeholder="https://"

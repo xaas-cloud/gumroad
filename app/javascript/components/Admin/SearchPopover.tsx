@@ -118,7 +118,7 @@ const SearchPopover = () => {
 
           <form
             onSubmit={(e) => submitForm(e, Routes.admin_search_purchases_path(), "purchase_query")}
-            className="input-with-button"
+            className="flex gap-2"
           >
             <div className="input">
               <Icon name="solid-currency-dollar" />
@@ -137,7 +137,7 @@ const SearchPopover = () => {
 
           <form
             onSubmit={(e) => submitForm(e, Routes.admin_affiliates_path(), "affiliate_query")}
-            className="input-with-button"
+            className="flex gap-2"
           >
             <div className="input">
               <Icon name="people-fill" />

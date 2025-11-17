@@ -78,6 +78,7 @@ import { showAlert } from "$app/components/server-components/Alert";
 import { Toggle } from "$app/components/Toggle";
 import { PageHeader } from "$app/components/ui/PageHeader";
 import Placeholder from "$app/components/ui/Placeholder";
+import { Sheet, SheetHeader } from "$app/components/ui/Sheet";
 import { useDebouncedCallback } from "$app/components/useDebouncedCallback";
 import { useOnChange } from "$app/components/useOnChange";
 import { useUserAgentInfo } from "$app/components/UserAgent";
@@ -387,7 +388,7 @@ const CustomersPage = ({
                 </WithTooltip>
               </PopoverTrigger>
               <PopoverContent>
-                <div className="paragraphs">
+                <div className="flex flex-col gap-4">
                   <h3>Download sales as CSV</h3>
                   <div>
                     {exportNames
@@ -420,7 +421,7 @@ const CustomersPage = ({
       />
       <section className="p-4 md:p-8">
         {customers.length > 0 ? (
-          <section className="paragraphs">
+          <section className="flex flex-col gap-4">
             <table aria-live="polite" aria-busy={isLoading}>
               <caption>{`All sales (${count})`}</caption>
               <thead>
@@ -493,19 +494,14 @@ const CustomersPage = ({
                           </>
                         )}
                         {customer.utm_link ? (
-                          <div className="has-tooltip" aria-describedby={`utm-link-${customer.id}`}>
+                          <WithTooltip
+                            tooltipProps={{ className: "w-80 p-0" }}
+                            tip={<UtmLinkStack link={customer.utm_link} showHeader={false} />}
+                          >
                             <span className="pill small" style={{ marginLeft: "var(--spacer-2)" }}>
                               UTM
                             </span>
-                            <div
-                              role="tooltip"
-                              id={`utm-link-${customer.id}`}
-                              style={{ padding: 0, width: "20rem" }}
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <UtmLinkStack link={customer.utm_link} showHeader={false} />
-                            </div>
-                          </div>
+                          </WithTooltip>
                         ) : null}
                       </td>
                       <td>
@@ -761,16 +757,17 @@ const CustomerDrawer = ({
     });
 
   return (
-    <aside>
-      <header>
-        {onBack ? (
-          <button onClick={onBack} aria-label="Return to bundle">
-            <Icon name="arrow-left" style={{ fontSize: "var(--big-icon-size)" }} />
-          </button>
-        ) : null}
-        <h2>{customer.product.name}</h2>
-        <button className="close" aria-label="Close" onClick={onClose} />
-      </header>
+    <Sheet open onOpenChange={onClose}>
+      <SheetHeader>
+        <div className="flex gap-4">
+          {onBack ? (
+            <button onClick={onBack} aria-label="Return to bundle">
+              <Icon name="arrow-left" style={{ fontSize: "var(--big-icon-size)" }} />
+            </button>
+          ) : null}
+          <h2>{customer.product.name}</h2>
+        </div>
+      </SheetHeader>
       {commission ? <CommissionStatusPill commission={commission} /> : null}
       {customer.is_additional_contribution ? (
         <div role="status" className="info">
@@ -1290,7 +1287,7 @@ const CustomerDrawer = ({
           )}
         </section>
       ) : null}
-    </aside>
+    </Sheet>
   );
 };
 
@@ -1343,7 +1340,7 @@ const AddressSection = ({
       </header>
       {isEditing ? (
         <div>
-          <div className="paragraphs">
+          <div className="flex flex-col gap-4">
             <fieldset>
               <legend>
                 <label htmlFor={`${uid}-full-name`}>Full name</label>

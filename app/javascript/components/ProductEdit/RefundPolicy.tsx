@@ -62,7 +62,7 @@ export const RefundPolicySelector = ({
                   <div className="link">Copy from other products</div>
                 </PopoverTrigger>
                 <PopoverContent>
-                  <div className="paragraphs w-80 max-w-full font-normal">
+                  <div className="flex w-80 max-w-full flex-col gap-4 font-normal">
                     <Select
                       options={refundPolicies.map(({ id, product_name: label }) => ({ id, label }))}
                       isMulti={false}

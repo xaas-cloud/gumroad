@@ -169,7 +169,7 @@ export const EditorMenu = ({
       </PopoverTrigger>
       <PopoverContent>
         {isSubmenu(activeSubmenu) ? (
-          <div className="paragraphs w-80">
+          <div className="flex w-75 flex-col gap-4">
             <h4 className="grid grid-cols-[1em_1fr_1em]">
               <button onClick={() => setMenuState("menu")} aria-label="Go back">
                 <Icon name="outline-cheveron-left" />
@@ -340,7 +340,7 @@ const ProductsSettings = ({ section }: { section: ProductsSection }) => {
   );
 
   return (
-    <div className="paragraphs overflow-auto" style={{ maxHeight: "min(100vh, 500px)" }}>
+    <div className="flex flex-col gap-4 overflow-auto" style={{ maxHeight: "min(100vh, 500px)" }}>
       <fieldset>
         <legend>
           <label htmlFor={`${uid}-defaultProductSort`}>Default sort order</label>

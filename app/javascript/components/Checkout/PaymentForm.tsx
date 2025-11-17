@@ -219,7 +219,7 @@ const EmailAddress = () => {
 
   return (
     <div>
-      <div className="paragraphs">
+      <div className="flex flex-col gap-4">
         <fieldset className={cx({ danger: errors.has("email") })}>
           <legend>
             <label htmlFor={`${uid}email`}>
@@ -370,7 +370,7 @@ const SharedInputs = () => {
     <>
       {showCountryInput || showVatIdInput ? (
         <div>
-          <div className="paragraphs">
+          <div className="flex flex-col gap-4">
             <h4>Contact information</h4>
             {showCountryInput ? (
               <div
@@ -488,7 +488,7 @@ const CustomerDetails = () => {
       <SharedInputs />
       {hasShipping(state) ? (
         <div>
-          <div className="paragraphs">
+          <div className="flex flex-col gap-4">
             <h4 style={{ display: "flex", justifyContent: "space-between" }}>
               Shipping information
               {isLoggedIn ? (
@@ -566,7 +566,7 @@ const CustomerDetails = () => {
                     <br />
                     {addressVerification.formattedSuggestedAddress}
                   </div>
-                  <div className="button-group">
+                  <div className="flex flex-wrap gap-2">
                     <Button onClick={verifyAddress}>No, continue</Button>
                     <Button
                       color="primary"
@@ -684,7 +684,7 @@ const CreditCard = () => {
 
   return (
     <div style={{ borderTop: "none", paddingTop: "0" }}>
-      <div className="paragraphs">
+      <div className="flex flex-col gap-4">
         {!useSavedCard ? (
           <fieldset>
             <legend>
@@ -739,7 +739,7 @@ const TipSelector = () => {
 
   return (
     <div>
-      <div className="paragraphs">
+      <div className="flex flex-col gap-4">
         <h4>Add a tip</h4>
         {showPercentageOptions ? (
           <div
@@ -1217,7 +1217,7 @@ export const PaymentForm = ({
       {!isFreePurchase ? (
         <>
           <div>
-            <div className="paragraphs">
+            <div className="flex flex-col gap-4">
               <h4>Pay with</h4>
               {state.availablePaymentMethods.length > 1 ? (
                 <Tabs variant="buttons" className="auto-cols-max grid-flow-col">
