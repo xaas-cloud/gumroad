@@ -3,8 +3,9 @@
 require "spec_helper"
 require "shared_examples/sellers_base_controller_concern"
 require "shared_examples/authorize_called"
+require "inertia_rails/rspec"
 
-describe Settings::MainController do
+describe Settings::MainController, type: :controller, inertia: true do
   it_behaves_like "inherits from Sellers::BaseController"
 
   let(:seller) { create(:named_seller) }
@@ -22,11 +23,12 @@ describe Settings::MainController do
 
     let(:pundit_user) { SellerContext.new(user: user_with_role_for_seller, seller:) }
 
-    it "returns http success and assigns correct instance variables" do
+    it "returns http success and renders Inertia component" do
       get :show
 
       expect(response).to be_successful
-      expect(assigns[:react_component_props]).to eq(SettingsPresenter.new(pundit_user:).main_props)
+      expect(inertia.component).to eq("Settings/Main")
+      expect(inertia.props).to be_present
     end
   end
 
@@ -36,16 +38,19 @@ describe Settings::MainController do
     end
 
     it "submits the form successfully" do
-      put :update, params: { user: user_params.merge(email: "hello@example.com") }, format: :json
-      expect(response.parsed_body["success"]).to be(true)
+      put :update, params: { user: user_params.merge(email: "hello@example.com") }
+      expect(response).to be_successful
+      expect(inertia.component).to eq("Settings/Main")
       expect(seller.reload.unconfirmed_email).to eq("hello@example.com")
     end
 
     it "returns error message when StandardError is raised" do
-      allow_any_instance_of(User).to receive(:update!).and_raise(StandardError)
-      put :update, params: { user: user_params.merge(email: "hello@example.com") }, format: :json
-      expect(response.parsed_body["success"]).to be(false)
-      expect(response.parsed_body["error_message"]).to eq("Something broke. We're looking into what happened. Sorry about this!")
+      allow_any_instance_of(User).to receive(:save!).and_raise(StandardError)
+      put :update, params: { user: user_params.merge(email: "hello@example.com") }
+      expect(response).to redirect_to(settings_main_path)
+      expect(response).to have_http_status :see_other
+      expect(flash[:alert]).to eq("Something broke. We're looking into what happened. Sorry about this!")
+      expect(session[:inertia_errors]).to be_present
     end
 
     describe "expires products" do
@@ -58,17 +63,20 @@ describe Settings::MainController do
       end
 
       it "expires the user's products", :sidekiq_inline do
-        put :update, params: { user: user_params.merge(enable_recurring_subscription_charge_email: false) }, format: :json
-        expect(response.parsed_body["success"]).to be(true)
+        put :update, params: { user: user_params.merge(enable_recurring_subscription_charge_email: false) }
+        expect(response).to be_successful
+        expect(inertia.component).to eq("Settings/Main")
         expect(Rails.cache.read(product.scoped_cache_key("en"))).to be(nil)
         expect(product.reload.product_cached_values.fresh).to eq([])
       end
     end
 
     it "sets error message and render show on invalid record" do
-      put :update, params: { user: user_params.merge(email: "BAD EMAIL") }, format: :json
-      expect(response.parsed_body["success"]).to be(false)
-      expect(response.parsed_body["error_message"]).to eq "Email is invalid"
+      put :update, params: { user: user_params.merge(email: "BAD EMAIL") }
+      expect(response).to redirect_to(settings_main_path)
+      expect(response).to have_http_status :see_other
+      expect(flash[:alert]).to eq("Email is invalid")
+      expect(session[:inertia_errors]).to be_present
     end
 
     describe "email changing" do
@@ -78,21 +86,27 @@ describe Settings::MainController do
         end
 
         it "sets unconfirmed_email column" do
-          expect { put :update, params: { user: user_params.merge(email: "new@gumroad.com") }, format: :json }.to change {
+          expect { put :update, params: { user: user_params.merge(email: "new@gumroad.com") } }.to change {
             seller.reload.unconfirmed_email
           }.from("test@gumroad.com").to("new@gumroad.com")
+          expect(response).to be_successful
+          expect(inertia.component).to eq("Settings/Main")
         end
 
         it "does not change email column" do
           expect do
-            put :update, params: { user: user_params.merge(email: "new@gumroad.com") }, format: :json
+            put :update, params: { user: user_params.merge(email: "new@gumroad.com") }
           end.to_not change { seller.reload.email }.from("test@gumroad.com")
+          expect(response).to be_successful
+          expect(inertia.component).to eq("Settings/Main")
         end
 
         it "sends email_changed notification" do
           expect do
-            put :update, params: { user: user_params.merge(email: "another+email@example.com") }, format: :json
+            put :update, params: { user: user_params.merge(email: "another+email@example.com") }
           end.to have_enqueued_mail(UserSignupMailer, :email_changed)
+          expect(response).to be_successful
+          expect(inertia.component).to eq("Settings/Main")
         end
       end
 
@@ -103,16 +117,20 @@ describe Settings::MainController do
 
         it "changes the unconfirmed_email to nil" do
           expect do
-            put :update, params: { user: user_params.merge(email: "test@gumroad.com") }, format: :json
+            put :update, params: { user: user_params.merge(email: "test@gumroad.com") }
           end.to change {
             seller.reload.unconfirmed_email
           }.from("new@gumroad.com").to(nil)
+          expect(response).to be_successful
+          expect(inertia.component).to eq("Settings/Main")
         end
 
         it "doesn't send email_changed notification" do
           expect do
-            put :update, params: { user: user_params.merge(email: seller.email) }, format: :json
+            put :update, params: { user: user_params.merge(email: seller.email) }
           end.not_to have_enqueued_mail(UserSignupMailer, :email_changed)
+          expect(response).to be_successful
+          expect(inertia.component).to eq("Settings/Main")
         end
       end
     end
@@ -121,15 +139,17 @@ describe Settings::MainController do
       seller.update!(enable_free_downloads_email: true)
 
       expect do
-        put :update, params: { user: user_params.merge(enable_free_downloads_email: false) }, format: :json
+        put :update, params: { user: user_params.merge(enable_free_downloads_email: false) }
         expect(response).to be_successful
+        expect(inertia.component).to eq("Settings/Main")
       end.to change {
         seller.reload.enable_free_downloads_email
       }.from(true).to(false)
 
       expect do
-        put :update, params: { user: user_params.merge(enable_free_downloads_email: true) }, format: :json
+        put :update, params: { user: user_params.merge(enable_free_downloads_email: true) }
         expect(response).to be_successful
+        expect(inertia.component).to eq("Settings/Main")
       end.to change {
         seller.reload.enable_free_downloads_email
       }.from(false).to(true)
@@ -139,15 +159,17 @@ describe Settings::MainController do
       seller.update!(enable_free_downloads_push_notification: true)
 
       expect do
-        put :update, params: { user: user_params.merge(enable_free_downloads_push_notification: false) }, format: :json
+        put :update, params: { user: user_params.merge(enable_free_downloads_push_notification: false) }
         expect(response).to be_successful
+        expect(inertia.component).to eq("Settings/Main")
       end.to change {
         seller.reload.enable_free_downloads_push_notification
       }.from(true).to(false)
 
       expect do
-        put :update, params: { user: user_params.merge(enable_free_downloads_push_notification: true) }, format: :json
+        put :update, params: { user: user_params.merge(enable_free_downloads_push_notification: true) }
         expect(response).to be_successful
+        expect(inertia.component).to eq("Settings/Main")
       end.to change {
         seller.reload.enable_free_downloads_push_notification
       }.from(false).to(true)
@@ -157,15 +179,17 @@ describe Settings::MainController do
       seller.update!(enable_recurring_subscription_charge_email: true)
 
       expect do
-        put :update, params: { user: user_params.merge(enable_recurring_subscription_charge_email: false) }, format: :json
+        put :update, params: { user: user_params.merge(enable_recurring_subscription_charge_email: false) }
         expect(response).to be_successful
+        expect(inertia.component).to eq("Settings/Main")
       end.to change {
         seller.reload.enable_recurring_subscription_charge_email
       }.from(true).to(false)
 
       expect do
-        put :update, params: { user: user_params.merge(enable_recurring_subscription_charge_email: true) }, format: :json
+        put :update, params: { user: user_params.merge(enable_recurring_subscription_charge_email: true) }
         expect(response).to be_successful
+        expect(inertia.component).to eq("Settings/Main")
       end.to change {
         seller.reload.enable_recurring_subscription_charge_email
       }.from(false).to(true)
@@ -175,15 +199,17 @@ describe Settings::MainController do
       seller.update!(enable_recurring_subscription_charge_push_notification: true)
 
       expect do
-        put :update, params: { user: user_params.merge(enable_recurring_subscription_charge_push_notification: false) }, format: :json
+        put :update, params: { user: user_params.merge(enable_recurring_subscription_charge_push_notification: false) }
         expect(response).to be_successful
+        expect(inertia.component).to eq("Settings/Main")
       end.to change {
         seller.reload.enable_recurring_subscription_charge_push_notification
       }.from(true).to(false)
 
       expect do
-        put :update, params: { user: user_params.merge(enable_recurring_subscription_charge_push_notification: true) }, format: :json
+        put :update, params: { user: user_params.merge(enable_recurring_subscription_charge_push_notification: true) }
         expect(response).to be_successful
+        expect(inertia.component).to eq("Settings/Main")
       end.to change {
         seller.reload.enable_recurring_subscription_charge_push_notification
       }.from(false).to(true)
@@ -193,15 +219,17 @@ describe Settings::MainController do
       seller.update!(enable_payment_push_notification: true)
 
       expect do
-        put :update, params: { user: user_params.merge(enable_payment_push_notification: false) }, format: :json
+        put :update, params: { user: user_params.merge(enable_payment_push_notification: false) }
         expect(response).to be_successful
+        expect(inertia.component).to eq("Settings/Main")
       end.to change {
         seller.reload.enable_payment_push_notification
       }.from(true).to(false)
 
       expect do
-        put :update, params: { user: user_params.merge(enable_payment_push_notification: true) }, format: :json
+        put :update, params: { user: user_params.merge(enable_payment_push_notification: true) }
         expect(response).to be_successful
+        expect(inertia.component).to eq("Settings/Main")
       end.to change {
         seller.reload.enable_payment_push_notification
       }.from(false).to(true)
@@ -211,15 +239,17 @@ describe Settings::MainController do
       seller.update!(disable_comments_email: true)
 
       expect do
-        put :update, params: { user: user_params.merge(disable_comments_email: false) }, format: :json
+        put :update, params: { user: user_params.merge(disable_comments_email: false) }
         expect(response).to be_successful
+        expect(inertia.component).to eq("Settings/Main")
       end.to change {
         seller.reload.disable_comments_email
       }.from(true).to(false)
 
       expect do
-        put :update, params: { user: user_params.merge(disable_comments_email: true) }, format: :json
+        put :update, params: { user: user_params.merge(disable_comments_email: true) }
         expect(response).to be_successful
+        expect(inertia.component).to eq("Settings/Main")
       end.to change {
         seller.reload.disable_comments_email
       }.from(false).to(true)
@@ -227,15 +257,17 @@ describe Settings::MainController do
 
     it "updates the disable_reviews_email flag correctly" do
       expect do
-        put :update, params: { user: user_params.merge(disable_reviews_email: true) }, format: :json
+        put :update, params: { user: user_params.merge(disable_reviews_email: true) }
         expect(response).to be_successful
+        expect(inertia.component).to eq("Settings/Main")
       end.to change {
         seller.reload.disable_reviews_email
       }.from(false).to(true)
 
       expect do
-        put :update, params: { user: user_params.merge(disable_reviews_email: false) }, format: :json
+        put :update, params: { user: user_params.merge(disable_reviews_email: false) }
         expect(response).to be_successful
+        expect(inertia.component).to eq("Settings/Main")
       end.to change {
         seller.reload.disable_reviews_email
       }.from(true).to(false)
@@ -243,15 +275,17 @@ describe Settings::MainController do
 
     it "updates the show_nsfw_products flag correctly" do
       expect do
-        put :update, params: { user: user_params.merge(show_nsfw_products: true) }, format: :json
+        put :update, params: { user: user_params.merge(show_nsfw_products: true) }
         expect(response).to be_successful
+        expect(inertia.component).to eq("Settings/Main")
       end.to change {
         seller.reload.show_nsfw_products
       }.from(false).to(true)
 
       expect do
-        put :update, params: { user: user_params.merge(show_nsfw_products: false) }, format: :json
+        put :update, params: { user: user_params.merge(show_nsfw_products: false) }
         expect(response).to be_successful
+        expect(inertia.component).to eq("Settings/Main")
       end.to change {
         seller.reload.show_nsfw_products
       }.from(true).to(false)
@@ -264,8 +298,9 @@ describe Settings::MainController do
         end
 
         it "updates the seller refund policy fine print" do
-          put :update, params: { user: { seller_refund_policy: { max_refund_period_in_days: "30", fine_print: "This is a fine print" } } }, as: :json
+          put :update, params: { user: { seller_refund_policy: { max_refund_period_in_days: "30", fine_print: "This is a fine print" } } }
           expect(response).to be_successful
+          expect(inertia.component).to eq("Settings/Main")
 
           expect(seller.refund_policy.reload.max_refund_period_in_days).to eq(30)
           expect(seller.refund_policy.fine_print).to eq("This is a fine print")
@@ -277,8 +312,9 @@ describe Settings::MainController do
           end
 
           it "does not update the seller refund policy" do
-            put :update, params: { user: { seller_refund_policy: { max_refund_period_in_days: "30", fine_print: "This is a fine print" } } }, as: :json
+            put :update, params: { user: { seller_refund_policy: { max_refund_period_in_days: "30", fine_print: "This is a fine print" } } }
             expect(response).to be_successful
+            expect(inertia.component).to eq("Settings/Main")
 
             expect(seller.refund_policy.reload.max_refund_period_in_days).to eq(0)
           end
@@ -292,8 +328,9 @@ describe Settings::MainController do
         end
 
         it "does not update the seller refund policy" do
-          put :update, params: { user: { seller_refund_policy: { max_refund_period_in_days: "30", fine_print: "This is a fine print" } } }, as: :json
+          put :update, params: { user: { seller_refund_policy: { max_refund_period_in_days: "30", fine_print: "This is a fine print" } } }
           expect(response).to be_successful
+          expect(inertia.component).to eq("Settings/Main")
 
           expect(seller.refund_policy.reload.max_refund_period_in_days).to eq(0)
           expect(seller.refund_policy.fine_print).to be_nil
@@ -322,9 +359,10 @@ describe Settings::MainController do
             }
           ]
 
-          put :update, params: { user: user_params.merge(product_level_support_emails:) }, format: :json
+          put :update, params: { user: user_params.merge(product_level_support_emails:) }
 
-          expect(response.parsed_body["success"]).to be(true)
+          expect(response).to be_successful
+          expect(inertia.component).to eq("Settings/Main")
           expect(product1.reload.support_email).to eq("contact@example.com")
           expect(product2.reload.support_email).to eq("contact@example.com")
         end
@@ -333,11 +371,12 @@ describe Settings::MainController do
           product_level_support_emails = [
             { email: "invalid-email", product_ids: [product1.external_id] }
           ]
-          put :update, params: { user: user_params.merge(product_level_support_emails:) }, format: :json
+          put :update, params: { user: user_params.merge(product_level_support_emails:) }
 
-          expect(response.parsed_body["success"]).to be(false)
-          expect(response.parsed_body["error_message"])
-            .to eq("Something broke. We're looking into what happened. Sorry about this!")
+          expect(response).to redirect_to(settings_main_path)
+          expect(response).to have_http_status :see_other
+          expect(flash[:alert]).to eq("Something broke. We're looking into what happened. Sorry about this!")
+          expect(session[:inertia_errors]).to be_present
         end
 
         it "only associates products belonging to current seller" do
@@ -348,9 +387,10 @@ describe Settings::MainController do
             }
           ]
 
-          put :update, params: { user: user_params.merge(product_level_support_emails:) }, format: :json
+          put :update, params: { user: user_params.merge(product_level_support_emails:) }
 
-          expect(response.parsed_body["success"]).to be(true)
+          expect(response).to be_successful
+          expect(inertia.component).to eq("Settings/Main")
           expect(product1.reload.support_email).to eq("contact@example.com")
           expect(other_product.reload.support_email).to be_nil
         end
@@ -359,9 +399,10 @@ describe Settings::MainController do
           product1.update!(support_email: "support@example.com")
           product2.update!(support_email: "support@example.com")
 
-          put :update, params: { user: user_params.merge(product_level_support_emails: []) }, format: :json
+          put :update, params: { user: user_params.merge(product_level_support_emails: []) }
 
-          expect(response.parsed_body["success"]).to be(true)
+          expect(response).to be_successful
+          expect(inertia.component).to eq("Settings/Main")
           expect(product1.reload.support_email).to be_nil
           expect(product2.reload.support_email).to be_nil
         end
@@ -376,9 +417,10 @@ describe Settings::MainController do
               { email: "contact@example.com", product_ids: [product1.external_id] }
             ]
 
-            put :update, params: { user: user_params.merge(product_level_support_emails:) }, format: :json
+            put :update, params: { user: user_params.merge(product_level_support_emails:) }
 
-            expect(response.parsed_body["success"]).to be(true)
+            expect(response).to be_successful
+            expect(inertia.component).to eq("Settings/Main")
             expect(product1.reload.support_email).to be_nil
           end
         end

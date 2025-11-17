@@ -46,9 +46,18 @@ class Settings::MainController < Settings::BaseController
     end
 
     current_seller.update_purchasing_power_parity_excluded_products!(normalized_ppp_ids(user_payload))
-    current_seller.update_product_level_support_emails!(normalized_product_level_support_emails(user_payload))
+    begin
+      current_seller.update_product_level_support_emails!(normalized_product_level_support_emails(user_payload))
+    rescue ActiveModel::ValidationError, StandardError => e
+      Bugsnag.notify(e)
+      message = "Something broke. We're looking into what happened. Sorry about this!"
+      return handle_inertia_error(message)
+    end
 
     render_main_page
+  rescue ActiveRecord::RecordInvalid => e
+    message = e.record.errors.full_messages.to_sentence
+    handle_inertia_error(message)
   rescue StandardError => e
     Bugsnag.notify(e)
     message = current_seller.errors.full_messages.to_sentence.presence ||
@@ -97,6 +106,7 @@ class Settings::MainController < Settings::BaseController
     def handle_inertia_error(message)
       redirect_to settings_main_path,
                   inertia: { errors: { error_message: message } },
+                  alert: message,
                   status: :see_other
     end
 
