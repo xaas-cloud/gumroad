@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class MassRefundPurchasesWorker
+class MassRefundForFraudJob
   include Sidekiq::Job
   sidekiq_options retry: 1, queue: :default, lock: :until_executed
 
@@ -21,10 +21,11 @@ class MassRefundPurchasesWorker
       rescue StandardError => e
         results[:failed] += 1
         results[:errors][purchase_id] = e.message
-        Rails.logger.error("Mass refund failed for purchase #{purchase_id}: #{e.class}: #{e.message}")
+        Rails.logger.error("Mass fraud refund failed for purchase #{purchase_id}: #{e.class}: #{e.message}")
       end
     end
 
-    Rails.logger.info("Mass refund completed for product #{product_id}: #{results[:success]} succeeded, #{results[:failed]} failed")
+    Rails.logger.info("Mass fraud refund completed for product #{product_id}: #{results[:success]} succeeded, #{results[:failed]} failed")
   end
 end
+

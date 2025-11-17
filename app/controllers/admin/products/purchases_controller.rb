@@ -17,8 +17,8 @@ class Admin::Products::PurchasesController < Admin::Products::BaseController
     }
   end
 
-  def mass_refund
-    purchase_ids = mass_refund_purchase_ids
+  def mass_refund_for_fraud
+    purchase_ids = mass_refund_for_fraud_purchase_ids
 
     if purchase_ids.empty?
       render json: { success: false, message: "Select at least one purchase." }, status: :unprocessable_entity
@@ -34,16 +34,16 @@ class Admin::Products::PurchasesController < Admin::Products::BaseController
       return
     end
 
-    MassRefundPurchasesWorker.perform_async(@product.id, purchase_ids, current_user.id)
+    MassRefundForFraudJob.perform_async(@product.id, purchase_ids, current_user.id)
 
     render json: {
       success: true,
-      message: "Processing #{purchase_ids.size} refunds..."
+      message: "Processing #{purchase_ids.size} fraud refunds..."
     }
   end
 
   private
-    def mass_refund_purchase_ids
+    def mass_refund_for_fraud_purchase_ids
       raw_ids = params[:purchase_ids]
       values =
         case raw_ids

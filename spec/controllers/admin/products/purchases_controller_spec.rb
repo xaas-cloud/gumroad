@@ -83,30 +83,30 @@ describe Admin::Products::PurchasesController do
     end
   end
 
-  describe "POST mass_refund" do
+  describe "POST mass_refund_for_fraud" do
     let(:product) { create(:product) }
     let!(:successful_purchase) { create(:purchase, link: product) }
     let!(:failed_purchase) { create(:failed_purchase, link: product) }
 
-    it "enqueues the worker with correct parameters" do
-      expect(MassRefundPurchasesWorker).to receive(:perform_async).with(
+    it "enqueues the job with correct parameters" do
+      expect(MassRefundForFraudJob).to receive(:perform_async).with(
         product.id,
         [successful_purchase.id, failed_purchase.id],
         admin_user.id
       )
 
-      post :mass_refund,
+      post :mass_refund_for_fraud,
            params: { product_id: product.id, purchase_ids: [successful_purchase.id, failed_purchase.id] },
            format: :json
 
       body = response.parsed_body
       expect(response).to have_http_status(:ok)
       expect(body["success"]).to eq(true)
-      expect(body["message"]).to include("Processing 2 refunds")
+      expect(body["message"]).to include("Processing 2 fraud refunds")
     end
 
     it "requires purchase ids" do
-      post :mass_refund, params: { product_id: product.id }, format: :json
+      post :mass_refund_for_fraud, params: { product_id: product.id }, format: :json
 
       expect(response).to have_http_status(:unprocessable_entity)
       expect(response.parsed_body["success"]).to eq(false)
@@ -115,7 +115,7 @@ describe Admin::Products::PurchasesController do
     it "rejects purchases that do not belong to the product" do
       other_purchase = create(:purchase)
 
-      post :mass_refund,
+      post :mass_refund_for_fraud,
            params: { product_id: product.id, purchase_ids: [other_purchase.id] },
            format: :json
 

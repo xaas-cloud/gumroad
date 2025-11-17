@@ -52,7 +52,7 @@ const AdminProductPurchasesContent = ({
         <div>
           {selectedCount > 0
             ? `${selectedCount} ${selectedCount === 1 ? "purchase selected" : "purchases selected"}`
-            : "Select purchases to mass refund"}
+            : "Select purchases to refund for fraud"}
         </div>
         <div className="button-group">
           {selectedCount > 0 ? (
@@ -61,7 +61,7 @@ const AdminProductPurchasesContent = ({
             </Button>
           ) : null}
           <Button small onClick={onMassRefund} disabled={selectedCount === 0 || isMassRefunding}>
-            {isMassRefunding ? "Starting..." : "Mass Refund"}
+            {isMassRefunding ? "Starting..." : "Refund for Fraud"}
           </Button>
         </div>
       </div>

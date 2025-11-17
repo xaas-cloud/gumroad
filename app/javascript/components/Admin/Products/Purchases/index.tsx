@@ -81,7 +81,7 @@ const AdminProductPurchases = ({ productId, isAffiliateUser = false, userId }: A
     if (selectionCount === 0 || isMassRefunding) return;
     const confirmMessage = `Are you sure you want to refund ${selectionCount} ${
       selectionCount === 1 ? "purchase" : "purchases"
-    } and block the buyers?`;
+    } for fraud and block the buyers?`;
     // eslint-disable-next-line no-alert
     if (!confirm(confirmMessage)) {
       return;
@@ -94,7 +94,7 @@ const AdminProductPurchases = ({ productId, isAffiliateUser = false, userId }: A
 
     try {
       const response = await request({
-        url: Routes.mass_refund_admin_product_purchases_path(productId, { format: "json" }),
+        url: Routes.mass_refund_for_fraud_admin_product_purchases_path(productId, { format: "json" }),
         method: "POST",
         accept: "json",
         data: {
@@ -108,7 +108,7 @@ const AdminProductPurchases = ({ productId, isAffiliateUser = false, userId }: A
         throw new ResponseError(body.message ?? "Something went wrong.");
       }
 
-      showAlert(body.message ?? "Mass refund started.", "success");
+      showAlert(body.message ?? "Mass fraud refund started.", "success");
       setSelectedPurchaseIds(new Set());
     } catch (error) {
       assertResponseError(error);

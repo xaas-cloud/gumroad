@@ -107,7 +107,7 @@ namespace :admin do
       resource :staff_picked, controller: "staff_picked", only: [:create]
       resources :purchases, only: [:index] do
         collection do
-          post :mass_refund
+          post :mass_refund_for_fraud
         end
       end
     end

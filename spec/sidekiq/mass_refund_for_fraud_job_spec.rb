@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-describe MassRefundPurchasesWorker do
+describe MassRefundForFraudJob do
   let(:admin_user) { create(:admin_user) }
   let(:product) { create(:product) }
 
@@ -18,7 +18,7 @@ describe MassRefundPurchasesWorker do
       allow(Purchase).to receive(:find_by).with(id: purchase1.id, link_id: product.id).and_return(purchase1)
       allow(Purchase).to receive(:find_by).with(id: purchase2.id, link_id: product.id).and_return(purchase2)
 
-      expect(Rails.logger).to receive(:info).with(/Mass refund completed for product #{product.id}: 2 succeeded, 0 failed/)
+      expect(Rails.logger).to receive(:info).with(/Mass fraud refund completed for product #{product.id}: 2 succeeded, 0 failed/)
 
       described_class.new.perform(product.id, purchase_ids, admin_user.id)
     end
@@ -32,7 +32,7 @@ describe MassRefundPurchasesWorker do
       allow(Purchase).to receive(:find_by).with(id: purchase1.id, link_id: product.id).and_return(purchase1)
       allow(Purchase).to receive(:find_by).with(id: missing_id, link_id: product.id).and_return(nil)
 
-      expect(Rails.logger).to receive(:info).with(/Mass refund completed for product #{product.id}: 1 succeeded, 1 failed/)
+      expect(Rails.logger).to receive(:info).with(/Mass fraud refund completed for product #{product.id}: 1 succeeded, 1 failed/)
 
       described_class.new.perform(product.id, purchase_ids_with_missing, admin_user.id)
     end
@@ -44,10 +44,11 @@ describe MassRefundPurchasesWorker do
       expect(purchase1).to receive(:refund_for_fraud_and_block_buyer!).with(admin_user.id).and_raise(StandardError.new("Refund failed"))
       expect(purchase2).to receive(:refund_for_fraud_and_block_buyer!).with(admin_user.id)
 
-      expect(Rails.logger).to receive(:error).with(/Mass refund failed for purchase #{purchase1.id}/)
-      expect(Rails.logger).to receive(:info).with(/Mass refund completed for product #{product.id}: 1 succeeded, 1 failed/)
+      expect(Rails.logger).to receive(:error).with(/Mass fraud refund failed for purchase #{purchase1.id}/)
+      expect(Rails.logger).to receive(:info).with(/Mass fraud refund completed for product #{product.id}: 1 succeeded, 1 failed/)
 
       described_class.new.perform(product.id, purchase_ids, admin_user.id)
     end
   end
 end
+
