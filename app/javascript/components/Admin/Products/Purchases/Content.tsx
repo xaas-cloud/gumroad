@@ -96,7 +96,6 @@ const AdminProductPurchasesContent = ({
           ) : null}
           <Button
             small
-            color="danger"
             onClick={onMassRefund}
             disabled={selectedCount === 0 || Boolean(isMassRefunding || isProcessingBatch)}
           >
