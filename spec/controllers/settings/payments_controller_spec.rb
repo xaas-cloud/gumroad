@@ -94,8 +94,9 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
             end
             user.reload
             expect(user.tos_agreements.last.created_at).to eq(time_freeze)
-            expect(response).to be_successful
-            expect(inertia.component).to eq("Settings/Payments")
+            expect(response).to redirect_to(settings_payments_path)
+            expect(response).to have_http_status :see_other
+            expect(flash[:notice]).to eq("Thanks! You're all set.")
           end
         end
 
@@ -110,8 +111,9 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
             put :update, params: { user: params, terms_accepted: true }
             user.reload
             expect(user.tos_agreements.last.ip).to eq(ip)
-            expect(response).to be_successful
-            expect(inertia.component).to eq("Settings/Payments")
+            expect(response).to redirect_to(settings_payments_path)
+            expect(response).to have_http_status :see_other
+            expect(flash[:notice]).to eq("Thanks! You're all set.")
           end
         end
       end
@@ -127,10 +129,10 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
       it "updates the payout threshold for valid amounts" do
         expect do
           put :update, params: { payout_threshold_cents: 2000 }
-        end.to change { user.reload.payout_threshold_cents }.from(1000).to(2000)
+        end.to change { user.reload.payout_threshold_cents.to_i }.from(1000).to(2000)
 
-        expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
+        expect(response).to redirect_to(settings_payments_path)
+        expect(response).to have_http_status :see_other
         expect(flash[:notice]).to eq("Thanks! You're all set.")
       end
 
@@ -150,8 +152,8 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
           put :update, params: { payout_frequency: User::PayoutSchedule::MONTHLY }
         end.to change { user.reload.payout_frequency }.from(User::PayoutSchedule::WEEKLY).to(User::PayoutSchedule::MONTHLY)
 
-        expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
+        expect(response).to redirect_to(settings_payments_path)
+        expect(response).to have_http_status :see_other
         expect(flash[:notice]).to eq("Thanks! You're all set.")
       end
 
@@ -188,8 +190,8 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
         expect(compliance_info.is_business).to be(false)
         expect(compliance_info.individual_tax_id.decrypt("1234")).to eq "6789"
 
-        expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
+        expect(response).to redirect_to(settings_payments_path)
+        expect(response).to have_http_status :see_other
         expect(flash[:notice]).to eq("Thanks! You're all set.")
       end
 
@@ -205,8 +207,8 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
         expect(compliance_info.zip_code).to eq "94104"
         expect(compliance_info.is_business).to be(false)
 
-        expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
+        expect(response).to redirect_to(settings_payments_path)
+        expect(response).to have_http_status :see_other
         expect(flash[:notice]).to eq("Thanks! You're all set.")
       end
 
@@ -219,8 +221,8 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
         expect(compliance_info.individual_tax_id).to be_present
         expect(compliance_info.individual_tax_id.decrypt(GlobalConfig.get("STRONGBOX_GENERAL_PASSWORD"))).to be_present
 
-        expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
+        expect(response).to redirect_to(settings_payments_path)
+        expect(response).to have_http_status :see_other
         expect(flash[:notice]).to eq("Thanks! You're all set.")
       end
 
@@ -259,9 +261,9 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
 
             put :update, params: all_params
 
-            expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
-        expect(flash[:notice]).to eq("Thanks! You're all set.")
+            expect(response).to redirect_to(settings_payments_path)
+            expect(response).to have_http_status :see_other
+            expect(flash[:notice]).to eq("Thanks! You're all set.")
           end
         end
 
@@ -271,9 +273,9 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
 
             put :update, params: all_params
 
-            expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
-        expect(flash[:notice]).to eq("Thanks! You're all set.")
+            expect(response).to redirect_to(settings_payments_path)
+            expect(response).to have_http_status :see_other
+            expect(flash[:notice]).to eq("Thanks! You're all set.")
           end
         end
 
@@ -294,9 +296,9 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
             put :update, params: all_params
 
             expect(user.reload.stripe_account).to be_present
-            expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
-        expect(flash[:notice]).to eq("Thanks! You're all set.")
+            expect(response).to redirect_to(settings_payments_path)
+            expect(response).to have_http_status :see_other
+            expect(flash[:notice]).to eq("Thanks! You're all set.")
           end
 
           it "raises error if stripe account creation fails" do
@@ -376,9 +378,9 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
           end
 
           it "returns success" do
-            expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
-        expect(flash[:notice]).to eq("Thanks! You're all set.")
+            expect(response).to redirect_to(settings_payments_path)
+            expect(response).to have_http_status :see_other
+            expect(flash[:notice]).to eq("Thanks! You're all set.")
           end
 
           it "the users current compliance info should contain the same data" do
@@ -442,9 +444,9 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
           end
 
           it "returns success" do
-            expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
-        expect(flash[:notice]).to eq("Thanks! You're all set.")
+            expect(response).to redirect_to(settings_payments_path)
+            expect(response).to have_http_status :see_other
+            expect(flash[:notice]).to eq("Thanks! You're all set.")
           end
 
           it "the users current compliance info should be changed" do
@@ -468,9 +470,9 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
           end
 
           it "returns success" do
-            expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
-        expect(flash[:notice]).to eq("Thanks! You're all set.")
+            expect(response).to redirect_to(settings_payments_path)
+            expect(response).to have_http_status :see_other
+            expect(flash[:notice]).to eq("Thanks! You're all set.")
           end
 
           it "the users current compliance info should contain the new address" do
@@ -502,8 +504,8 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
           )
           put :update, params: { user: params }
 
-          expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
+          expect(response).to redirect_to(settings_payments_path)
+          expect(response).to have_http_status :see_other
         expect(flash[:notice]).to eq("Thanks! You're all set.")
 
           compliance_info = user.alive_user_compliance_info
@@ -545,9 +547,9 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
           end
 
           it "returns success" do
-            expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
-        expect(flash[:notice]).to eq("Thanks! You're all set.")
+            expect(response).to redirect_to(settings_payments_path)
+            expect(response).to have_http_status :see_other
+            expect(flash[:notice]).to eq("Thanks! You're all set.")
           end
 
           it "the users current compliance info should contain the same details" do
@@ -601,8 +603,8 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
         expect(compliance_info.business_type).to eq "llc"
         expect(compliance_info.business_tax_id.decrypt("1234")).to eq "123-123-123"
 
-        expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
+        expect(response).to redirect_to(settings_payments_path)
+        expect(response).to have_http_status :see_other
         expect(flash[:notice]).to eq("Thanks! You're all set.")
       end
 
@@ -627,8 +629,8 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
         business_params.merge!(is_business: "off")
         put :update, params: { user: business_params }
 
-        expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
+        expect(response).to redirect_to(settings_payments_path)
+        expect(response).to have_http_status :see_other
         expect(flash[:notice]).to eq("Thanks! You're all set.")
 
         compliance_info = user.alive_user_compliance_info
@@ -1054,8 +1056,8 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
 
         put :update, params: { payment_address: "sebastian@example.com" }
 
-        expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
+        expect(response).to redirect_to(settings_payments_path)
+        expect(response).to have_http_status :see_other
         expect(flash[:notice]).to eq("Thanks! You're all set.")
         expect(user.reload.payment_address).to eq("sebastian@example.com")
       end
@@ -1069,8 +1071,8 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
 
         put :update, params: { payment_address: "sebastian@example.com" }
 
-        expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
+        expect(response).to redirect_to(settings_payments_path)
+        expect(response).to have_http_status :see_other
         expect(user.reload.payment_address).to eq("sebastian@example.com")
         expect(stripe_account.reload.alive?).to be false
         expect(user.user_compliance_info_requests.requested.count).to eq(0)
@@ -1088,8 +1090,8 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
 
         put :update, params: { payment_address: "sebastian@example.com" }
 
-        expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
+        expect(response).to redirect_to(settings_payments_path)
+        expect(response).to have_http_status :see_other
         expect(user.reload.payment_address).to eq("sebastian@example.com")
         expect(stripe_account.reload.alive?).to be false
         expect(user.user_compliance_info_requests.requested.count).to eq(0)
@@ -1114,8 +1116,8 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
 
         put :update, xhr: true, params: @card_params.call
 
-        expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
+        expect(response).to redirect_to(settings_payments_path)
+        expect(response).to have_http_status :see_other
         expect(flash[:notice]).to eq("Thanks! You're all set.")
 
         user.reload
@@ -1135,8 +1137,8 @@ describe Settings::PaymentsController, :vcr, type: :controller, inertia: true do
 
         put :update, params: { user: { updated_country_code: "GB" } }
 
-        expect(response).to be_successful
-        expect(inertia.component).to eq("Settings/Payments")
+        expect(response).to redirect_to(settings_payments_path)
+        expect(response).to have_http_status :see_other
         expect(flash[:notice]).to eq("Your country has been updated!")
       end
 

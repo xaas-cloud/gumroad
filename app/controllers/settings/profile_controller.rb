@@ -16,7 +16,7 @@ class Settings::ProfileController < Settings::BaseController
     return redirect_to settings_profile_path, status: :see_other, alert: "You have to confirm your email address before you can do that." unless current_seller.confirmed?
 
     if permitted_params[:profile_picture_blob_id].present?
-      return redirect_to settings_profile_path, status: :see_other, alert: "The logo is already removed. Please refresh the page and try again." if ActiveStorage::Blob.find_signed(permitted_params[:profile_picture_blob_id]).nil?
+      redirect_to settings_profile_path, status: :see_other, alert: "The logo is already removed. Please refresh the page and try again." if ActiveStorage::Blob.find_signed(permitted_params[:profile_picture_blob_id]).nil?
       current_seller.avatar.attach permitted_params[:profile_picture_blob_id]
     elsif permitted_params.has_key?(:profile_picture_blob_id) && current_seller.avatar.attached?
       current_seller.avatar.purge
@@ -39,10 +39,10 @@ class Settings::ProfileController < Settings::BaseController
         current_seller.update!(permitted_params[:user]) if permitted_params[:user]
 
         current_seller.clear_products_cache if permitted_params[:profile_picture_blob_id].present?
-        return redirect_to settings_profile_path, status: :see_other, notice: "Changes saved!"
+        redirect_to settings_profile_path, status: :see_other, notice: "Changes saved!"
       end
     rescue ActiveRecord::RecordInvalid => e
-      return redirect_to settings_profile_path, status: :see_other, alert: e.record.errors.full_messages.to_sentence
+      redirect_to settings_profile_path, status: :see_other, alert: e.record.errors.full_messages.to_sentence
     end
   end
 

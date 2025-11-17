@@ -12,7 +12,9 @@ class Settings::PaymentsController < Settings::BaseController
   end
 
   def update
-    return redirect_to settings_payments_path, inertia: { errors: { error_message: "You have to confirm your email address before you can do that." } }, status: :see_other unless current_seller.email.present?
+    unless current_seller.email.present?
+      return redirect_to settings_payments_path, status: :see_other, alert: "You have to confirm your email address before you can do that."
+    end
     return unless current_seller.fetch_or_build_user_compliance_info.country.present?
 
     compliance_info = current_seller.fetch_or_build_user_compliance_info
@@ -21,18 +23,19 @@ class Settings::PaymentsController < Settings::BaseController
     if updated_country_code.present? && updated_country_code != compliance_info.legal_entity_country_code
       begin
         UpdateUserCountry.new(new_country_code: updated_country_code, user: current_seller).process
-        flash[:notice] = "Your country has been updated!"
         return redirect_to settings_payments_path, status: :see_other, notice: "Your country has been updated!"
       rescue => e
         Bugsnag.notify("Update country failed for user #{current_seller.id} (from #{compliance_info.country_code} to #{updated_country_code}): #{e}")
-        return redirect_to settings_payments_path, inertia: { errors: { error_message: "Country update failed" } }, status: :see_other
+        return redirect_to settings_payments_path, status: :see_other, alert: "Country update failed"
       end
     end
 
     if Compliance::Countries::USA.common_name == compliance_info.legal_entity_country
       zip_code = params.dig(:user, :is_business) ? params.dig(:user, :business_zip_code).presence : params.dig(:user, :zip_code).presence
       if zip_code
-        return redirect_to settings_payments_path, inertia: { errors: { error_message: "You entered a ZIP Code that doesn't exist within your country." } }, status: :see_other unless UsZipCodes.identify_state_code(zip_code).present?
+        unless UsZipCodes.identify_state_code(zip_code).present?
+          return redirect_to settings_payments_path, status: :see_other, alert: "You entered a ZIP Code that doesn't exist within your country."
+        end
       end
     end
 
@@ -45,9 +48,11 @@ class Settings::PaymentsController < Settings::BaseController
     end
 
     if params.dig(:user, :country) == Compliance::Countries::ARE.alpha2 && !params.dig(:user, :is_business) && payout_type != "PayPal"
-      return redirect_to settings_payments_path, inertia: { errors: { error_message: "Individual accounts from the UAE are not supported. Please use a business account." } }, status: :see_other
+      return redirect_to settings_payments_path, status: :see_other, alert: "Individual accounts from the UAE are not supported. Please use a business account."
     end
-    return redirect_to settings_payments_path, inertia: { errors: { error_message: "You cannot change your payout method to #{payout_type} because you have a stripe account connected." } }, status: :see_other if current_seller.has_stripe_account_connected?
+    if current_seller.has_stripe_account_connected?
+      return redirect_to settings_payments_path, status: :see_other, alert: "You cannot change your payout method to #{payout_type} because you have a stripe account connected."
+    end
 
     current_seller.tos_agreements.create!(ip: request.remote_ip)
 
@@ -56,13 +61,13 @@ class Settings::PaymentsController < Settings::BaseController
     return unless update_user_compliance_info
 
     if params[:payout_threshold_cents].present? && params[:payout_threshold_cents].to_i < current_seller.minimum_payout_threshold_cents
-      return redirect_to settings_payments_path, inertia: { errors: { error_message: "Your payout threshold must be greater than the minimum payout amount" } }, status: :see_other
+      return redirect_to settings_payments_path, status: :see_other, alert: "Your payout threshold must be greater than the minimum payout amount"
     end
 
     unless current_seller.update(
       params.permit(:payouts_paused_by_user, :payout_threshold_cents, :payout_frequency)
     )
-      return redirect_to settings_payments_path, inertia: { errors: { error_message: current_seller.errors.full_messages.first } }, status: :see_other
+      return redirect_to settings_payments_path, status: :see_other, alert: current_seller.errors.full_messages.first
     end
 
     # Once the user has submitted all their information, and a bank account record was created for them,
@@ -71,12 +76,8 @@ class Settings::PaymentsController < Settings::BaseController
       begin
         StripeMerchantAccountManager.create_account(current_seller, passphrase: GlobalConfig.get("STRONGBOX_GENERAL_PASSWORD"))
       rescue => e
-        return redirect_to settings_payments_path, inertia: { errors: { error_message: e.try(:message) || "Something went wrong." } }, status: :see_other
+        return redirect_to settings_payments_path, status: :see_other, alert: e.try(:message) || "Something went wrong."
       end
-    end
-
-    if flash[:notice].blank?
-      flash[:notice] = "Thanks! You're all set."
     end
 
     redirect_to settings_payments_path, status: :see_other, notice: "Thanks! You're all set."
@@ -192,7 +193,7 @@ class Settings::PaymentsController < Settings::BaseController
         "PayPal payouts are not supported in your country."
       end
 
-      return redirect_to settings_payments_path, inertia: { errors: { error_message: message } }, status: :see_other
+      redirect_to settings_payments_path, status: :see_other, alert: message
       false
     end
 
@@ -207,7 +208,7 @@ class Settings::PaymentsController < Settings::BaseController
           comment_type: :note,
           content: result[:error_message]
         )
-        return redirect_to settings_payments_path, inertia: { errors: { error_message: result[:error_message], error_code: result[:error_code] } }, status: :see_other
+        redirect_to settings_payments_path, status: :see_other, alert: result[:error_message]
         false
       end
     end
