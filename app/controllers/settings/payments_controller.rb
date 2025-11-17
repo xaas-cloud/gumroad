@@ -12,9 +12,7 @@ class Settings::PaymentsController < Settings::BaseController
   end
 
   def update
-    unless current_seller.email.present?
-      return redirect_to settings_payments_path, inertia: { errors: { error_message: "You have to confirm your email address before you can do that." } }, status: :see_other
-    end
+    return redirect_to settings_payments_path, inertia: { errors: { error_message: "You have to confirm your email address before you can do that." } }, status: :see_other unless current_seller.email.present?
     return unless current_seller.fetch_or_build_user_compliance_info.country.present?
 
     compliance_info = current_seller.fetch_or_build_user_compliance_info
@@ -34,9 +32,7 @@ class Settings::PaymentsController < Settings::BaseController
     if Compliance::Countries::USA.common_name == compliance_info.legal_entity_country
       zip_code = params.dig(:user, :is_business) ? params.dig(:user, :business_zip_code).presence : params.dig(:user, :zip_code).presence
       if zip_code
-        unless UsZipCodes.identify_state_code(zip_code).present?
-          return redirect_to settings_payments_path, inertia: { errors: { error_message: "You entered a ZIP Code that doesn't exist within your country." } }, status: :see_other
-        end
+        return redirect_to settings_payments_path, inertia: { errors: { error_message: "You entered a ZIP Code that doesn't exist within your country." } }, status: :see_other unless UsZipCodes.identify_state_code(zip_code).present?
       end
     end
 
@@ -51,9 +47,7 @@ class Settings::PaymentsController < Settings::BaseController
     if params.dig(:user, :country) == Compliance::Countries::ARE.alpha2 && !params.dig(:user, :is_business) && payout_type != "PayPal"
       return redirect_to settings_payments_path, inertia: { errors: { error_message: "Individual accounts from the UAE are not supported. Please use a business account." } }, status: :see_other
     end
-    if current_seller.has_stripe_account_connected?
-      return redirect_to settings_payments_path, inertia: { errors: { error_message: "You cannot change your payout method to #{payout_type} because you have a stripe account connected." } }, status: :see_other
-    end
+    return redirect_to settings_payments_path, inertia: { errors: { error_message: "You cannot change your payout method to #{payout_type} because you have a stripe account connected." } }, status: :see_other if current_seller.has_stripe_account_connected?
 
     current_seller.tos_agreements.create!(ip: request.remote_ip)
 
@@ -65,9 +59,9 @@ class Settings::PaymentsController < Settings::BaseController
       return redirect_to settings_payments_path, inertia: { errors: { error_message: "Your payout threshold must be greater than the minimum payout amount" } }, status: :see_other
     end
 
-    update_params = params.permit(:payouts_paused_by_user, :payout_threshold_cents, :payout_frequency)
-    update_params[:payout_threshold_cents] = update_params[:payout_threshold_cents].to_i if update_params[:payout_threshold_cents].present?
-    unless current_seller.update(update_params)
+    unless current_seller.update(
+      params.permit(:payouts_paused_by_user, :payout_threshold_cents, :payout_frequency)
+    )
       return redirect_to settings_payments_path, inertia: { errors: { error_message: current_seller.errors.full_messages.first } }, status: :see_other
     end
 
