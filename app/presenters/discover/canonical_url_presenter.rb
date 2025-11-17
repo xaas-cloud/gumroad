@@ -7,7 +7,7 @@ class Discover::CanonicalUrlPresenter
     end
 
     path = params[:taxonomy] || "/"
-    valid_canonical_params = params.permit(:sort, :query, :min_price, :max_price, :rating, tags: [], filetypes: [])
+    valid_canonical_params = params.permit(:sort, :query, :min_price, :max_price, :rating, tags: [], filetypes: [], offer_codes: [])
                                    .to_h
                                    .transform_values { |value| to_canonical_value(value) }
                                    .select { |_, v| v.present? }

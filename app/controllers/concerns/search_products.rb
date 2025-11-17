@@ -25,6 +25,12 @@ module SearchProducts
         params[:filetypes] = params[:filetypes].split(",").map { |f| f.squish.downcase }
       end
 
+      if params[:offer_codes].is_a?(String)
+        params[:offer_codes] = params[:offer_codes].split(",").map(&:squish).select { |code| code == "BLACKFRIDAY2025" }
+      elsif params[:offer_codes].is_a?(Array)
+        params[:offer_codes] = params[:offer_codes].select { |code| code == "BLACKFRIDAY2025" }
+      end
+
       if params[:size].is_a?(String)
         params[:size] = params[:size].to_i
       end

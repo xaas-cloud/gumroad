@@ -38,6 +38,7 @@ module Product::Searchable
     is_subscription
     is_bundle
     filetypes
+    offer_codes
     price_cents
     available_price_cents
     updated_at
@@ -93,6 +94,9 @@ module Product::Searchable
           indexes :keyword, type: :keyword
         end
         indexes :filetypes, type: :text do
+          indexes :keyword, type: :keyword
+        end
+        indexes :offer_codes, type: :text do
           indexes :keyword, type: :keyword
         end
         indexes :user_id, type: :long
@@ -222,6 +226,12 @@ module Product::Searchable
             if params[:filetypes]
               must do
                 terms "filetypes.keyword" => Array.wrap(params[:filetypes])
+              end
+            end
+
+            if params[:offer_codes]
+              must do
+                terms "offer_codes.keyword" => Array.wrap(params[:offer_codes])
               end
             end
 
@@ -469,6 +479,7 @@ module Product::Searchable
       when "is_bundle"         then is_bundle
       when "is_preorder"       then is_in_preorder_state
       when "filetypes"         then product_files.alive.pluck(:filetype).uniq
+      when "offer_codes"       then product_and_universal_offer_codes.pluck(:code)
       when "user_id"           then user_id
       when "taxonomy_id"       then taxonomy_id
       when "is_alive_on_profile"  then (alive? && !archived?)
