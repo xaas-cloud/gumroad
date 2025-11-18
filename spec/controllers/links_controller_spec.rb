@@ -4521,6 +4521,11 @@ describe LinksController, :vcr, inertia: true do
             @product_with_offer_code = create(:product, :recommendable, name: "product with offer", user: @user)
             @offer_code = create(:offer_code, code: "BLACKFRIDAY2025", amount_percentage: 20, products: [@product_with_offer_code], user: @user)
             Link.__elasticsearch__.refresh_index!
+            Feature.activate(:blackfriday_discover_search)
+          end
+
+          after do
+            Feature.deactivate(:blackfriday_discover_search)
           end
 
           it "includes offer_code in product URLs when BLACKFRIDAY2025 is provided" do
@@ -4558,6 +4563,26 @@ describe LinksController, :vcr, inertia: true do
             if product_result
               # Verify that offer_code is not included when searching on profile
               expect(product_result["url"]).not_to include("code=")
+            end
+          end
+
+          context "when feature flag is disabled" do
+            before do
+              Feature.deactivate(:blackfriday_discover_search)
+            end
+
+            after do
+              Feature.deactivate(:blackfriday_discover_search)
+            end
+
+            it "does not include offer_code in product URLs even when BLACKFRIDAY2025 is provided" do
+              get :search, params: { offer_codes: "BLACKFRIDAY2025", query: "product with offer" }
+
+              expect(response).to be_successful
+              product_result = response.parsed_body["products"].find { |p| p["id"] == @product_with_offer_code.external_id }
+              if product_result
+                expect(product_result["url"]).not_to include("code=")
+              end
             end
           end
         end

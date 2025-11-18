@@ -126,6 +126,11 @@ describe DiscoverController do
       before do
         create(:offer_code, code: "BLACKFRIDAY2025", amount_percentage: 20, products: [product_with_offer_code], user: creator)
         Link.import(refresh: true, force: true)
+        Feature.activate(:blackfriday_discover_search)
+      end
+
+      after do
+        Feature.deactivate(:blackfriday_discover_search)
       end
 
       it "includes offer_code in product URLs when BLACKFRIDAY2025 is provided" do
@@ -160,6 +165,35 @@ describe DiscoverController do
           # If products are found, verify no code parameter is added
           product_url = search_results[:products].first[:url]
           expect(product_url).not_to include("code=")
+        end
+      end
+
+      context "when feature flag is disabled" do
+        before do
+          Feature.deactivate(:blackfriday_discover_search)
+        end
+
+        after do
+          Feature.deactivate(:blackfriday_discover_search)
+        end
+
+        it "does not include offer_code in product URLs even when BLACKFRIDAY2025 is provided" do
+          get :index, params: { offer_codes: "BLACKFRIDAY2025" }
+
+          expect(response).to be_successful
+          search_results = assigns(:search_results)
+          if search_results[:products].present?
+            product_url = search_results[:products].first[:url]
+            expect(product_url).not_to include("code=")
+          end
+        end
+
+        it "does not filter products by offer code" do
+          get :index, params: { offer_codes: "BLACKFRIDAY2025" }
+
+          expect(response).to be_successful
+          # The search should not filter by offer codes when feature is disabled
+          # All recommendable products should be returned, not just those with the offer code
         end
       end
     end

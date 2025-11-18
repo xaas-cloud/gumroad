@@ -27,10 +27,15 @@ module SearchProducts
         params[:filetypes] = params[:filetypes].split(",").map { |f| f.squish.downcase }
       end
 
-      if params[:offer_codes].is_a?(String)
-        params[:offer_codes] = params[:offer_codes].split(",").map(&:squish).select { |code| ALLOWED_OFFER_CODES.include?(code) }
-      elsif params[:offer_codes].is_a?(Array)
-        params[:offer_codes] = params[:offer_codes].select { |code| ALLOWED_OFFER_CODES.include?(code) }
+      if Feature.active?(:blackfriday_discover_search)
+        if params[:offer_codes].is_a?(String)
+          params[:offer_codes] = params[:offer_codes].split(",").map(&:squish).select { |code| ALLOWED_OFFER_CODES.include?(code) }
+        elsif params[:offer_codes].is_a?(Array)
+          params[:offer_codes] = params[:offer_codes].select { |code| ALLOWED_OFFER_CODES.include?(code) }
+        end
+      else
+        # Remove offer_codes from search params when feature flag is disabled
+        params[:offer_codes] = nil
       end
 
       if params[:size].is_a?(String)
