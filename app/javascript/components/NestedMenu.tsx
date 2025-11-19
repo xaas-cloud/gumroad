@@ -371,19 +371,16 @@ const ItemsList = ({
 }) => {
   const [displayedItem, setDisplayedItem] = React.useState(initialMenuItem);
   React.useEffect(() => setDisplayedItem(initialMenuItem), [open]);
-
-  const isNestedView = displayedItem.key !== initialMenuItem.key;
-
   return (
     <div
       id={menuId}
       style={displayedItem.css}
       role="menu"
       aria-label={displayedItem.label}
-      className={classNames("overflow-hidden border-none! p-0! shadow-[unset]!", className)}
+      className={classNames("overflow-hidden border-none! p-0! shadow-none!", className)}
     >
       {footer}
-      {isNestedView ? (
+      {displayedItem.key !== initialMenuItem.key ? (
         <MenuItemLink
           key={`back${displayedItem.key}`}
           href={displayedItem.parent?.href ?? "#"}
@@ -398,13 +395,11 @@ const ItemsList = ({
           <span>Back</span>
         </MenuItemLink>
       ) : null}
-
-      {isNestedView || showAllItemOnInitialList ? (
+      {displayedItem.key !== initialMenuItem.key || showAllItemOnInitialList ? (
         <MenuItemLink href={displayedItem.href} onClick={(e) => onSelectItem?.(displayedItem, e)}>
           All {displayedItem.label}
         </MenuItemLink>
       ) : null}
-
       {displayedItem.children.map((item) => (
         <MenuItemLink
           key={item.key}
