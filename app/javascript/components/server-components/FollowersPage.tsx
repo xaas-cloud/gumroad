@@ -121,14 +121,12 @@ export const FollowersPage = ({ followers: initialFollowers, per_page, total }: 
             <Search onSearch={setSearchQuery} value={searchQuery} placeholder="Search followers" />
           )}
           <Popover aria-label="Export">
-            <PopoverTrigger aria-label="Export">
-              <WithTooltip tip="Export" position="bottom">
-                <div className={buttonVariants()}>
-                  <Icon aria-label="Download" name="download" />
-                </div>
-              </WithTooltip>
-            </PopoverTrigger>
-            <PopoverContent>
+            <WithTooltip tip="Export" position="bottom">
+              <PopoverTrigger aria-label="Export" className={buttonVariants()}>
+                <Icon aria-label="Download" name="download" />
+              </PopoverTrigger>
+            </WithTooltip>
+            <PopoverContent sideOffset={4}>
               <ExportSubscribersPopover />
             </PopoverContent>
           </Popover>

@@ -149,12 +149,10 @@ const ExportPayoutsPopoverContent = () => {
 
 export const ExportPayoutsPopover = () => (
   <Popover aria-label="Bulk export">
-    <PopoverTrigger aria-label="Bulk export">
-      <div className={buttonVariants()}>
-        <Icon name="download" />
-      </div>
+    <PopoverTrigger aria-label="Bulk export" className={buttonVariants()}>
+      <Icon name="download" />
     </PopoverTrigger>
-    <PopoverContent>
+    <PopoverContent sideOffset={4}>
       <ExportPayoutsPopoverContent />
     </PopoverContent>
   </Popover>

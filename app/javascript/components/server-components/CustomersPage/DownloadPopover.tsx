@@ -9,7 +9,6 @@ import { Button, buttonVariants } from "$app/components/Button";
 import { DateRangePicker } from "$app/components/DateRangePicker";
 import { Icon } from "$app/components/Icons";
 import { Popover, PopoverContent, PopoverTrigger } from "$app/components/Popover";
-import { WithTooltip } from "$app/components/WithTooltip";
 
 type Props = { authenticityToken: string };
 export const DownloadPopover = ({ authenticityToken }: Props) => {
@@ -17,14 +16,10 @@ export const DownloadPopover = ({ authenticityToken }: Props) => {
   const [to, setTo] = React.useState(new Date());
   return (
     <Popover aria-label="Export">
-      <PopoverTrigger>
-        <WithTooltip tip="Export" position="bottom">
-          <div className={classNames(buttonVariants(), "js-toggle-download-box")}>
-            <Icon name="download" />
-          </div>
-        </WithTooltip>
+      <PopoverTrigger className={classNames(buttonVariants(), "js-toggle-download-box")}>
+        <Icon name="download" />
       </PopoverTrigger>
-      <PopoverContent>
+      <PopoverContent sideOffset={4}>
         <form
           id="customer-csv-download-form"
           className="js-download-box customer-popover--export grid gap-3"

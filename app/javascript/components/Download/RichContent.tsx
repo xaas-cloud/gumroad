@@ -365,13 +365,11 @@ const FileGroupDownloadAllButton = ({ folderId, files }: { folderId: string; fil
 
   return (
     <Popover>
-      <PopoverTrigger disabled={isDownloading}>
-        <div className={buttonVariants()} contentEditable={false}>
-          Download all
-          <Icon name="outline-cheveron-down" />
-        </div>
+      <PopoverTrigger disabled={isDownloading} className={buttonVariants()} contentEditable={false}>
+        Download all
+        <Icon name="outline-cheveron-down" />
       </PopoverTrigger>
-      <PopoverContent>
+      <PopoverContent sideOffset={4}>
         <div className="grid gap-2">
           {isArchiving ? (
             <Button contentEditable={false} disabled>

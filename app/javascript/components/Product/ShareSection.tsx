@@ -15,7 +15,6 @@ import { Product, WishlistForProduct } from "$app/components/Product";
 import { PriceSelection } from "$app/components/Product/ConfigurationSelector";
 import { showAlert } from "$app/components/server-components/Alert";
 import { TwitterShareButton } from "$app/components/TwitterShareButton";
-import { WithTooltip } from "$app/components/WithTooltip";
 
 type SuccessState = { newlyCreated: boolean; wishlist: Wishlist };
 
@@ -140,14 +139,10 @@ export const ShareSection = ({
         />
 
         <Popover aria-label="Share">
-          <PopoverTrigger aria-label="Share">
-            <WithTooltip tip="Share" position="bottom">
-              <div className={buttonVariants()}>
-                <Icon name="share" />
-              </div>
-            </WithTooltip>
+          <PopoverTrigger aria-label="Share" className={buttonVariants()}>
+            <Icon name="share" />
           </PopoverTrigger>
-          <PopoverContent>
+          <PopoverContent sideOffset={4}>
             <div className="grid grid-cols-1 gap-4">
               <TwitterShareButton url={product.long_url} text={`Buy ${product.name} on @Gumroad`} />
               <FacebookShareButton url={product.long_url} text={product.name} />

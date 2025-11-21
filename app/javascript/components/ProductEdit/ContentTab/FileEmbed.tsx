@@ -490,12 +490,10 @@ const FileEmbedNodeView = ({ node, editor, getPos, updateAttributes }: NodeViewP
 
           {file.is_streamable ? (
             <Popover>
-              <PopoverTrigger aria-label="Thumbnail view">
-                <div className={buttonVariants()}>
-                  <Icon name={node.attrs.collapsed ? "arrows-expand" : "arrows-collapse"} />
-                </div>
+              <PopoverTrigger aria-label="Thumbnail view" className={buttonVariants()}>
+                <Icon name={node.attrs.collapsed ? "arrows-expand" : "arrows-collapse"} />
               </PopoverTrigger>
-              <PopoverContent className="border-0 p-0 shadow-none">
+              <PopoverContent sideOffset={4} className="border-0 p-0 shadow-none">
                 <div role="menu">
                   <PopoverClose>
                     <div

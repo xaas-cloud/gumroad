@@ -41,13 +41,11 @@ export const DownloadTaxFormsPopover = ({ taxForms }: Props) => {
         if (open) setSelectedYears(new Set());
       }}
     >
-      <PopoverTrigger aria-label="Tax forms">
-        <div className={buttonVariants()}>
-          Tax forms
-          <Icon name="download" />
-        </div>
+      <PopoverTrigger aria-label="Tax forms" className={buttonVariants()}>
+        Tax forms
+        <Icon name="download" />
       </PopoverTrigger>
-      <PopoverContent>
+      <PopoverContent sideOffset={4}>
         <div className="max-w-[300px] space-y-4 sm:max-w-full">
           {Object.keys(taxForms).length === 0 ? (
             <section className="text-muted">No tax forms available.</section>

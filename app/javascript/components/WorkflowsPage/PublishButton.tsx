@@ -36,13 +36,11 @@ export const PublishButton = ({
     </Button>
   ) : (
     <Popover>
-      <PopoverTrigger disabled={isDisabled}>
-        <div className={buttonVariants({ color: "accent" })}>
-          Publish
-          <Icon name="outline-cheveron-down" />
-        </div>
+      <PopoverTrigger disabled={isDisabled} className={buttonVariants({ color: "accent" })}>
+        Publish
+        <Icon name="outline-cheveron-down" />
       </PopoverTrigger>
-      <PopoverContent>
+      <PopoverContent sideOffset={4}>
         <fieldset>
           <Button color="accent" onClick={() => onClick("save_and_publish")} disabled={isDisabled}>
             Publish now

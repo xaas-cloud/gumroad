@@ -23,12 +23,10 @@ export const NodeActionsMenu = ({
 
   return (
     <Popover open={isOpen} onOpenChange={setOpen} aria-label="Actions">
-      <PopoverTrigger>
-        <div className={buttonVariants({ color: "filled", size: "sm" })} data-drag-handle draggable>
-          <Icon name="outline-drag" />
-        </div>
+      <PopoverTrigger className={buttonVariants({ color: "filled", size: "sm" })} data-drag-handle draggable>
+        <Icon name="outline-drag" />
       </PopoverTrigger>
-      <PopoverContent className="actions-menu border-0 p-0 shadow-none">
+      <PopoverContent sideOffset={4} className="actions-menu border-0 p-0 shadow-none">
         <div role="menu">
           {actions && selectedActionIndex !== null ? (
             <>

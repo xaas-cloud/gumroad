@@ -5,7 +5,6 @@ import { Button, buttonVariants } from "$app/components/Button";
 import { Icon } from "$app/components/Icons";
 import { Popover, PopoverContent, PopoverTrigger } from "$app/components/Popover";
 import { useOriginalLocation } from "$app/components/useOriginalLocation";
-import { WithTooltip } from "$app/components/WithTooltip";
 
 type CardType = {
   id: string;
@@ -87,14 +86,10 @@ const SearchPopover = () => {
 
   return (
     <Popover open={open} onOpenChange={setOpen} aria-label="Toggle Search">
-      <PopoverTrigger>
-        <WithTooltip tip="Search" position="bottom">
-          <div className={buttonVariants()}>
-            <Icon name="solid-search" />
-          </div>
-        </WithTooltip>
+      <PopoverTrigger className={buttonVariants()}>
+        <Icon name="solid-search" />
       </PopoverTrigger>
-      <PopoverContent>
+      <PopoverContent sideOffset={4}>
         <div className="grid w-96 max-w-full gap-3">
           <form onSubmit={(e) => submitForm(e, Routes.admin_search_users_path(), "user_query")} className="flex gap-2">
             <div className="input">

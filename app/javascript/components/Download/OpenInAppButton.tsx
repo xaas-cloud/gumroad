@@ -7,10 +7,8 @@ type Props = { iosAppUrl: string; androidAppUrl: string };
 
 export const OpenInAppButton = ({ iosAppUrl, androidAppUrl }: Props) => (
   <Popover>
-    <PopoverTrigger>
-      <div className={buttonVariants()}>Open in app</div>
-    </PopoverTrigger>
-    <PopoverContent>
+    <PopoverTrigger className={buttonVariants()}>Open in app</PopoverTrigger>
+    <PopoverContent sideOffset={4}>
       <div className="mx-auto grid w-72 gap-4 text-center">
         <h3>Gumroad Library</h3>
         <div>Download from the App Store</div>

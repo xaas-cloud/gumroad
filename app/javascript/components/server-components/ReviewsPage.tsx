@@ -196,12 +196,10 @@ const Row = ({ review, onChange }: { review: Review; onChange: (review: Review) 
     <td>
       <div className="actions">
         <Popover>
-          <PopoverTrigger aria-label="Edit">
-            <div className={buttonVariants()}>
-              <Icon name="pencil" />
-            </div>
+          <PopoverTrigger aria-label="Edit" className={buttonVariants()}>
+            <Icon name="pencil" />
           </PopoverTrigger>
-          <PopoverContent className="border-0 p-0 shadow-none">
+          <PopoverContent sideOffset={4} className="border-0 p-0 shadow-none">
             <div className="stack">
               <ReviewForm
                 permalink={review.product.permalink}

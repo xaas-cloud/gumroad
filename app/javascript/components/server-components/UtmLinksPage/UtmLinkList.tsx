@@ -345,12 +345,12 @@ const UtmLinkActions = ({ link, children }: { link: SavedUtmLink; children: Reac
     </CopyToClipboard>
 
     <Popover aria-label="Open action menu">
-      <PopoverTrigger>
-        <div className={buttonVariants()}>
-          <Icon name="three-dots" />
-        </div>
+      <PopoverTrigger className={buttonVariants()}>
+        <Icon name="three-dots" />
       </PopoverTrigger>
-      <PopoverContent className="border-0 p-0 shadow-none">{children}</PopoverContent>
+      <PopoverContent sideOffset={4} className="border-0 p-0 shadow-none">
+        {children}
+      </PopoverContent>
     </Popover>
   </div>
 );

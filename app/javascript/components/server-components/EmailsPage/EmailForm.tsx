@@ -636,14 +636,12 @@ export const EmailForm = () => {
           <>
             {channel.email && channel.profile ? (
               <Popover>
-                <PopoverTrigger disabled={isBusy}>
-                  <div className={buttonVariants()}>
-                    <Icon name="eye-fill" />
-                    Preview
-                    <Icon name="outline-cheveron-down" />
-                  </div>
+                <PopoverTrigger disabled={isBusy} className={buttonVariants()}>
+                  <Icon name="eye-fill" />
+                  Preview
+                  <Icon name="outline-cheveron-down" />
                 </PopoverTrigger>
-                <PopoverContent>
+                <PopoverContent sideOffset={4}>
                   <div className="grid gap-3">
                     <Button disabled={isBusy} onClick={() => save("save_and_preview_post")}>
                       <Icon name="file-earmark-medical-fill" />
@@ -670,11 +668,9 @@ export const EmailForm = () => {
               Cancel
             </Link>
             <Popover>
-              <PopoverTrigger disabled={isBusy}>
-                <div className={buttonVariants()}>
-                  {channel.profile ? "Publish" : "Send"}
-                  <Icon name="outline-cheveron-down" />
-                </div>
+              <PopoverTrigger disabled={isBusy} className={buttonVariants()}>
+                {channel.profile ? "Publish" : "Send"}
+                <Icon name="outline-cheveron-down" />
               </PopoverTrigger>
               <PopoverContent>
                 <div className="grid gap-3">

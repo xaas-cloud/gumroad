@@ -3,21 +3,55 @@ import * as React from "react";
 
 import { classNames } from "$app/utils/classNames";
 
+import { ButtonProps, buttonVariants } from "$app/components/Button";
+import { Position, WithTooltip } from "$app/components/WithTooltip";
+
 export const Popover = PopoverPrimitive.Root;
 
 export const PopoverClose = PopoverPrimitive.Close;
 
 export const PopoverTrigger = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Trigger>
->(({ className, ...props }, ref) => (
-  <PopoverPrimitive.Trigger
-    ref={ref}
-    className={classNames("outline-none focus-visible:outline-none", className)}
-    {...props}
-  />
-));
+  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Trigger> & {
+    tooltip?: string | undefined;
+    tooltipPosition?: Position;
+  }
+>(({ className, tooltip, tooltipPosition, ...props }, ref) => {
+  const content = (
+    <PopoverPrimitive.Trigger
+      ref={ref}
+      className={classNames("outline-none focus-visible:outline-none", className)}
+      {...props}
+    />
+  );
+
+  if (tooltip) {
+    return (
+      <WithTooltip position={tooltipPosition} tip={tooltip}>
+        {content}
+      </WithTooltip>
+    );
+  }
+
+  return content;
+});
 PopoverTrigger.displayName = PopoverPrimitive.Trigger.displayName;
+
+export const PopoverTriggerButton = React.forwardRef<
+  React.ElementRef<typeof PopoverPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Trigger> & {
+    tooltip?: string | undefined;
+    tooltipPosition?: Position;
+    color?: ButtonProps["color"];
+    size?: "sm" | "default";
+    variant?: "default" | "outline" | "secondary" | "destructive";
+  }
+>(({ children, color, size, variant, ...props }, ref) => (
+  <PopoverTrigger ref={ref} {...props}>
+    <div className={buttonVariants({ color, size, variant })}>{children}</div>
+  </PopoverTrigger>
+));
+PopoverTriggerButton.displayName = "PopoverTriggerButton";
 
 export const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,

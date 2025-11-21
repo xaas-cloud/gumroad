@@ -338,12 +338,10 @@ const WithContent = ({
         <div role="navigation" className="mt-auto flex gap-4 border-t border-border pt-4 lg:justify-end lg:pb-4">
           {isDesktop ? null : (
             <Popover aria-label="Table of Contents">
-              <PopoverTrigger>
-                <div className={buttonVariants()}>
-                  <Icon name="unordered-list" />
-                </div>
+              <PopoverTrigger className={buttonVariants()}>
+                <Icon name="unordered-list" />
               </PopoverTrigger>
-              <PopoverContent className="border-0 p-0 shadow-none">
+              <PopoverContent sideOffset={4} className="border-0 p-0 shadow-none">
                 <div role="menu">
                   {pages.map((page, index) => (
                     <PopoverClose key={page.page_id}>

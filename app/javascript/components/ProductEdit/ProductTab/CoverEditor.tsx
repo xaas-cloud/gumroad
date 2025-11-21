@@ -93,14 +93,12 @@ export const CoverEditor = ({
               }}
               aria-label="Add cover"
             >
-              <PopoverTrigger disabled={!canAddPreview || isUploading}>
-                <WithTooltip tip={canAddPreview ? null : "Maximum number of previews uploaded"}>
-                  <div className={buttonVariants()}>
-                    <Icon name="plus" />
-                  </div>
-                </WithTooltip>
-              </PopoverTrigger>
-              <PopoverContent>
+              <WithTooltip tip={canAddPreview ? null : "Maximum number of previews uploaded"}>
+                <PopoverTrigger disabled={!canAddPreview || isUploading} className={buttonVariants()}>
+                  <Icon name="plus" />
+                </PopoverTrigger>
+              </WithTooltip>
+              <PopoverContent sideOffset={4}>
                 <div className="flex flex-col gap-4">
                   <CoverUploader
                     permalink={permalink}

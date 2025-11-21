@@ -172,13 +172,11 @@ const FileEmbedGroupNodeView = ({
             <div className="actions">
               {showDownloadButton ? (
                 <Popover>
-                  <PopoverTrigger>
-                    <div className={buttonVariants()}>
-                      Download all
-                      <Icon name="outline-cheveron-down" />
-                    </div>
+                  <PopoverTrigger className={buttonVariants()}>
+                    Download all
+                    <Icon name="outline-cheveron-down" />
                   </PopoverTrigger>
-                  <PopoverContent>
+                  <PopoverContent sideOffset={4}>
                     <div className="grid gap-2">
                       {downloading ? (
                         <Button disabled>

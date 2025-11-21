@@ -383,12 +383,10 @@ const DiscountsPage = ({ offer_codes, pages, products, pagination: initialPagina
                             }}
                             aria-label="Open discount action menu"
                           >
-                            <PopoverTrigger>
-                              <div className={buttonVariants()}>
-                                <Icon name="three-dots" />
-                              </div>
+                            <PopoverTrigger className={buttonVariants()}>
+                              <Icon name="three-dots" />
                             </PopoverTrigger>
-                            <PopoverContent className="border-0 p-0 shadow-none">
+                            <PopoverContent sideOffset={4} className="border-0 p-0 shadow-none">
                               <div role="menu">
                                 <div
                                   role="menuitem"

@@ -8,21 +8,16 @@ import { Icon } from "$app/components/Icons";
 import { Popover, PopoverContent, PopoverTrigger } from "$app/components/Popover";
 import { Separator } from "$app/components/Separator";
 import { useOriginalLocation } from "$app/components/useOriginalLocation";
-import { WithTooltip } from "$app/components/WithTooltip";
 
 type Props = { card_types: { id: string; name: string }[] };
 export const SearchPopover = ({ card_types }: Props) => {
   const searchParams = new URL(useOriginalLocation()).searchParams;
   return (
     <Popover aria-label="Toggle Search">
-      <PopoverTrigger>
-        <WithTooltip tip="Search" position="bottom">
-          <div className={buttonVariants()}>
-            <Icon name="solid-search" />
-          </div>
-        </WithTooltip>
+      <PopoverTrigger className={buttonVariants()}>
+        <Icon name="solid-search" />
       </PopoverTrigger>
-      <PopoverContent>
+      <PopoverContent sideOffset={4}>
         <div className="grid w-96 max-w-full gap-3">
           <form action={Routes.admin_search_users_path()} method="get" className="flex gap-2">
             <div className="input">

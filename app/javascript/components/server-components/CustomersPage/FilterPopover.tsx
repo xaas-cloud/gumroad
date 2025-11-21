@@ -7,20 +7,15 @@ import { register } from "$app/utils/serverComponentUtil";
 import { buttonVariants } from "$app/components/Button";
 import { Icon } from "$app/components/Icons";
 import { Popover, PopoverContent, PopoverTrigger } from "$app/components/Popover";
-import { WithTooltip } from "$app/components/WithTooltip";
 
 type Props = { contentHTML: string };
 
 export const FilterPopover = ({ contentHTML }: Props) => (
   <Popover aria-label="Filter">
-    <PopoverTrigger>
-      <WithTooltip tip="Filter" position="bottom">
-        <div className={classNames(buttonVariants(), "js-toggle-filter-list")}>
-          <Icon name="filter" />
-        </div>
-      </WithTooltip>
+    <PopoverTrigger className={classNames(buttonVariants(), "js-toggle-filter-list")}>
+      <Icon name="filter" />
     </PopoverTrigger>
-    <PopoverContent>
+    <PopoverContent sideOffset={4}>
       <div
         className="js-filter-list customer-popover--filter filter-box"
         dangerouslySetInnerHTML={{ __html: contentHTML }}

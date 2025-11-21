@@ -8,13 +8,11 @@ type Props = { zip_path: string; files: { url: string; filename: string | null }
 
 export const DownloadAllButton = ({ zip_path, files }: Props) => (
   <Popover>
-    <PopoverTrigger>
-      <div className={buttonVariants()}>
-        Download all
-        <Icon name="outline-cheveron-down" />
-      </div>
+    <PopoverTrigger className={buttonVariants()}>
+      Download all
+      <Icon name="outline-cheveron-down" />
     </PopoverTrigger>
-    <PopoverContent>
+    <PopoverContent sideOffset={4}>
       <div className="grid gap-2">
         <NavigationButton href={zip_path}>
           <Icon name="file-earmark-binary-fill" />
