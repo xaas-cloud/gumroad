@@ -70,7 +70,7 @@ describe Settings::ThirdPartyAnalyticsController, type: :controller, inertia: tr
         }
 
         expect(response).to redirect_to(settings_third_party_analytics_path)
-        expect(response).to have_http_status :see_other
+        expect(response).to have_http_status :found
         expect(flash[:alert]).to eq("Please enter a valid Google Analytics ID")
 
         seller.reload
@@ -89,7 +89,7 @@ describe Settings::ThirdPartyAnalyticsController, type: :controller, inertia: tr
         put :update, params: {}
 
         expect(response).to redirect_to(settings_third_party_analytics_path)
-        expect(response).to have_http_status :see_other
+        expect(response).to have_http_status :found
         expect(flash[:alert]).to eq("Something broke. We're looking into what happened. Sorry about this!")
       end
     end

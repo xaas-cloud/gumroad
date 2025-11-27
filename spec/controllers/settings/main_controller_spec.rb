@@ -52,7 +52,7 @@ describe Settings::MainController, type: :controller, inertia: true do
       allow_any_instance_of(User).to receive(:save!).and_raise(StandardError)
       put :update, params: { user: user_params.merge(email: "hello@example.com") }
       expect(response).to redirect_to(settings_main_path)
-      expect(response).to have_http_status :see_other
+      expect(response).to have_http_status :found
       expect(flash[:alert]).to eq("Something broke. We're looking into what happened. Sorry about this!")
     end
 
@@ -78,7 +78,7 @@ describe Settings::MainController, type: :controller, inertia: true do
     it "sets error message and render show on invalid record" do
       put :update, params: { user: user_params.merge(email: "BAD EMAIL") }
       expect(response).to redirect_to(settings_main_path)
-      expect(response).to have_http_status :see_other
+      expect(response).to have_http_status :found
       expect(flash[:alert]).to eq("Email is invalid")
     end
 
@@ -402,7 +402,7 @@ describe Settings::MainController, type: :controller, inertia: true do
           put :update, params: { user: user_params.merge(product_level_support_emails:) }
 
           expect(response).to redirect_to(settings_main_path)
-          expect(response).to have_http_status :see_other
+          expect(response).to have_http_status :found
           expect(flash[:alert]).to eq("Something broke. We're looking into what happened. Sorry about this!")
         end
 
@@ -476,7 +476,7 @@ describe Settings::MainController, type: :controller, inertia: true do
           .not_to have_enqueued_mail(UserSignupMailer)
 
         expect(response).to redirect_to(settings_main_path)
-        expect(response).to have_http_status :see_other
+        expect(response).to have_http_status :found
         expect(flash[:alert]).to eq("Sorry, something went wrong. Please try again.")
       end
     end

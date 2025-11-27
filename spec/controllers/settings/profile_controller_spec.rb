@@ -55,7 +55,7 @@ describe Settings::ProfileController, :vcr, type: :controller, inertia: true do
     it "performs model validations" do
       put :update, params: { user: { username: "ab" } }
       expect(response).to redirect_to(settings_profile_path)
-      expect(response).to have_http_status :see_other
+      expect(response).to have_http_status :found
       expect(flash[:alert]).to eq("Username is too short (minimum is 3 characters)")
     end
 
@@ -67,7 +67,7 @@ describe Settings::ProfileController, :vcr, type: :controller, inertia: true do
       it "returns an error" do
         put :update, params: { user: { name: "New name" } }
         expect(response).to redirect_to(settings_profile_path)
-        expect(response).to have_http_status :see_other
+        expect(response).to have_http_status :found
         expect(flash[:alert]).to eq("You have to confirm your email address before you can do that.")
       end
     end

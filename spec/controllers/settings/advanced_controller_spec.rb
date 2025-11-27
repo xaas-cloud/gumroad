@@ -46,7 +46,7 @@ describe Settings::AdvancedController, :vcr, type: :controller, inertia: true do
       put :update, params: { user: { notification_endpoint: "https://example.com" } }
 
       expect(response).to redirect_to(settings_advanced_path)
-      expect(response).to have_http_status :see_other
+      expect(response).to have_http_status :found
       expect(flash[:alert]).to eq("Something broke. We're looking into what happened. Sorry about this!")
     end
 
@@ -234,7 +234,7 @@ describe Settings::AdvancedController, :vcr, type: :controller, inertia: true do
 
         expect(seller.blocked_customer_objects.active.email.pluck(:object_value)).to match_array(["customer1@example.com"])
         expect(response).to redirect_to(settings_advanced_path)
-        expect(response).to have_http_status :see_other
+        expect(response).to have_http_status :found
         expect(flash[:alert]).to eq("The email rob@@example.com cannot be blocked as it is invalid.")
       end
 
@@ -261,7 +261,7 @@ describe Settings::AdvancedController, :vcr, type: :controller, inertia: true do
         end.to_not change { seller.blocked_customer_objects.active.email.count }
 
         expect(response).to redirect_to(settings_advanced_path)
-        expect(response).to have_http_status :see_other
+        expect(response).to have_http_status :found
         expect(flash[:alert]).to eq("Sorry, something went wrong. Please try again.")
       end
 
@@ -273,7 +273,7 @@ describe Settings::AdvancedController, :vcr, type: :controller, inertia: true do
 
         expect(seller.blocked_customer_objects.active.email.pluck(:object_value)).to match_array(["john@example.com", "rob@example.com"])
         expect(response).to redirect_to(settings_advanced_path)
-        expect(response).to have_http_status :see_other
+        expect(response).to have_http_status :found
         expect(flash[:alert]).to eq("invalid-domain is not a valid domain name.")
       end
     end

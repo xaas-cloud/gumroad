@@ -37,7 +37,7 @@ describe Settings::PasswordController, :vcr, type: :controller, inertia: true do
           put :update
         end
         expect(response).to redirect_to(settings_password_path)
-        expect(response).to have_http_status :see_other
+        expect(response).to have_http_status :found
         expect(flash[:alert]).to eq("Incorrect password.")
       end
     end
@@ -59,7 +59,7 @@ describe Settings::PasswordController, :vcr, type: :controller, inertia: true do
           put :update, params: { user: { password: user.password, new_password: "password" } }
         end
         expect(response).to redirect_to(settings_password_path)
-        expect(response).to have_http_status :see_other
+        expect(response).to have_http_status :found
         expect(flash[:alert]).to be_present
       end
     end
