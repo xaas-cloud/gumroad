@@ -57,8 +57,7 @@ class BlackFridayStatsService
 
         response.response.dig("hits", "hits").to_a.each_with_object({}) do |hit, hash|
           hash[hit["_id"].to_i] = {
-            price_cents: hit.dig("_source", "price_cents").to_i,
-            offer_codes: hit.dig("_source", "offer_codes").to_a.map { |code| code["code"] }
+            price_cents: hit.dig("_source", "price_cents").to_i
           }
         end
       end
