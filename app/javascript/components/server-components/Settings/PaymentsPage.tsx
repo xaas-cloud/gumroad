@@ -34,6 +34,7 @@ import PayPalEmailSection from "$app/components/Settings/PaymentsPage/PayPalEmai
 import StripeConnectSection, { StripeConnect } from "$app/components/Settings/PaymentsPage/StripeConnectSection";
 import { Toggle } from "$app/components/Toggle";
 import { TypeSafeOptionSelect } from "$app/components/TypeSafeOptionSelect";
+import { Alert } from "$app/components/ui/Alert";
 import { useUserAgentInfo } from "$app/components/UserAgent";
 import { WithTooltip } from "$app/components/WithTooltip";
 
@@ -860,7 +861,7 @@ const PaymentsPage = (props: Props) => {
       ) : null}
       <form ref={formRef}>
         {props.payouts_paused_by !== null ? (
-          <div role="status" className="warning mx-8 mb-12">
+          <Alert role="status" variant="warning" className="mx-8 mb-12">
             <p>
               {props.payouts_paused_by === "stripe" ? (
                 <strong>
@@ -881,7 +882,7 @@ const PaymentsPage = (props: Props) => {
                 <strong>You have paused your payouts.</strong>
               )}
             </p>
-          </div>
+          </Alert>
         ) : null}
 
         <section className="p-4! md:p-8!">
@@ -892,9 +893,9 @@ const PaymentsPage = (props: Props) => {
             <StripeConnectEmbeddedNotificationBanner />
           ) : (
             <div className="flex flex-col">
-              <div role="status" className="success">
+              <Alert role="status" variant="success">
                 Your account details have been verified!
-              </div>
+              </Alert>
               <div className="mt-4 flex items-center">
                 <img src={logo} alt="Gum Coin" className="mr-2 h-5 w-5" />
                 <span className="text-sm text-muted">
@@ -925,13 +926,13 @@ const PaymentsPage = (props: Props) => {
 
         {errorMessage ? (
           <div className="mb-12 px-8">
-            <div role="status" className="danger">
+            <Alert role="status" variant="danger">
               {errorMessage.code === "stripe_error" ? (
                 <div>Your account could not be updated due to an error with Stripe.</div>
               ) : (
                 errorMessage.message
               )}
-            </div>
+            </Alert>
           </div>
         ) : null}
         <section className="p-4! md:p-8!">
@@ -958,17 +959,17 @@ const PaymentsPage = (props: Props) => {
               </small>
             </fieldset>
             {payoutFrequency === "daily" && props.payout_frequency_daily_supported ? (
-              <div role="status" className="info">
+              <Alert role="status" variant="info">
                 <div>
                   Every day, your balance from the previous day will be sent to you via instant payouts, subject to a{" "}
                   <b>3% fee</b>.
                 </div>
-              </div>
+              </Alert>
             ) : null}
             {payoutFrequency === "daily" && !props.payout_frequency_daily_supported && (
-              <div role="status" className="danger">
+              <Alert role="status" variant="danger">
                 <div>Your account is no longer eligible for daily payouts. Please update your schedule.</div>
-              </div>
+              </Alert>
             )}
             <fieldset className={cx({ danger: payoutThresholdCents.error })}>
               <label htmlFor="payout_threshold_cents">Minimum payout threshold</label>

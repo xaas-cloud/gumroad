@@ -10,6 +10,7 @@ import { CopyToClipboard } from "$app/components/CopyToClipboard";
 import { useDomains, useDiscoverUrl } from "$app/components/DomainSettings";
 import { Icon } from "$app/components/Icons";
 import { LoadingSpinner } from "$app/components/LoadingSpinner";
+import { Alert } from "$app/components/ui/Alert";
 
 const DiscoverLinkSection = ({
   globalAffiliateId,
@@ -107,9 +108,9 @@ const LinkGenerationSection = ({
           </Button>
         </div>
         {hasError ? (
-          <div role="alert" className={cx({ danger: hasError })}>
+          <Alert variant="danger">
             Invalid URL. Make sure your URL is a Gumroad URL and starts with "http" or "https".
-          </div>
+          </Alert>
         ) : null}
       </fieldset>
       <fieldset>
@@ -238,11 +239,7 @@ const ProductEligibilitySection = ({
           </div>
         </div>
       ) : null}
-      {result.error ? (
-        <div role="alert" className={result.error.type}>
-          {result.error.message}
-        </div>
-      ) : null}
+      {result.error ? <Alert variant={result.error.type}>{result.error.message}</Alert> : null}
     </section>
   );
 };

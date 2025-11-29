@@ -5,6 +5,7 @@ import { Button } from "$app/components/Button";
 import { useState, getErrors } from "$app/components/Checkout/payment";
 import { Icon } from "$app/components/Icons";
 import { Modal } from "$app/components/Modal";
+import { Alert } from "$app/components/ui/Alert";
 
 export const GiftForm = ({ isMembership }: { isMembership: boolean }) => {
   const giftEmailUID = React.useId();
@@ -40,12 +41,12 @@ export const GiftForm = ({ isMembership }: { isMembership: boolean }) => {
       {gift ? (
         <div className="flex w-full flex-col gap-4">
           {isMembership ? (
-            <div role="alert" className="info">
+            <Alert variant="info">
               <div>
                 Note: Free trials will be charged immediately. The membership will not auto-renew. The recipient must
                 update the payment method to renew the membership.
               </div>
-            </div>
+            </Alert>
           ) : null}
           {gift.type === "normal" ? (
             <fieldset className={cx({ danger: hasError })}>
@@ -63,7 +64,7 @@ export const GiftForm = ({ isMembership }: { isMembership: boolean }) => {
               />
             </fieldset>
           ) : (
-            <div role="alert" className="info">
+            <Alert variant="info">
               <div>
                 {gift.name}'s email has been hidden for privacy purposes.{" "}
                 <button className="underline" onClick={() => setCancellingPresetGift(true)}>
@@ -92,7 +93,7 @@ export const GiftForm = ({ isMembership }: { isMembership: boolean }) => {
                 You are about to switch off the gift option. To gift this wishlist again, you will need to return to the
                 wishlist page and select "Gift this product".
               </Modal>
-            </div>
+            </Alert>
           )}
           <fieldset className="w-full">
             <legend>

@@ -1,4 +1,4 @@
-import { Slot } from "@radix-ui/react-slot";
+import { Slot, Slottable } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 
@@ -46,25 +46,28 @@ const AlertContext = React.createContext<Exclude<VariantProps<typeof alertVarian
 export interface AlertProps
   extends React.HTMLProps<HTMLDivElement>,
     Omit<VariantProps<typeof alertVariants>, "variant"> {
-  variant?: Exclude<VariantProps<typeof alertVariants>["variant"], null>;
-  role?: "alert" | "status";
+  asChild?: boolean;
   children: React.ReactNode;
+  role?: "alert" | "status";
+  variant?: Exclude<VariantProps<typeof alertVariants>["variant"], null>;
 }
 
 export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
-  ({ variant, role = "alert", className, children, ...props }, ref) => {
+  ({ asChild, className, children, role = "alert", variant, ...props }, ref) => {
     const hasIcon = React.Children.toArray(children).some(
       (child) => React.isValidElement(child) && child.type === AlertIcon,
     );
 
+    const Component = asChild ? Slot : "div";
+
     return (
       <AlertContext.Provider value={variant}>
-        <div ref={ref} role={role} className={classNames(alertVariants({ variant }), className)} {...props}>
+        <Component ref={ref} role={role} className={classNames(alertVariants({ variant }), className)} {...props}>
           {!hasIcon && variant ? (
             <Icon name={iconNames[variant]} className={iconColorVariants({ variant })} aria-hidden="true" />
           ) : null}
-          {children}
-        </div>
+          {asChild ? <Slottable>{children}</Slottable> : children}
+        </Component>
       </AlertContext.Provider>
     );
   },
