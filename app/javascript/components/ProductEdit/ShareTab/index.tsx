@@ -15,6 +15,7 @@ import { TaxonomyEditor } from "$app/components/ProductEdit/ShareTab/TaxonomyEdi
 import { useProductEditContext } from "$app/components/ProductEdit/state";
 import { Toggle } from "$app/components/Toggle";
 import { TwitterShareButton } from "$app/components/TwitterShareButton";
+import { Alert } from "$app/components/ui/Alert";
 import { useRunOnce } from "$app/components/useRunOnce";
 
 export const ShareTab = () => {
@@ -71,12 +72,9 @@ export const ShareTab = () => {
               </a>
             </header>
             {isListedOnDiscover ? (
-              <div role="status" className="success">
-                <div>{product.name} is listed on Gumroad Discover.</div>
-                <a className="close" href={discoverLink.toString()}>
-                  View
-                </a>
-              </div>
+              <Alert color="success" action={<a href={discoverLink.toString()}>View</a>}>
+                {product.name} is listed on Gumroad Discover.
+              </Alert>
             ) : null}
             <div className="flex flex-col gap-4">
               <p>

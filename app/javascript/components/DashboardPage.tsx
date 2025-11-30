@@ -20,6 +20,7 @@ import { useLoggedInUser } from "$app/components/LoggedInUser";
 import { ProductIconCell } from "$app/components/ProductsPage/ProductIconCell";
 import { DownloadTaxFormsPopover } from "$app/components/server-components/DashboardPage/DownloadTaxFormsPopover";
 import { Stats } from "$app/components/Stats";
+import { Alert } from "$app/components/ui/Alert";
 import { PageHeader } from "$app/components/ui/PageHeader";
 import Placeholder from "$app/components/ui/Placeholder";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "$app/components/ui/Table";
@@ -319,12 +320,10 @@ export const DashboardPage = ({
         </div>
       ) : null}
       {show_1099_download_notice ? (
-        <div role="alert" className="info">
-          <div>
-            Your 1099 tax form for {new Date().getFullYear() - 1} is ready!{" "}
-            <a href={Routes.dashboard_download_tax_form_path()}>Click here to download</a>.
-          </div>
-        </div>
+        <Alert color="info">
+          Your 1099 tax form for {new Date().getFullYear() - 1} is ready!{" "}
+          <a href={Routes.dashboard_download_tax_form_path()}>Click here to download</a>.
+        </Alert>
       ) : null}
 
       {loggedInUser?.policies.settings_payments_user.show

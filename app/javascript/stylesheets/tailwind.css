@@ -46,6 +46,7 @@
   --color-success: rgb(var(--success));
   --color-danger: rgb(var(--danger));
   --color-warning: rgb(var(--warning));
+  --color-info: rgb(var(--info));
 
   --shadow: 0.25rem 0.25rem 0 currentColor;
   --shadow-lg: 0.5rem 0.5rem 0 currentColor;
