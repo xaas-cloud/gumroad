@@ -38,7 +38,7 @@ const AdminProductPurchasesContent = ({
   const selectedCount = selectedPurchaseIds.size;
 
   return (
-    <div className="paragraphs">
+    <div className="flex flex-col gap-4">
       <div
         className="mass-refund-toolbar"
         style={{
