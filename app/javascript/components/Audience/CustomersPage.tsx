@@ -78,6 +78,7 @@ import { showAlert } from "$app/components/server-components/Alert";
 import { Toggle } from "$app/components/Toggle";
 import { PageHeader } from "$app/components/ui/PageHeader";
 import Placeholder from "$app/components/ui/Placeholder";
+import { Row, RowActions, RowContent, Rows } from "$app/components/ui/Rows";
 import { Sheet, SheetHeader } from "$app/components/ui/Sheet";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "$app/components/ui/Table";
 import { useDebouncedCallback } from "$app/components/useDebouncedCallback";
@@ -990,11 +991,11 @@ const CustomerDrawer = ({
                 {field.type === "text" ? (
                   field.value
                 ) : (
-                  <div role="tree" style={{ marginTop: "var(--spacer-2)" }}>
+                  <Rows role="list" className="mt-2">
                     {field.files.map((file) => (
                       <FileRow file={file} key={file.key} />
                     ))}
-                  </div>
+                  </Rows>
                 )}
               </section>
             );
@@ -2419,8 +2420,8 @@ const CallSection = ({ call, onChange }: { call: Call; onChange: (call: Call) =>
 };
 
 const FileRow = ({ file, disabled, onDelete }: { file: File; disabled?: boolean; onDelete?: () => void }) => (
-  <div role="treeitem">
-    <div className="content">
+  <Row role="listitem">
+    <RowContent>
       <FileKindIcon extension={file.extension} />
       <div>
         <h4>{file.name}</h4>
@@ -2429,8 +2430,8 @@ const FileRow = ({ file, disabled, onDelete }: { file: File; disabled?: boolean;
           <li>{FileUtils.getFullFileSizeString(file.size)}</li>
         </ul>
       </div>
-    </div>
-    <div className="actions">
+    </RowContent>
+    <RowActions>
       {onDelete ? (
         <Button color="danger" onClick={onDelete} disabled={disabled} aria-label="Delete">
           <Icon name="trash2" />
@@ -2445,8 +2446,8 @@ const FileRow = ({ file, disabled, onDelete }: { file: File; disabled?: boolean;
       >
         <Icon name="download-fill" />
       </NavigationButton>
-    </div>
-  </div>
+    </RowActions>
+  </Row>
 );
 
 const CommissionSection = ({
@@ -2547,11 +2548,11 @@ const CommissionSection = ({
       <section>
         <section className="grid gap-2">
           {commission.files.length ? (
-            <div role="tree">
+            <Rows role="list">
               {commission.files.map((file) => (
                 <FileRow key={file.id} file={file} onDelete={() => void handleDelete(file.id)} disabled={isLoading} />
               ))}
-            </div>
+            </Rows>
           ) : null}
           <label className="button">
             <input type="file" onChange={handleFileChange} disabled={isLoading} multiple style={{ display: "none" }} />
