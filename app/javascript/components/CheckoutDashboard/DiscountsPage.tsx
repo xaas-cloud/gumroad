@@ -342,7 +342,7 @@ const DiscountsPage = ({
       <section className="p-4 md:p-8">
         {show_black_friday_banner && !offerCodes.some((offerCode) => offerCode.code === black_friday_code) ? (
           <Alert className="mb-8 grid-cols-[auto_1fr_auto] gap-y-4 md:gap-x-4" role="status" variant="accent">
-            <AlertIcon asChild>
+            <AlertIcon>
               <img src={blackFridayIllustration} alt="Black Friday" className="size-12" />
             </AlertIcon>
             <div className="self-center text-sm md:text-base">

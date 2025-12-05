@@ -296,8 +296,8 @@ const NewProductPage = ({
 
               {ai_generation_enabled && aiPromoVisible ? (
                 <Alert className="gap-4 p-6" role="status" variant="accent">
-                  <AlertIcon asChild>
-                    <img src={hands} alt="Hands" className="size-12 self-center" />
+                  <AlertIcon className="self-center">
+                    <img src={hands} alt="Hands" className="size-12" />
                   </AlertIcon>
                   <div className="grid grid-cols-[1fr_auto] gap-4">
                     <div>

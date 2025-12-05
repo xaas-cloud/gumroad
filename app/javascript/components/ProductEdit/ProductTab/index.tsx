@@ -88,8 +88,8 @@ export const ProductTab = () => {
           <section className="p-4! md:p-8!">
             {showAiNotification ? (
               <Alert role="status" className="grid grid-cols-[auto_1fr_auto] gap-4" variant="accent">
-                <AlertIcon asChild className="self-center text-lg">
-                  <Icon name="sparkle" />
+                <AlertIcon className="self-center">
+                  <Icon className="text-lg" name="sparkle" />
                 </AlertIcon>
                 <div>
                   <strong>Your AI product is ready!</strong> Take a moment to check out the product and content tabs.

@@ -1,4 +1,3 @@
-import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 
@@ -65,15 +64,9 @@ export interface AlertIconProps extends React.HTMLProps<HTMLSpanElement> {
   asChild?: boolean;
 }
 
-export const AlertIcon = React.forwardRef<HTMLSpanElement, AlertIconProps>(
-  ({ children, asChild, className, ...props }, ref) => {
-    const Component = asChild ? Slot : "span";
-
-    return (
-      <Component ref={ref} className={classNames(className)} {...props}>
-        {children}
-      </Component>
-    );
-  },
-);
+export const AlertIcon = React.forwardRef<HTMLSpanElement, AlertIconProps>(({ children, className, ...props }, ref) => (
+  <span ref={ref} className={classNames(className)} {...props}>
+    {children}
+  </span>
+));
 AlertIcon.displayName = "AlertIcon";

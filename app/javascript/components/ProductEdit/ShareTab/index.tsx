@@ -125,8 +125,8 @@ const DiscoverEligibilityPromo = () => {
 
   return (
     <Alert role="status">
-      <AlertIcon asChild>
-        <img src={hands} alt="" className="size-12 self-center" />
+      <AlertIcon className="self-center">
+        <img src={hands} alt="" className="size-12" />
       </AlertIcon>
       <div className="flex flex-col gap-2">
         <div>
