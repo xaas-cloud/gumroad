@@ -114,3 +114,9 @@ export const CartItemEnd = ({ className, children, ...props }: BaseProps) => (
     {children}
   </section>
 );
+
+export const CartItemRecurrenceLabel = ({ className, children, ...props }: BaseProps) => (
+  <span className={classNames("text-sm leading-[1.3]", className)} {...props}>
+    {children}
+  </span>
+);

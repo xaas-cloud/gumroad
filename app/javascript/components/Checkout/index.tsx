@@ -25,6 +25,7 @@ import {
   CartItemQuantity,
   CartItemActions,
   CartActionButton,
+  CartItemRecurrenceLabel,
 } from "$app/components/CartItemList";
 import { PaymentForm } from "$app/components/Checkout/PaymentForm";
 import { Popover } from "$app/components/Popover";
@@ -247,8 +248,9 @@ export const Checkout = ({
                     updateCart={updateCart}
                   />
                 ))}
-
-                <div className="grid gap-4 border-t border-border p-4">
+              </CartItemList>
+              <CartItemList>
+                <div className="grid gap-4 border-border p-4">
                   {state.surcharges.type === "loaded" ? (
                     <>
                       <CartPriceItem title="Subtotal" price={formatPrice(subtotal)} />
@@ -332,7 +334,13 @@ export const Checkout = ({
                 {total != null ? (
                   <>
                     <footer className="grid gap-4 border-t border-border p-4">
-                      <CartPriceItem title="Total" price={formatPrice(total)} className="*:text-lg" />
+                      <CartPriceItem
+                        title="Total"
+                        price={formatPrice(total)}
+                        className="*:font-bold"
+                        titleClassName="text-base sm:text-xl"
+                        priceClassName="text-base sm:text-lg"
+                      />
                     </footer>
                     {commissionCompletionTotal > 0 || futureInstallmentsWithoutTipsTotal > 0 ? (
                       <div className="grid gap-4 border-t border-border p-4">
@@ -395,14 +403,18 @@ const CartPriceItem = ({
   title,
   price,
   className,
+  titleClassName,
+  priceClassName,
 }: {
   title: React.ReactNode;
   price: string | number | null;
   className?: string;
+  titleClassName?: string;
+  priceClassName?: string;
 }) => (
   <div className={classNames("grid grid-flow-col justify-between gap-4", className)}>
-    <h4 className="inline-flex flex-wrap gap-2">{title}</h4>
-    <div>{price}</div>
+    <h4 className={classNames("inline-flex flex-wrap gap-2 text-sm sm:text-base", titleClassName)}>{title}</h4>
+    <div className={classNames("text-base sm:text-lg", priceClassName)}>{price}</div>
   </div>
 );
 
@@ -519,11 +531,6 @@ const CartItemComponent = ({
               <strong>{variantLabel(item.product.native_type)}:</strong> {option.name}
             </span>
           ) : null}
-          {item.recurrence ? (
-            <span>
-              <strong>Membership:</strong> {recurrenceNames[item.recurrence]}
-            </span>
-          ) : null}
           {item.call_start_time ? (
             <span>
               <strong>Time:</strong> {formatCallDate(new Date(item.call_start_time), { date: { hideYear: true } })}
@@ -591,25 +598,27 @@ const CartItemComponent = ({
         </span>
         {hasFreeTrial(item, isGift) && item.product.free_trial ? (
           <>
-            <span>
+            <CartItemRecurrenceLabel>
               {item.product.free_trial.duration.amount === 1
                 ? `one ${item.product.free_trial.duration.unit}`
                 : `${item.product.free_trial.duration.amount} ${item.product.free_trial.duration.unit}s`}{" "}
               free
-            </span>
+            </CartItemRecurrenceLabel>
             {item.recurrence ? (
-              <span>
+              <CartItemRecurrenceLabel>
                 {formatAmountPerRecurrence(item.recurrence, formatPrice(convertToUSD(item, discount.price)))} after
-              </span>
+              </CartItemRecurrenceLabel>
             ) : null}
           </>
         ) : item.pay_in_installments && item.product.installment_plan ? (
-          <span>in {item.product.installment_plan.number_of_installments} installments</span>
+          <CartItemRecurrenceLabel>
+            in {item.product.installment_plan.number_of_installments} installments
+          </CartItemRecurrenceLabel>
         ) : item.recurrence ? (
           isGift ? (
-            recurrenceDurationLabels[item.recurrence]
+            <CartItemRecurrenceLabel>{recurrenceDurationLabels[item.recurrence]}</CartItemRecurrenceLabel>
           ) : (
-            recurrenceNames[item.recurrence]
+            <CartItemRecurrenceLabel>{recurrenceNames[item.recurrence]}</CartItemRecurrenceLabel>
           )
         ) : null}
       </CartItemEnd>
