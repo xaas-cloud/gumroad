@@ -2,16 +2,16 @@
 
 class Oauth::ApplicationsController < Doorkeeper::ApplicationsController
   protect_from_forgery
-  layout "inertia"
 
   include CsrfTokenInjector
   include Impersonate
 
   before_action :authenticate_user!
-  before_action :set_display_vars
   before_action :set_application_params, only: %i[create update]
   before_action :set_application, only: %i[edit update destroy]
   after_action :verify_authorized, except: %i[index new show]
+
+  layout "inertia"
 
   def index
     redirect_to settings_advanced_path
@@ -103,10 +103,5 @@ class Oauth::ApplicationsController < Doorkeeper::ApplicationsController
           redirect_to oauth_applications_url
         end
       end
-    end
-
-    # set display instance vars here because we don't inherit from application controller
-    def set_display_vars
-      @body_id = "app"
     end
 end
