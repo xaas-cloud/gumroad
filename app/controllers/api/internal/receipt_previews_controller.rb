@@ -13,6 +13,11 @@ class Api::Internal::ReceiptPreviewsController < Api::Internal::BaseController
     @product.custom_view_content_button_text = params[:custom_view_content_button_text]
     preview_purchase = build_preview_purchase
 
+    unless preview_purchase.valid?
+      error_message = preview_purchase.errors.full_messages.join(", ")
+      return render html: "Error: #{error_message}", status: :unprocessable_entity
+    end
+
     rendered_html = ApplicationController.renderer.render(
       template: "customer_mailer/receipt",
       layout: "email",
@@ -29,21 +34,23 @@ class Api::Internal::ReceiptPreviewsController < Api::Internal::BaseController
 
   private
     def build_preview_purchase
-      preview_purchase = OpenStruct.new(
+      price_cents = @product.price_cents || 0
+
+      preview_purchase = PreviewPurchase.new(
         link: @product,
         seller: @product.user,
         created_at: Time.current,
         quantity: 1,
         custom_fields: [],
-        formatted_total_display_price_per_unit: MoneyFormatter.format(@product.price_cents, @product.price_currency_type.to_sym, no_cents_if_whole: true, symbol: true),
+        formatted_total_display_price_per_unit: MoneyFormatter.format(price_cents, @product.price_currency_type.to_sym, no_cents_if_whole: true, symbol: true),
         shipping_cents: 0,
         displayed_price_currency_type: @product.price_currency_type,
         url_redirect: OpenStruct.new(
           token: "preview_token"
         ),
-        displayed_price_cents: @product.price_cents,
+        displayed_price_cents: price_cents,
         support_email: @product.user.support_or_form_email,
-        charged_amount_cents: @product.price_cents,
+        charged_amount_cents: price_cents,
         external_id_for_invoice: "preview_order_id"
       )
 
