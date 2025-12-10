@@ -34,5 +34,4 @@ module HelperWidget
         message
       )
     end
-
 end

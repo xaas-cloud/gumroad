@@ -40,16 +40,21 @@ type FileEmbedGroupStorage = { lastCreatedUid: string | null };
 
 export const titleWithFallback = (title: unknown) => (title ? String(title).trim() : "") || "Untitled";
 
-export const useFilesInGroup = (node: ProseMirrorNode | null, allFiles: FileEntry[]) =>
+export const useFilesInGroup = (
+  node: ProseMirrorNode | null,
+  allFiles: FileEntry[],
+  filesById?: Map<string, FileEntry>,
+) =>
   React.useMemo(() => {
     if (!node) return { files: [], hasStreamable: false };
+    const lookup = filesById ?? new Map(allFiles.map((file) => [file.id, file]));
     const filesInGroup: FileEntry[] = [];
     node.content.forEach((c) => {
-      const file = allFiles.find((file) => file.id === c.attrs.id);
+      const file = lookup.get(c.attrs.id);
       if (file) filesInGroup.push(file);
     });
     return { files: filesInGroup, hasStreamable: filesInGroup.some((file) => file.is_streamable) };
-  }, [node, allFiles]);
+  }, [node, allFiles, filesById]);
 
 // The actual archive size limit is 500 MB (524288000B)
 const ARCHIVE_SIZE_LIMIT_IN_BYTES = 500000000;
