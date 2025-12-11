@@ -295,6 +295,7 @@ $body-padding-desktop-center: max((100% - #{$body-max-width}) / 2, #{$body-paddi
 $button-hover-transform-length: spacer(1);
 $header-padding-y: spacer(6);
 
+// This mixin is temporary. It can be removed once all icon()-based SCSS styles have been fully migrated to Tailwind.
 @mixin icon($name: null) {
   content: "\00a0";
   display: inline-block;
@@ -310,6 +311,7 @@ $header-padding-y: spacer(6);
     @if str-index($name, "brand-") == 1 {
       $brand-name: str-slice($name, 7);
       mask-image: url("~images/brands/#{$brand-name}.svg");
+      mask-size: contain;
     } @else {
       mask-image: url("~images/icons/#{$name}.svg");
     }

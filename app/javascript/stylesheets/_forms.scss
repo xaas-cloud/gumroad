@@ -205,9 +205,11 @@ input[type="checkbox"]:not([role="switch"]) {
   border-radius: border-radius(2);
 
   &:checked::after {
-    display: block;
-    margin-inline: auto;
     @include icon("outline-check");
+    & {
+      display: block;
+      margin-inline: auto;
+    }
   }
 }
 

@@ -20,19 +20,17 @@ describe IconHelper do
 
   describe "#icon_yes" do
     it "renders the icon" do
-      output = icon_yes
-      expect(output).to include("mask-[url(~images/icons/solid-check-circle.svg)]")
-      expect(output).to include('aria-label="Yes"')
-      expect(output).to include('style="color: rgb(var(--success))"')
+      expect(icon_yes).to include("mask-[url(~images/icons/solid-check-circle.svg)]")
+      expect(icon_yes).to include('aria-label="Yes"')
+      expect(icon_yes).to include('style="color: rgb(var(--success))"')
     end
   end
 
   describe "#icon_no" do
     it "renders the icon" do
-      output = icon_no
-      expect(output).to include("mask-[url(~images/icons/x-circle-fill.svg)]")
-      expect(output).to include('aria-label="No"')
-      expect(output).to include('style="color: rgb(var(--danger))"')
+      expect(icon_no).to include("mask-[url(~images/icons/x-circle-fill.svg)]")
+      expect(icon_no).to include('aria-label="No"')
+      expect(icon_no).to include('style="color: rgb(var(--danger))"')
     end
   end
 end
