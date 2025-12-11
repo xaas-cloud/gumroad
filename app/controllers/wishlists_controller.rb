@@ -45,12 +45,13 @@ class WishlistsController < ApplicationController
     @title = wishlist.name
     @show_user_favicon = true
 
+    layout = params[:layout]
     props = WishlistPresenter.new(wishlist:).public_props(
       request:,
       pundit_user:,
       recommended_by: params[:recommended_by],
-      layout: params[:layout],
-      taxonomies_for_nav:,
+      layout:,
+      taxonomies_for_nav: layout == Product::Layout::DISCOVER ? taxonomies_for_nav : nil,
     )
 
     render inertia: "Wishlists/Show", props:
@@ -64,7 +65,7 @@ class WishlistsController < ApplicationController
       redirect_to wishlists_path, notice: "Wishlist updated!", status: :see_other
     else
       redirect_to wishlists_path,
-                  inertia: { errors: { base: [wishlist.errors.full_messages.first] } },
+                  inertia: { errors: { base: wishlist.errors.full_messages } },
                   status: :see_other
     end
   end
