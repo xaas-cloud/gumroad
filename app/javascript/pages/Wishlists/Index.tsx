@@ -28,7 +28,13 @@ type Props = {
   following_wishlists_enabled: boolean;
 };
 
-const WishlistsPage = ({ wishlists: preloadedWishlists, reviews_page_enabled, following_wishlists_enabled }: Props) => {
+export default function WishlistsPage() {
+  const {
+    wishlists: preloadedWishlists,
+    reviews_page_enabled,
+    following_wishlists_enabled,
+  } = cast<Props>(usePage().props);
+
   const [wishlists, setWishlists] = React.useState<Wishlist[]>(preloadedWishlists);
   const [deletingWishlist, setConfirmingDeleteWishlist] = React.useState<Wishlist | null>(null);
   const [isDeleting, setIsDeleting] = React.useState(false);
@@ -169,10 +175,4 @@ const WishlistsPage = ({ wishlists: preloadedWishlists, reviews_page_enabled, fo
       </section>
     </Layout>
   );
-};
-
-export default function WishlistsIndex() {
-  const props = cast<Props>(usePage().props);
-
-  return <WishlistsPage {...props} />;
 }

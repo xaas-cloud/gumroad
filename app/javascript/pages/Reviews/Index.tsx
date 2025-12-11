@@ -55,7 +55,68 @@ type Props = {
   following_wishlists_enabled: boolean;
 };
 
-const ReviewsPage = ({ reviews: initialReviews, purchases: initialPurchases, following_wishlists_enabled }: Props) => {
+const Row = ({ review, onChange }: { review: Review; onChange: (review: Review) => void }) => {
+  const [isEditing, setIsEditing] = React.useState(false);
+
+  return (
+    <TableRow>
+      <ProductIconCell
+        href={review.product.url}
+        thumbnail={review.product.thumbnail_url ?? null}
+        placeholder={<img src={cast(nativeTypeThumbnails(`./${review.product.native_type}.svg`))} />}
+      />
+      <TableCell className="break-words">
+        <div>
+          <a href={review.product.url} target="_blank" rel="noreferrer">
+            <h4>{review.product.name}</h4>
+          </a>
+          By{" "}
+          <a href={review.product.seller.url} target="_blank" rel="noreferrer">
+            {review.product.seller.name}
+          </a>
+        </div>
+      </TableCell>
+      <TableCell
+        className="whitespace-nowrap"
+        aria-label={`${review.rating} ${review.rating === 1 ? "star" : "stars"}`}
+      >
+        <RatingStars rating={review.rating} />
+      </TableCell>
+      <TableCell className="break-words">{review.message ? `"${review.message}"` : null}</TableCell>
+      <TableCell>
+        <div className="flex flex-wrap gap-3 lg:justify-end">
+          <Popover
+            open={isEditing}
+            onToggle={setIsEditing}
+            trigger={
+              <Button aria-label="Edit">
+                <Icon name="pencil" />
+              </Button>
+            }
+          >
+            <div className="stack">
+              <ReviewForm
+                permalink={review.product.permalink}
+                purchaseId={review.purchase_id}
+                purchaseEmailDigest={review.purchase_email_digest}
+                review={review}
+                onChange={(newReview) => onChange({ ...review, ...newReview })}
+              />
+            </div>
+          </Popover>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+};
+
+export default function ReviewsPage() {
+  const {
+    reviews: initialReviews,
+    purchases: initialPurchases,
+    following_wishlists_enabled,
+  } = cast<Props>(usePage().props);
+
   const discoverUrl = useDiscoverUrl();
 
   const [reviews, setReviews] = React.useState(initialReviews);
@@ -171,65 +232,4 @@ const ReviewsPage = ({ reviews: initialReviews, purchases: initialPurchases, fol
       </section>
     </Layout>
   );
-};
-
-const Row = ({ review, onChange }: { review: Review; onChange: (review: Review) => void }) => {
-  const [isEditing, setIsEditing] = React.useState(false);
-
-  return (
-    <TableRow>
-      <ProductIconCell
-        href={review.product.url}
-        thumbnail={review.product.thumbnail_url ?? null}
-        placeholder={<img src={cast(nativeTypeThumbnails(`./${review.product.native_type}.svg`))} />}
-      />
-      <TableCell className="break-words">
-        <div>
-          <a href={review.product.url} target="_blank" rel="noreferrer">
-            <h4>{review.product.name}</h4>
-          </a>
-          By{" "}
-          <a href={review.product.seller.url} target="_blank" rel="noreferrer">
-            {review.product.seller.name}
-          </a>
-        </div>
-      </TableCell>
-      <TableCell
-        className="whitespace-nowrap"
-        aria-label={`${review.rating} ${review.rating === 1 ? "star" : "stars"}`}
-      >
-        <RatingStars rating={review.rating} />
-      </TableCell>
-      <TableCell className="break-words">{review.message ? `"${review.message}"` : null}</TableCell>
-      <TableCell>
-        <div className="flex flex-wrap gap-3 lg:justify-end">
-          <Popover
-            open={isEditing}
-            onToggle={setIsEditing}
-            trigger={
-              <Button aria-label="Edit">
-                <Icon name="pencil" />
-              </Button>
-            }
-          >
-            <div className="stack">
-              <ReviewForm
-                permalink={review.product.permalink}
-                purchaseId={review.purchase_id}
-                purchaseEmailDigest={review.purchase_email_digest}
-                review={review}
-                onChange={(newReview) => onChange({ ...review, ...newReview })}
-              />
-            </div>
-          </Popover>
-        </div>
-      </TableCell>
-    </TableRow>
-  );
-};
-
-export default function ReviewsIndex() {
-  const props = cast<Props>(usePage().props);
-
-  return <ReviewsPage {...props} />;
 }

@@ -240,7 +240,11 @@ const extractParams = (rawParams: URLSearchParams): Params => ({
   showArchivedOnly: rawParams.get("show_archived_only") === "true",
 });
 
-const LibraryPage = ({ results, creators, bundles, reviews_page_enabled, following_wishlists_enabled }: Props) => {
+export default function LibraryPage() {
+  const { results, creators, bundles, reviews_page_enabled, following_wishlists_enabled } = cast<Props>(
+    usePage().props,
+  );
+
   const originalLocation = useOriginalLocation();
   const discoverUrl = useDiscoverUrl();
   const [state, dispatch] = React.useReducer(reducer, null, () => ({
@@ -564,10 +568,4 @@ const LibraryPage = ({ results, creators, bundles, reviews_page_enabled, followi
       </section>
     </Layout>
   );
-};
-
-export default function LibraryIndex() {
-  const props = cast<Props>(usePage().props);
-
-  return <LibraryPage {...props} />;
 }

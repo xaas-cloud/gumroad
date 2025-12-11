@@ -31,7 +31,9 @@ type Props = {
   reviews_page_enabled: boolean;
 };
 
-const WishlistsFollowingPage = ({ wishlists: preloadedWishlists, reviews_page_enabled }: Props) => {
+export default function WishlistsFollowingPage() {
+  const { wishlists: preloadedWishlists, reviews_page_enabled } = cast<Props>(usePage().props);
+
   const [wishlists, setWishlists] = React.useState<Wishlist[]>(preloadedWishlists);
 
   const destroy = async (wishlist: Wishlist) => {
@@ -109,10 +111,4 @@ const WishlistsFollowingPage = ({ wishlists: preloadedWishlists, reviews_page_en
       </section>
     </Layout>
   );
-};
-
-export default function WishlistsFollowingIndex() {
-  const props = cast<Props>(usePage().props);
-
-  return <WishlistsFollowingPage {...props} />;
 }
