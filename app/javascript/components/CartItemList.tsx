@@ -86,7 +86,7 @@ export const CartItemFooter = ({ className, children, ...props }: BaseProps) => 
 );
 
 export const CartItemActions = ({ className, children, ...props }: BaseProps) => (
-  <div className={classNames("mt-2 flex flex-wrap items-stretch gap-3", className)} {...props}>
+  <div className={classNames("flex flex-wrap items-stretch gap-3 pt-2", className)} {...props}>
     {children}
   </div>
 );
