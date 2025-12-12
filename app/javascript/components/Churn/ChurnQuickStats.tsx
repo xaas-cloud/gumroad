@@ -8,10 +8,16 @@ export type ChurnSummary = {
   churnRate: number;
   churnedCustomers: number;
   revenueLostCents: number;
+  previousPeriodChurnRate: number | null;
 };
 
 const ChurnQuickStats = ({ summary }: { summary: ChurnSummary }) => (
-  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <Stats title={<>Churn rate</>} value={`${summary.churnRate.toFixed(2)}%`} />
+    <Stats
+      title={<>Last period churn rate</>}
+      value={summary.previousPeriodChurnRate === null ? "—" : `${summary.previousPeriodChurnRate.toFixed(2)}%`}
+    />
     <Stats title={<>Churned users</>} value={summary.churnedCustomers.toLocaleString()} />
     <Stats
       title={<>Revenue lost</>}
@@ -20,7 +26,6 @@ const ChurnQuickStats = ({ summary }: { summary: ChurnSummary }) => (
         noCentsIfWhole: true,
       })}
     />
-    <Stats title={<>Churn rate</>} value={`${summary.churnRate.toFixed(2)}%`} />
   </div>
 );
 

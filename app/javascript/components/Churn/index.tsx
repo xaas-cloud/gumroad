@@ -33,11 +33,21 @@ type DateRangeState = {
   setTo: (to: Date) => void;
 };
 
+type PeriodMetadata = {
+  start_date: string;
+  end_date: string;
+  timezone: string;
+};
+
+type PeriodData = {
+  daily: Record<string, RawChurnBucket>;
+  monthly: Record<string, RawChurnBucket>;
+};
+
 export type ChurnPayload = {
   metadata: {
-    start_date: string;
-    end_date: string;
-    timezone: string;
+    current_period: PeriodMetadata;
+    previous_period: PeriodMetadata | null;
     products: {
       external_id: string;
       permalink: string;
@@ -45,8 +55,8 @@ export type ChurnPayload = {
     }[];
   };
   data: {
-    daily: Record<string, RawChurnBucket>;
-    monthly: Record<string, RawChurnBucket>;
+    current_period: PeriodData;
+    previous_period: PeriodData | null;
   };
 };
 
@@ -70,8 +80,8 @@ const useChurnRangeSync = (
   setIsReloading: (value: boolean) => void,
 ) => {
   const lastLoadedRange = React.useRef<{ from: string; to: string }>({
-    from: churn.metadata.start_date,
-    to: churn.metadata.end_date,
+    from: churn.metadata.current_period.start_date,
+    to: churn.metadata.current_period.end_date,
   });
   const inFlightRange = React.useRef<{ from: string; to: string } | null>(null);
   const toYMD = React.useCallback((date: Date) => lightFormat(date, "yyyy-MM-dd"), []);
@@ -79,8 +89,8 @@ const useChurnRangeSync = (
   // Keep the picker/URL in sync with the server-normalized range (e.g., clamped "All time"),
   // and clear in-flight tracking when server data matches what we asked for.
   React.useEffect(() => {
-    const serverFrom = parseISO(churn.metadata.start_date);
-    const serverTo = parseISO(churn.metadata.end_date);
+    const serverFrom = parseISO(churn.metadata.current_period.start_date);
+    const serverTo = parseISO(churn.metadata.current_period.end_date);
     if (isNaN(serverFrom.getTime()) || isNaN(serverTo.getTime())) return;
 
     const pickerMatchesServer =
@@ -100,7 +110,7 @@ const useChurnRangeSync = (
     ) {
       inFlightRange.current = null;
     }
-  }, [churn.metadata.start_date, churn.metadata.end_date, dateRange, toYMD]);
+  }, [churn.metadata.current_period.start_date, churn.metadata.current_period.end_date, dateRange, toYMD]);
 
   // Trigger reload when picker changes to a range we haven't requested yet.
   React.useEffect(() => {
@@ -163,8 +173,24 @@ const Churn = ({ churn }: ChurnProps) => {
 
   useChurnRangeSync(churn, dateRange, setIsReloading);
 
-  const dailyBuckets = React.useMemo(() => buildBuckets(churn.data.daily), [churn.data.daily]);
-  const monthlyBuckets = React.useMemo(() => buildBuckets(churn.data.monthly), [churn.data.monthly]);
+  const currentDailyBuckets = React.useMemo(
+    () => buildBuckets(churn.data.current_period.daily),
+    [churn.data.current_period.daily],
+  );
+  const currentMonthlyBuckets = React.useMemo(
+    () => buildBuckets(churn.data.current_period.monthly),
+    [churn.data.current_period.monthly],
+  );
+
+  const previousDailyBuckets = React.useMemo(() => {
+    if (!churn.data.previous_period?.daily) return [];
+    return buildBuckets(churn.data.previous_period.daily);
+  }, [churn.data.previous_period]);
+
+  const previousMonthlyBuckets = React.useMemo(() => {
+    if (!churn.data.previous_period?.monthly) return [];
+    return buildBuckets(churn.data.previous_period.monthly);
+  }, [churn.data.previous_period]);
 
   const aggregateBucket = React.useCallback(
     (bucket: RawChurnBucket) => {
@@ -199,37 +225,42 @@ const Churn = ({ churn }: ChurnProps) => {
     [selectedPermalinks, allPermalinks],
   );
 
+  const buildChartData = React.useCallback(
+    (buckets: [string, RawChurnBucket][]) =>
+      buckets.map(([date, bucket], index, source) => {
+        const metrics = aggregateBucket(bucket);
+        const parsedDate = parseISO(date);
+        const title = aggregateBy === "monthly" ? format(parsedDate, "MMMM yyyy") : format(parsedDate, "EEEE, MMM d");
+        const label =
+          index === 0 || index === source.length - 1
+            ? format(parsedDate, aggregateBy === "monthly" ? "MMM" : "MMM d")
+            : "";
+
+        return {
+          date,
+          label,
+          title,
+          churnRate: metrics.churnRate,
+          churnedCustomers: metrics.churnedCustomers,
+          revenueLostCents: metrics.revenueLostCents,
+          base: metrics.base,
+        };
+      }),
+    [aggregateBy, aggregateBucket],
+  );
+
   const chartData = React.useMemo<ChartPointWithBase[]>(() => {
-    const buckets = aggregateBy === "daily" ? dailyBuckets : monthlyBuckets;
+    const buckets = aggregateBy === "daily" ? currentDailyBuckets : currentMonthlyBuckets;
+    return buildChartData(buckets);
+  }, [aggregateBy, buildChartData, currentDailyBuckets, currentMonthlyBuckets]);
 
-    return buckets.map(([date, bucket], index) => {
-      const metrics = aggregateBucket(bucket);
-      const parsedDate = parseISO(date);
-      const title = aggregateBy === "monthly" ? format(parsedDate, "MMMM yyyy") : format(parsedDate, "EEEE, MMM d");
-      const label =
-        index === 0 || index === buckets.length - 1
-          ? format(parsedDate, aggregateBy === "monthly" ? "MMM" : "MMM d")
-          : "";
-
-      return {
-        date,
-        label,
-        title,
-        churnRate: metrics.churnRate,
-        churnedCustomers: metrics.churnedCustomers,
-        revenueLostCents: metrics.revenueLostCents,
-        base: metrics.base,
-      };
-    });
-  }, [aggregateBy, dailyBuckets, monthlyBuckets, aggregateBucket]);
-
-  const summary = React.useMemo<ChurnSummary>(() => {
-    if (chartData.length === 0) {
-      return { churnRate: 0, churnedCustomers: 0, revenueLostCents: 0 };
+  const computeSummary = React.useCallback((buckets: ChartPointWithBase[]) => {
+    if (buckets.length === 0) {
+      return { churnRate: 0, churnedCustomers: 0, revenueLostCents: 0, base: 0 };
     }
 
-    const totals = chartData.reduce(
-      (acc, point) => {
+    const totals = buckets.reduce(
+      (acc: { churnedCustomers: number; revenueLostCents: number; weightedRate: number; base: number }, point) => {
         acc.churnedCustomers += point.churnedCustomers;
         acc.revenueLostCents += point.revenueLostCents;
         acc.weightedRate += point.churnRate * (point.base || 0);
@@ -239,14 +270,28 @@ const Churn = ({ churn }: ChurnProps) => {
       { churnedCustomers: 0, revenueLostCents: 0, weightedRate: 0, base: 0 },
     );
 
-    const churnRate = totals.base > 0 ? totals.weightedRate / totals.base : 0;
-
     return {
-      churnRate,
+      churnRate: totals.base > 0 ? totals.weightedRate / totals.base : 0,
       churnedCustomers: totals.churnedCustomers,
       revenueLostCents: totals.revenueLostCents,
+      base: totals.base,
     };
-  }, [chartData]);
+  }, []);
+
+  const summary = React.useMemo<ChurnSummary>(() => {
+    const currentSummary = computeSummary(chartData);
+
+    const previousBuckets = aggregateBy === "daily" ? previousDailyBuckets : previousMonthlyBuckets;
+    const previousChartData = buildChartData(previousBuckets);
+    const previousSummary = previousBuckets.length > 0 ? computeSummary(previousChartData) : null;
+
+    return {
+      churnRate: currentSummary.churnRate,
+      churnedCustomers: currentSummary.churnedCustomers,
+      revenueLostCents: currentSummary.revenueLostCents,
+      previousPeriodChurnRate: previousSummary && previousSummary.base > 0 ? previousSummary.churnRate : null,
+    };
+  }, [aggregateBy, buildChartData, chartData, computeSummary, previousDailyBuckets, previousMonthlyBuckets]);
 
   const hasProducts = churn.metadata.products.length > 0;
 
