@@ -16,8 +16,8 @@ class CreatorAnalytics::Churn
   # Sample output:
   # {
   #   metadata: {
-  #     current_period: { start_date: "2025-10-16", end_date: "2025-11-16", timezone: "+00:00" },
-  #     previous_period: { start_date: "2025-09-16", end_date: "2025-10-15", timezone: "+00:00" },
+  #     current_period: { start_date: "2025-10-16", end_date: "2025-11-16" },
+  #     previous_period: { start_date: "2025-09-16", end_date: "2025-10-15" },
   #     products: [
   #       { external_id: "FxlavpQXIwDwiwB3Q4nWrw==", permalink: "gm", name: "Enterprise Membership" },
   #       { external_id: "euRm4g7swijZgqyrIhRfiQ==", permalink: "vd", name: "Premium Membership" },
@@ -181,8 +181,7 @@ class CreatorAnalytics::Churn
     def period_metadata(date_window)
       {
         start_date: date_window.start_date.to_s,
-        end_date: date_window.end_date.to_s,
-        timezone: date_window.timezone_offset
+        end_date: date_window.end_date.to_s
       }
     end
 end

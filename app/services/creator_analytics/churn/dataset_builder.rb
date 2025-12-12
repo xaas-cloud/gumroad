@@ -33,7 +33,6 @@ class CreatorAnalytics::Churn::DatasetBuilder
       {
         start_date: date_window.start_date.to_s,
         end_date: date_window.end_date.to_s,
-        timezone: date_window.timezone_offset,
         products: product_infos.values.map do |info|
           {
             external_id: info[:external_id],

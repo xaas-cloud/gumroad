@@ -36,7 +36,6 @@ type DateRangeState = {
 type PeriodMetadata = {
   start_date: string;
   end_date: string;
-  timezone: string;
 };
 
 type PeriodData = {
