@@ -485,7 +485,9 @@ const CartItemComponent = ({
                         <Thumbnail url={item.product.thumbnail_url} nativeType={item.product.native_type} />
                       </a>
                     </CartItemMedia>
-                    <CartItemQuantity>{item.quantity}</CartItemQuantity>
+                    <CartItemQuantity aria-label="Bundle Item Quantity">
+                      {bundleProduct.quantity || item.quantity}
+                    </CartItemQuantity>
                   </div>
                   <CartItemMain>
                     <CartItemTitle>{bundleProduct.name}</CartItemTitle>
@@ -510,7 +512,7 @@ const CartItemComponent = ({
             <Thumbnail url={item.product.thumbnail_url} nativeType={item.product.native_type} />
           </a>
         </CartItemMedia>
-        <CartItemQuantity>{item.quantity}</CartItemQuantity>
+        <CartItemQuantity aria-label="Quantity">{item.quantity}</CartItemQuantity>
       </div>
 
       <CartItemMain>

@@ -46,7 +46,6 @@ export const CartItemMedia = ({ className, children, ...props }: BaseProps) => (
 
 export const CartItemQuantity = ({ className, children, ...props }: BaseProps) => (
   <div
-    aria-label="Quantity"
     className={classNames(
       "absolute top-0 right-0 flex h-5 w-5 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-primary-foreground bg-primary text-xs font-normal text-primary-foreground sm:h-6 sm:w-6",
       className,

@@ -13,6 +13,9 @@ describe "Checkout bundles", :js, type: :system do
   let!(:versioned_bundle_product) { create(:bundle_product, bundle:, product: versioned_product, variant: versioned_product.alive_variants.first, quantity: 3) }
 
   before do
+    # Stub Braintree client token generation to avoid authentication errors in tests
+    allow(Braintree::ClientToken).to receive(:generate).and_return("fake_client_token")
+
     product.product_files << create(:readable_document, pdf_stamp_enabled: true)
   end
 
@@ -22,12 +25,12 @@ describe "Checkout bundles", :js, type: :system do
 
     within_cart_item "This bundle contains..." do
       within_cart_item "Product" do
-        within("[aria-label='Quantity']") do
+        within("[aria-label='Bundle Item Quantity']") do
           expect(page).to have_text("1")
         end
       end
       within_cart_item "Versioned product" do
-        within("[aria-label='Quantity']") do
+        within("[aria-label='Bundle Item Quantity']") do
           expect(page).to have_text("3")
         end
         expect(page).to have_text("Version: Untitled 1")
