@@ -158,7 +158,7 @@ describe("ProductShowScenario", type: :system, js: true) do
       within "[role='listitem']" do
         expect(page).to have_text(@membership.name)
         expect(page).to have_text("Tier: Second Tier")
-        expect(page).to have_text("Membership: Every 6 months")
+        expect(page).to have_text("Every 6 months")
       end
       expect(page).to have_field("Email address", with: "gumhead@gumroad.com")
       expect(page).to have_field("your nickname", with: "moneybags")

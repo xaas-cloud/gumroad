@@ -90,7 +90,7 @@ describe "Wishlist show page", :js, type: :system do
 
     within_cart_item(membership_product.name) do
       expect(page).to have_text("Tier: First Tier")
-      expect(page).to have_text("Membership: Yearly")
+      expect(page).to have_text("Yearly")
     end
 
     page.go_back
@@ -126,7 +126,7 @@ describe "Wishlist show page", :js, type: :system do
 
     within_cart_item(membership_product.name) do
       expect(page).to have_text("Tier: First Tier")
-      expect(page).to have_text("Membership: Yearly")
+      expect(page).to have_text("Yearly")
     end
 
     within_cart_item(rental_product.name) do

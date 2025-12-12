@@ -52,7 +52,7 @@ module CheckoutHelpers
         expect(page).to have_text(quantity.to_s)
       end
       expect(page).to have_text("#{variant_label(product)}: #{option == "Untitled" ? product.name : option}") if option.present?
-      expect(page).to have_text("Membership: #{recurrence}") if recurrence.present?
+      expect(page).to have_text(recurrence) if recurrence.present?
       expect(page).to have_text("one #{product.free_trial_details[:duration][:unit]} free") if product.free_trial_enabled
     end
     expect(page).to have_selector("[aria-label='Discount code']", text: offer_code.code) if offer_code.present? && ((offer_code.amount_cents || 0) > 0 || (offer_code.amount_percentage || 0) > 0)
