@@ -399,4 +399,3 @@ describe CreatorAnalytics::Churn::DatasetBuilder do
     end
   end
 end
-

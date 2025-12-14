@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
-# Builds per-bucket (daily or monthly, by product) churn data plus period summaries.
-# Each bucket includes subscriber_base (active at bucket start + new subscriptions during the bucket) so consumers
-# can re-aggregate for arbitrary product selections without re-inferring denominators.
+# Assembles churn metrics from raw ES buckets: daily buckets, derived monthly rollups,
+# and period summaries keyed by product. Subscriber bases are the period base
+# (active-at-start + new) per bucket so the UI can re-aggregate by product without
+# recomputing denominators. Relies on caller to provide ES-extracted counts.
 class CreatorAnalytics::Churn::DatasetBuilder
   attr_reader :product_scope, :date_window, :churn_events, :new_subscriptions, :initial_active_counts
 
@@ -191,7 +192,7 @@ class CreatorAnalytics::Churn::DatasetBuilder
         new_count = new_by_product[product_id]
         starting_active = initial_active_counts.fetch(product_id, 0)
         denominator = starting_active + new_count
-        churn_rate = denominator.positive? ? ((churned.to_f / denominator) * 100).round(2) : 0.0
+        churn_rate = compute_rate(churned, denominator)
 
         result[info[:permalink]] = {
           churn_rate: churn_rate,

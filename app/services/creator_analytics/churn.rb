@@ -13,87 +13,10 @@ class CreatorAnalytics::Churn
     product_scope.subscription_products
   end
 
-  # Sample output:
-  # {
-  #   metadata: {
-  #     current_period: { start_date: "2025-10-16", end_date: "2025-11-16" },
-  #     previous_period: { start_date: "2025-09-16", end_date: "2025-10-15" },
-  #     products: [
-  #       { external_id: "FxlavpQXIwDwiwB3Q4nWrw==", permalink: "gm", name: "Enterprise Membership" },
-  #       { external_id: "euRm4g7swijZgqyrIhRfiQ==", permalink: "vd", name: "Premium Membership" },
-  #       { external_id: "r4pQ8_yK3PeMDO09QAVajQ==", permalink: "tmt", name: "Beta Membership" },
-  #       { external_id: "FeGnju-VsIHoeR_1dTrxAg==", permalink: "zf", name: "Alpha Membership" }
-  #     ]
-  #   },
-  #   data: {
-  #     current_period: {
-  #       daily: {
-  #         "2025-10-16" => {
-  #           by_product: {
-  #             "gm" => { churn_rate: 0.0, churned_customers_count: 0, revenue_lost_cents: 0 },
-  #             "vd" => { churn_rate: 0.21, churned_customers_count: 1, revenue_lost_cents: 19900 },
-  #             "tmt" => { churn_rate: 0.22, churned_customers_count: 1, revenue_lost_cents: 1500 },
-  #             "zf" => { churn_rate: 0.52, churned_customers_count: 4, revenue_lost_cents: 4000 }
-  #           },
-  #           total: { churn_rate: 0.29, churned_customers_count: 6, revenue_lost_cents: 25400 }
-  #         }
-  #       },
-  #       monthly: {
-  #         "2025-10-01" => {
-  #           by_product: {
-  #             "gm" => { churn_rate: 0.79, churned_customers_count: 3, revenue_lost_cents: 750000 },
-  #             "vd" => { churn_rate: 1.24, churned_customers_count: 6, revenue_lost_cents: 119400 },
-  #             "tmt" => { churn_rate: 3.13, churned_customers_count: 15, revenue_lost_cents: 22500 },
-  #             "zf" => { churn_rate: 3.03, churned_customers_count: 24, revenue_lost_cents: 24000 }
-  #           },
-  #           total: { churn_rate: 2.25, churned_customers_count: 48, revenue_lost_cents: 915900 }
-  #         }
-  #       }
-  #       summary: {
-  #         total: { churn_rate: 2.25, churned_customers_count: 48, revenue_lost_cents: 915900, subscriber_base: 2135 },
-  #         by_product: {
-  #           "gm" => { churn_rate: 0.79, churned_customers_count: 3, revenue_lost_cents: 750000, subscriber_base: 380 },
-  #           "vd" => { churn_rate: 1.24, churned_customers_count: 6, revenue_lost_cents: 119400, subscriber_base: 485 },
-  #           "tmt" => { churn_rate: 3.13, churned_customers_count: 15, revenue_lost_cents: 22500, subscriber_base: 480 },
-  #           "zf" => { churn_rate: 3.03, churned_customers_count: 24, revenue_lost_cents: 24000, subscriber_base: 790 }
-  #         }
-  #       }
-  #     },
-  #     previous_period: {
-  #       daily: {
-  #         "2025-09-16" => {
-  #           by_product: {
-  #             "gm" => { churn_rate: 0.1, churned_customers_count: 1, revenue_lost_cents: 1000 },
-  #             "vd" => { churn_rate: 0.21, churned_customers_count: 1, revenue_lost_cents: 19900 },
-  #             "tmt" => { churn_rate: 0.22, churned_customers_count: 1, revenue_lost_cents: 1500 },
-  #             "zf" => { churn_rate: 0.52, churned_customers_count: 4, revenue_lost_cents: 4000 }
-  #           },
-  #           total: { churn_rate: 0.29, churned_customers_count: 7, revenue_lost_cents: 26400 }
-  #         }
-  #       },
-  #       monthly: {
-  #         "2025-09-01" => {
-  #           by_product: {
-  #             "gm" => { churn_rate: 0.65, churned_customers_count: 2, revenue_lost_cents: 500000 },
-  #             "vd" => { churn_rate: 1.10, churned_customers_count: 5, revenue_lost_cents: 95000 },
-  #             "tmt" => { churn_rate: 2.95, churned_customers_count: 14, revenue_lost_cents: 21000 },
-  #             "zf" => { churn_rate: 2.80, churned_customers_count: 22, revenue_lost_cents: 22000 }
-  #           },
-  #           total: { churn_rate: 2.05, churned_customers_count: 43, revenue_lost_cents: 833000 }
-  #         }
-  #       }
-  #       summary: {
-  #         total: { churn_rate: 2.05, churned_customers_count: 43, revenue_lost_cents: 833000, subscriber_base: 2095 },
-  #         by_product: {
-  #           "gm" => { churn_rate: 0.65, churned_customers_count: 2, revenue_lost_cents: 500000, subscriber_base: 310 },
-  #           "vd" => { churn_rate: 1.10, churned_customers_count: 5, revenue_lost_cents: 95000, subscriber_base: 455 },
-  #           "tmt" => { churn_rate: 2.95, churned_customers_count: 14, revenue_lost_cents: 21000, subscriber_base: 475 },
-  #           "zf" => { churn_rate: 2.80, churned_customers_count: 22, revenue_lost_cents: 22000, subscriber_base: 855 }
-  #         }
-  #       }
-  #     }
-  #   }
-  # }
+# Coordinator for churn analytics: scopes to subscription products, fetches churn/new/active
+# series via Elasticsearch, builds daily/monthly/summary payloads, and caches older ranges
+# like other sales analytics. Uses Stripe's formula (cancellations ÷ (active-at-start + new))
+# and refreshes the most recent two days instead of caching them.
   def generate_data(start_date:, end_date:)
     current_date_window = CreatorAnalytics::Churn::DateWindow.new(
       seller:,

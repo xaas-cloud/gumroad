@@ -19,8 +19,9 @@ describe CreatorAnalytics::Churn::ElasticsearchFetcher do
   end
   let(:service) { described_class.new(seller:, products:, date_window:) }
 
-  def create_subscription_purchase(product:, created_at:, subscription_deactivated_at: nil, price_cents: 100)
-    subscription = create(:subscription, link: product, user: seller, deactivated_at: subscription_deactivated_at)
+  def create_subscription_purchase(product:, created_at:, subscription_deactivated_at: nil, price_cents: 100, recurrence: BasePrice::Recurrence::MONTHLY)
+    price = create(:price, link: product, price_cents:, recurrence:)
+    subscription = create(:subscription, link: product, user: seller, deactivated_at: subscription_deactivated_at, price:)
     purchase = create(
       :purchase,
       link: product,
@@ -53,7 +54,8 @@ describe CreatorAnalytics::Churn::ElasticsearchFetcher do
           product: product1,
           created_at: Time.utc(2020, 1, 10),
           subscription_deactivated_at: Time.utc(2020, 1, 15, 14),
-          price_cents: 200
+          price_cents: 1200,
+          recurrence: BasePrice::Recurrence::YEARLY
         )
         create_subscription_purchase(
           product: product1,
@@ -84,7 +86,7 @@ describe CreatorAnalytics::Churn::ElasticsearchFetcher do
 
         expect(result[[product1.id, Date.new(2020, 1, 15)]]).to include(
           churned_count: 2,
-          revenue_lost_cents: 300
+          revenue_lost_cents: 200
         )
         expect(result[[product1.id, Date.new(2020, 1, 16)]]).to include(
           churned_count: 1,

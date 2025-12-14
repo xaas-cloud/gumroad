@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
-# Executes Elasticsearch queries to retrieve churn-related events, new
-# subscriptions, and active baselines for each product/date bucket.
-#
+# Runs the ES-facing layer for churn: builds scoped queries and pagination to fetch
+# cancellations (with recurring revenue), new subscriptions, and active baselines.
+# Assumes subscription activity lives in the purchases index; relies on
+# Purchase::CHARGED_SALES_SEARCH_OPTIONS and the original-subscription flag to filter scope.
 class CreatorAnalytics::Churn::ElasticsearchFetcher
   attr_reader :seller, :products, :date_window
 
@@ -31,7 +32,7 @@ class CreatorAnalytics::Churn::ElasticsearchFetcher
     sources = composite_sources(field: "subscription_deactivated_at")
     aggs = {
       churned_customers: { cardinality: { field: "subscription_id" } },
-      revenue_lost_cents: { sum: { field: "price_cents" } }
+      revenue_lost_cents: { sum: { field: "monthly_recurring_revenue" } }
     }
     buckets = paginate(query:, sources:, aggs:)
 
