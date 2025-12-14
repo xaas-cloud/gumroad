@@ -3,6 +3,8 @@
 class ChurnController < Sellers::BaseController
   layout "inertia"
 
+  before_action :check_payment_details
+
   def show
     authorize :churn
 
