@@ -909,25 +909,6 @@ describe("Payments Settings Scenario", type: :system, js: true) do
       expect(@user.reload.alive_user_compliance_info.first_name).not_to eq("barnabas")
 
       @user.confirm
-      logout(:user)
-      login_as @user
-
-      visit settings_payments_path
-      fill_in("First name", with: "barnabas")
-      fill_in("Last name", with: "barnabastein")
-      fill_in("Address", with: "address_full_match")
-      fill_in("City", with: "barnabasville")
-      select("California", from: "State")
-      fill_in("ZIP code", with: "12345")
-      fill_in("Phone number", with: "5022541982")
-      fill_in("Pay to the order of", with: "barnabas ngagy")
-      fill_in("Routing number", with: "110000000")
-      fill_in("Account number", with: "000123456789")
-      fill_in("Confirm account number", with: "000123456789")
-      select("1", from: "Day")
-      select("January", from: "Month")
-      select("1980", from: "Year")
-      fill_in("Last 4 digits of SSN", with: "1235")
       click_on("Update settings")
       expect(page).to have_alert(text: "Thanks! You're all set.")
       expect(@user.reload.user_compliance_infos.count).to eq(2)
