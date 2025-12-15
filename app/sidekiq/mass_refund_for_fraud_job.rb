@@ -28,4 +28,3 @@ class MassRefundForFraudJob
     Rails.logger.info("Mass fraud refund completed for product #{product_id}: #{results[:success]} succeeded, #{results[:failed]} failed")
   end
 end
-

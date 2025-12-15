@@ -51,4 +51,3 @@ describe MassRefundForFraudJob do
     end
   end
 end
-
