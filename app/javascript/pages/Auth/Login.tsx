@@ -21,7 +21,7 @@ type PageProps = {
   title: string;
 };
 
-function Login() {
+function LoginPage() {
   const { auth_props, flash } = usePage<PageProps>().props;
   const { email: initialEmail, application_name, recaptcha_site_key } = auth_props;
 
@@ -117,5 +117,5 @@ function Login() {
   );
 }
 
-Login.disableLayout = true;
-export default Login;
+LoginPage.disableLayout = true;
+export default LoginPage;

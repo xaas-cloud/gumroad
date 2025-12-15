@@ -29,7 +29,7 @@ type PageProps = {
   title: string;
 };
 
-function Signup() {
+function SignupPage() {
   const { auth_props, flash } = usePage<PageProps>().props;
   const { email: initialEmail, application_name, recaptcha_site_key, referrer, stats } = auth_props;
   const { number_of_creators, total_made } = stats;
@@ -123,5 +123,5 @@ function Signup() {
   );
 }
 
-Signup.disableLayout = true;
-export default Signup;
+SignupPage.disableLayout = true;
+export default SignupPage;
