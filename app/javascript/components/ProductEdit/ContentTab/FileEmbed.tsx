@@ -170,8 +170,7 @@ const FileEmbedNodeView = ({ node, editor, getPos, updateAttributes }: NodeViewP
   if (!fileExists) return;
   const updateFile = (data: Partial<FileEntry>) =>
     updateProduct(() => {
-      // file is already a reference from product.files via filesById
-      if (file) Object.assign(file, data);
+      Object.assign(file, data);
     });
   const isComplete = !(
     (file.status.type === "unsaved" && file.status.uploadStatus.type === "uploading") ||
