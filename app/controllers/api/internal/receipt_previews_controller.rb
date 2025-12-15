@@ -11,10 +11,10 @@ class Api::Internal::ReceiptPreviewsController < Api::Internal::BaseController
 
     @product.custom_receipt_text = params[:custom_receipt_text]
     @product.custom_view_content_button_text = params[:custom_view_content_button_text]
-    preview_purchase = build_preview_purchase
+    purchase_preview = build_purchase_preview
 
-    unless preview_purchase.valid?
-      error_message = preview_purchase.errors.full_messages.join(", ")
+    unless purchase_preview.valid?
+      error_message = purchase_preview.errors.full_messages.join(", ")
       return render html: "Error: #{error_message}", status: :unprocessable_entity
     end
 
@@ -22,8 +22,8 @@ class Api::Internal::ReceiptPreviewsController < Api::Internal::BaseController
       template: "customer_mailer/receipt",
       layout: "email",
       assigns: {
-        chargeable: preview_purchase,
-        receipt_presenter: ReceiptPresenter.new(preview_purchase, for_email: false)
+        chargeable: purchase_preview,
+        receipt_presenter: ReceiptPresenter.new(purchase_preview, for_email: false)
       }
     )
 
@@ -33,10 +33,10 @@ class Api::Internal::ReceiptPreviewsController < Api::Internal::BaseController
   end
 
   private
-    def build_preview_purchase
+    def build_purchase_preview
       price_cents = @product.price_cents || 0
 
-      preview_purchase = PreviewPurchase.new(
+      purchase_preview = PurchasePreview.new(
         link: @product,
         seller: @product.user,
         created_at: Time.current,
@@ -54,10 +54,10 @@ class Api::Internal::ReceiptPreviewsController < Api::Internal::BaseController
         external_id_for_invoice: "preview_order_id"
       )
 
-      preview_purchase.unbundled_purchases = [preview_purchase]
-      preview_purchase.successful_purchases = [preview_purchase]
-      preview_purchase.orderable = preview_purchase
+      purchase_preview.unbundled_purchases = [purchase_preview]
+      purchase_preview.successful_purchases = [purchase_preview]
+      purchase_preview.orderable = purchase_preview
 
-      preview_purchase
+      purchase_preview
     end
 end

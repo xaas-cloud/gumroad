@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class PreviewPurchase
+class PurchasePreview
   include ActiveModel::Model
 
   attr_accessor :link, :seller, :created_at, :quantity, :custom_fields,
