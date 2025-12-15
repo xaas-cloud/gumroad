@@ -6,10 +6,6 @@ class CollaboratorsController < Sellers::BaseController
 
   layout "inertia"
 
-  FLASH_CHANGES_SAVED = "Changes saved!"
-  FLASH_COLLABORATOR_ADDED = "Collaborator added!"
-  FLASH_COLLABORATOR_REMOVED = "Collaborator removed!"
-
   def index
     authorize Collaborator
 
@@ -32,7 +28,7 @@ class CollaboratorsController < Sellers::BaseController
     response = Collaborator::CreateService.new(seller: current_seller, params: collaborator_params).process
 
     if response[:success]
-      redirect_to collaborators_path, notice: FLASH_COLLABORATOR_ADDED, status: :see_other
+      redirect_to collaborators_path, notice: "Collaborator added!", status: :see_other
     else
       redirect_to new_collaborator_path, inertia: { errors: { base: [response[:message]] } }, alert: response[:message]
     end
@@ -49,7 +45,7 @@ class CollaboratorsController < Sellers::BaseController
     response = Collaborator::UpdateService.new(seller: current_seller, collaborator_id: params[:id], params: collaborator_params).process
 
     if response[:success]
-      redirect_to collaborators_path, notice: FLASH_CHANGES_SAVED, status: :see_other
+      redirect_to collaborators_path, notice: "Changes saved!", status: :see_other
     else
       redirect_to edit_collaborator_path(@collaborator.external_id), inertia: { errors: { base: [response[:message]] } }, alert: response[:message]
     end
@@ -64,7 +60,7 @@ class CollaboratorsController < Sellers::BaseController
       AffiliateMailer.collaboration_ended_by_affiliate_user(@collaborator.id).deliver_later
     end
 
-    redirect_to collaborators_path, notice: FLASH_COLLABORATOR_REMOVED, status: :see_other
+    redirect_to collaborators_path, notice: "Collaborator removed!", status: :see_other
   end
 
   private

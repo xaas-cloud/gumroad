@@ -198,17 +198,23 @@ const CollaboratorForm = ({ formData }: Props) => {
 
     if (isEditing) {
       router.patch(Routes.collaborator_path(formData.id), data, {
+        onSuccess: () => {
+          showAlert("Changes saved!", "success");
+        },
         onError: (errors) => {
-          setIsSaving(false);
           showAlert(errors.base?.[0] || "Failed to update collaborator", "error");
         },
+        onFinish: () => setIsSaving(false),
       });
     } else {
       router.post(Routes.collaborators_path(), data, {
+        onSuccess: () => {
+          showAlert("Collaborator added!", "success");
+        },
         onError: (errors) => {
-          setIsSaving(false);
           showAlert(errors.base?.[0] || "Failed to add collaborator", "error");
         },
+        onFinish: () => setIsSaving(false),
       });
     }
   };

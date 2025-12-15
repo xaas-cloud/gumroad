@@ -18,7 +18,8 @@ describe Collaborators::IncomingsController, inertia: true do
       get :index
       expect(response).to be_successful
       expect(inertia.component).to eq("Collaborators/Incomings/Index")
-      expect(inertia.props).to include(:collaborators, :collaborators_disabled_reason)
+      expect(inertia.props[:collaborators]).to eq([])
+      expect(inertia.props[:collaborators_disabled_reason]).to be_nil
     end
 
     context "with incoming collaborators" do
@@ -28,7 +29,13 @@ describe Collaborators::IncomingsController, inertia: true do
       it "includes the incoming collaborator in props" do
         get :index
         expect(response).to be_successful
-        expect(inertia.props[:collaborators]).to be_an(Array)
+
+        expected_collaborator = inertia.props[:collaborators].first
+        expect(expected_collaborator[:id]).to eq(collaborator.external_id)
+        expect(expected_collaborator[:seller_email]).to eq(other_seller.email)
+        expect(expected_collaborator[:seller_name]).to eq(other_seller.display_name(prefer_email_over_default_username: true))
+        expect(expected_collaborator[:apply_to_all_products]).to eq(collaborator.apply_to_all_products)
+        expect(expected_collaborator[:affiliate_percentage]).to eq(collaborator.affiliate_percentage)
       end
     end
   end
