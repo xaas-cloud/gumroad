@@ -14,6 +14,6 @@ function EmailsNew() {
   return <EmailForm context={context} installment={installment} />;
 }
 
-EmailsNew.layout = (page: React.ReactNode) => <EmailsLayout selectedTab="drafts">{page}</EmailsLayout>;
+EmailsNew.layout = (page: React.ReactNode) => <EmailsLayout selectedTab="drafts" hideNewButton>{page}</EmailsLayout>;
 
 export default EmailsNew;
