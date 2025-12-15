@@ -252,19 +252,16 @@ const ProductEditPage = (props: Props) => {
 
 const ProductEditRouter = async (global: GlobalProps) => {
   const { router, context } = await buildStaticRouter(global, routes);
-  const component = (props: Props) => {
-    const contextValue = createContextValue(props);
-    return (
-      <ProductEditContext.Provider
-        value={{
-          ...contextValue,
-          setCurrencyType: (_currency) => {}, // no-op
-        }}
-      >
-        <StaticRouterProvider router={router} context={context} nonce={global.csp_nonce} />
-      </ProductEditContext.Provider>
-    );
-  };
+  const component = (props: Props) => (
+    <ProductEditContext.Provider
+      value={{
+        ...createContextValue(props),
+        setCurrencyType: (_currency) => {}, // no-op
+      }}
+    >
+      <StaticRouterProvider router={router} context={context} nonce={global.csp_nonce} />
+    </ProductEditContext.Provider>
+  );
   component.displayName = "ProductEditRouter";
   return component;
 };
