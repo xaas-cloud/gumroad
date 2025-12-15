@@ -3,8 +3,8 @@ import { Content, Editor, JSONContent } from "@tiptap/core";
 import cx from "classnames";
 import { addHours, format, startOfDay, startOfHour } from "date-fns";
 import React from "react";
-import { Link, Location, useLoaderData, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { cast } from "ts-safe-cast";
+import { router as inertiaRouter, Link } from "@inertiajs/react";
 
 import {
   AudienceType,
@@ -175,12 +175,14 @@ const toISODateString = (date: Date | string | undefined | null) => (date ? form
 
 const DEFAULT_SECONDS_LEFT_TO_PUBLISH = 5;
 
-export const EmailForm = () => {
+type EmailFormProps = {
+  context: InstallmentFormContext;
+  installment: Installment | null;
+};
+
+export const EmailForm = ({ context, installment }: EmailFormProps) => {
   const uid = React.useId();
   const currentSeller = assertDefined(useCurrentSeller());
-  const { context, installment } = cast<{ context: InstallmentFormContext; installment: Installment | null }>(
-    useLoaderData(),
-  );
   const hasAudience = context.audience_types.length > 0;
   const [audienceType, setAudienceType] = React.useState<AudienceType>(
     installment ? getAudienceType(installment.installment_type) : "everyone",
@@ -199,8 +201,9 @@ export const EmailForm = () => {
     loading: boolean;
   }>({ count: 0, total: 0, loading: false });
   const activeRecipientCountRequest = React.useRef<{ cancel: () => void } | null>(null);
-  const [searchParams] = useSearchParams();
-  const routerLocation = cast<Location<{ from?: string | undefined } | null>>(useLocation());
+  // Use browser APIs for URL params
+  const searchParams = new URLSearchParams(window.location.search);
+  const currentPathname = window.location.pathname;
   const [bought, setBought] = React.useState<string[]>(() => {
     if (!installment) return [];
     return installment.installment_type === "variant" && installment.variant_external_id
@@ -313,7 +316,7 @@ export const EmailForm = () => {
   );
 
   useRunOnce(() => {
-    if (routerLocation.pathname !== newEmailPath || searchParams.size === 0) return;
+    if (currentPathname !== newEmailPath || searchParams.size === 0) return;
 
     const tier = searchParams.get("tier");
     const permalink = searchParams.get("product");
@@ -547,7 +550,9 @@ export const EmailForm = () => {
       });
     }
   };
-  const navigate = useNavigate();
+  const navigateTo = (path: string, options?: { replace?: boolean }) => {
+    inertiaRouter.visit(path, { replace: options?.replace ?? false });
+  };
   const [isSaving, setIsSaving] = React.useState(false);
   const save = asyncVoid(async (action: SaveAction = "save") => {
     if (!validate(action)) return;
@@ -604,14 +609,11 @@ export const EmailForm = () => {
       }
 
       if (action === "save_and_schedule") {
-        navigate(emailTabPath("scheduled"));
+        navigateTo(emailTabPath("scheduled"));
       } else if (action === "save_and_publish") {
-        navigate(emailTabPath("published"));
+        navigateTo(emailTabPath("published"));
       } else {
-        navigate(editEmailPath(response.installment_id), {
-          replace: true,
-          state: { from: routerLocation.state?.from },
-        });
+        navigateTo(editEmailPath(response.installment_id), { replace: true });
       }
     } catch (e) {
       assertResponseError(e);
@@ -625,8 +627,7 @@ export const EmailForm = () => {
     imagesUploading.size > 0 ||
     files.some((file) => isFileUploading(file) || file.subtitle_files.some(isFileUploading));
 
-  const cancelPath =
-    routerLocation.state?.from ?? emailTabPath(context.has_scheduled_emails ? "scheduled" : "published");
+  const cancelPath = emailTabPath(context.has_scheduled_emails ? "scheduled" : "published");
 
   return (
     <div>
@@ -664,7 +665,7 @@ export const EmailForm = () => {
                 Preview
               </Button>
             )}
-            <Link to={cancelPath} className="button" inert={isBusy}>
+            <Link href={cancelPath} className="button" inert={isBusy ? true : undefined}>
               <Icon name="x-square" />
               Cancel
             </Link>

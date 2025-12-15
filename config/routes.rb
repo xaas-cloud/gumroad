@@ -397,7 +397,6 @@ Rails.application.routes.draw do
     get "/collaborators/*other", to: "collaborators#index"
 
     get "/affiliates/*other", to: "affiliates#index" # route handled by react-router
-    get "/emails/*other", to: "emails#index" # route handled by Inertia for tabs (and React Router for new/edit)
     get "/dashboard/utm_links/*other", to: "utm_links#index" # route handled by react-router
     get "/communities/*other", to: "communities#index" # route handled by react-router
 
@@ -802,6 +801,11 @@ Rails.application.routes.draw do
 
     # emails
     get "/emails", to: "emails#index", as: :emails
+    get "/emails/published", to: "emails#published", as: :emails_published
+    get "/emails/scheduled", to: "emails#scheduled", as: :emails_scheduled
+    get "/emails/drafts", to: "emails#drafts", as: :emails_drafts
+    get "/emails/new", to: "emails#new", as: :new_email
+    get "/emails/:id/edit", to: "emails#edit", as: :edit_email
     get "/posts", to: redirect("/emails")
 
     # workflows
