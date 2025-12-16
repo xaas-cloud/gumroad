@@ -229,7 +229,7 @@ describe("Bundle edit page", type: :system, js: true) do
           end
           expect(page).to have_text("Version: Untitled 1")
 
-          select_disclosure "Edit" do
+          select_disclosure "Configure" do
             choose "Untitled 2"
             click_on "Apply"
           end
@@ -241,7 +241,7 @@ describe("Bundle edit page", type: :system, js: true) do
           within("[aria-label='Quantity']") do
             expect(page).to have_text("1")
           end
-          select_disclosure "Edit" do
+          select_disclosure "Configure" do
             fill_in "Quantity", with: 2
             click_on "Apply"
           end
