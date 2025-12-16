@@ -305,8 +305,8 @@ export default function AffiliatesIndex() {
     }
     setSort(newSort);
     setIsNavigating(true);
-    router.visit(`${Routes.affiliates_path()}?${params.toString()}`, {
-      preserveState: true,
+    router.reload({
+      data: params,
       onFinish: () => setIsNavigating(false),
     });
   };
