@@ -316,7 +316,7 @@ export const EmailForm = ({ context, installment }: EmailFormProps) => {
   );
 
   useRunOnce(() => {
-    if (currentPathname !== newEmailPath || searchParams.size === 0) return;
+    if (currentPathname !== newEmailPath() || searchParams.size === 0) return;
 
     const tier = searchParams.get("tier");
     const permalink = searchParams.get("product");

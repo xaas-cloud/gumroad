@@ -99,7 +99,7 @@ const NotifyAboutProductUpdatesAlert = () => {
             </Button>
             <NavigationButton
               color="primary"
-              href={`${newEmailPath}?${paramsToQueryString({
+              href={`${newEmailPath()}?${paramsToQueryString({
                 template: "content_updates",
                 product: uniquePermalink,
                 bought: contentUpdates?.uniquePermalinkOrVariantIds ?? [],

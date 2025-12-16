@@ -10,9 +10,9 @@ class EmailsController < Sellers::BaseController
 
 
     if current_seller.installments.alive.ready_to_publish.exists?
-      redirect_to emails_scheduled_path, status: :moved_permanently
+      redirect_to scheduled_emails_path, status: :moved_permanently
     else
-      redirect_to emails_published_path, status: :moved_permanently
+      redirect_to published_emails_path, status: :moved_permanently
     end
   end
 
@@ -20,37 +20,37 @@ class EmailsController < Sellers::BaseController
     authorize Installment, :index?
     create_user_event("emails_view")
 
-    presenter = EmailsPresenter.new(seller: current_seller)
-    render inertia: "Emails/Published", props: presenter.published_props
+    presenter = PaginatedInstallmentsPresenter.new(seller: current_seller, type: Installment::PUBLISHED, page: 1)
+    render inertia: "Emails/Published", props: presenter.props
   end
 
   def scheduled
     authorize Installment, :index?
     create_user_event("emails_view")
 
-    presenter = EmailsPresenter.new(seller: current_seller)
-    render inertia: "Emails/Scheduled", props: presenter.scheduled_props
+    presenter = PaginatedInstallmentsPresenter.new(seller: current_seller, type: Installment::SCHEDULED, page: 1)
+    render inertia: "Emails/Scheduled", props: presenter.props
   end
 
   def drafts
     authorize Installment, :index?
     create_user_event("emails_view")
 
-    presenter = EmailsPresenter.new(seller: current_seller)
-    render inertia: "Emails/Drafts", props: presenter.drafts_props
+    presenter = PaginatedInstallmentsPresenter.new(seller: current_seller, type: Installment::DRAFT, page: 1)
+    render inertia: "Emails/Drafts", props: presenter.props
   end
 
   def new
     authorize Installment
 
-    presenter = EmailsPresenter.new(seller: current_seller)
+    presenter = InstallmentPresenter.new(seller: current_seller)
     render inertia: "Emails/New", props: presenter.new_page_props(copy_from: params[:copy_from])
   end
 
   def edit
     authorize @installment
 
-    presenter = EmailsPresenter.new(seller: current_seller, installment: @installment)
+    presenter = InstallmentPresenter.new(seller: current_seller, installment: @installment)
     render inertia: "Emails/Edit", props: presenter.edit_page_props
   end
 

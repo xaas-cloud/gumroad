@@ -10,10 +10,21 @@ import { WithTooltip } from "$app/components/WithTooltip";
 const TABS = ["published", "scheduled", "drafts", "subscribers"] as const;
 export type EmailTab = (typeof TABS)[number];
 
-// Path helpers
-export const emailTabPath = (tab: (typeof TABS)[number]) => `/emails/${tab}`;
-export const newEmailPath = "/emails/new";
-export const editEmailPath = (id: string) => `/emails/${id}/edit`;
+// Path helpers using Rails routes
+export const emailTabPath = (tab: (typeof TABS)[number]) => {
+  switch (tab) {
+    case "published":
+      return Routes.published_emails_path();
+    case "scheduled":
+      return Routes.scheduled_emails_path();
+    case "drafts":
+      return Routes.drafts_emails_path();
+    case "subscribers":
+      return Routes.followers_path();
+  }
+};
+export const newEmailPath = () => Routes.new_email_path();
+export const editEmailPath = (id: string) => Routes.edit_email_path(id);
 
 type LayoutProps = {
   selectedTab: EmailTab;
@@ -69,13 +80,13 @@ export const EmailsLayout = ({ selectedTab, children, hasPosts, query, onQueryCh
       >
         <Tabs>
           <Tab asChild isSelected={selectedTab === "published"}>
-            <Link href="/emails/published">Published</Link>
+            <Link href={Routes.published_emails_path()}>Published</Link>
           </Tab>
           <Tab asChild isSelected={selectedTab === "scheduled"}>
-            <Link href="/emails/scheduled">Scheduled</Link>
+            <Link href={Routes.scheduled_emails_path()}>Scheduled</Link>
           </Tab>
           <Tab asChild isSelected={selectedTab === "drafts"}>
-            <Link href="/emails/drafts">Drafts</Link>
+            <Link href={Routes.drafts_emails_path()}>Drafts</Link>
           </Tab>
           <Tab href={Routes.followers_path()} isSelected={false}>
             Subscribers
@@ -88,7 +99,7 @@ export const EmailsLayout = ({ selectedTab, children, hasPosts, query, onQueryCh
 };
 
 export const NewEmailButton = ({ copyFrom }: { copyFrom?: string } = {}) => {
-  const href = copyFrom ? `/emails/new?copy_from=${copyFrom}` : "/emails/new";
+  const href = copyFrom ? `${Routes.new_email_path()}?copy_from=${copyFrom}` : Routes.new_email_path();
 
   return (
     <Link className={copyFrom ? "button" : "button accent"} href={href}>
@@ -99,7 +110,7 @@ export const NewEmailButton = ({ copyFrom }: { copyFrom?: string } = {}) => {
 
 export const EditEmailButton = ({ id }: { id: string }) => {
   return (
-    <Link className="button" href={`/emails/${id}/edit`}>
+    <Link className="button" href={Routes.edit_email_path(id)}>
       Edit
     </Link>
   );

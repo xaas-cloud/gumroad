@@ -800,12 +800,13 @@ Rails.application.routes.draw do
     get "/communities(/:seller_id/:community_id)", to: "communities#index", as: :community
 
     # emails
-    get "/emails", to: "emails#index", as: :emails
-    get "/emails/published", to: "emails#published", as: :emails_published
-    get "/emails/scheduled", to: "emails#scheduled", as: :emails_scheduled
-    get "/emails/drafts", to: "emails#drafts", as: :emails_drafts
-    get "/emails/new", to: "emails#new", as: :new_email
-    get "/emails/:id/edit", to: "emails#edit", as: :edit_email
+    resources :emails, only: [:index, :new, :edit] do
+      collection do
+        get :published
+        get :scheduled
+        get :drafts
+      end
+    end
     get "/posts", to: redirect("/emails")
 
     # workflows
