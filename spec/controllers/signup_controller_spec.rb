@@ -49,8 +49,7 @@ describe SignupController do
         it "signs in as user" do
           post "create", params: { user: { email: @user.email, password: "password" } }
 
-          expect(response).to have_http_status(:conflict)
-          expect(response.headers["X-Inertia-Location"]).to eq(dashboard_path)
+          expect(response).to redirect_to(dashboard_path)
           expect(controller.user_signed_in?).to eq true
         end
       end
@@ -65,8 +64,7 @@ describe SignupController do
           post "create", params: { user: { email: @user.email, password: "password" } }
 
           expect(session[:verify_two_factor_auth_for]).to eq @user.id
-          expect(response).to have_http_status(:conflict)
-          expect(response.headers["X-Inertia-Location"]).to eq(two_factor_authentication_path(next: dashboard_path))
+          expect(response).to redirect_to(two_factor_authentication_path(next: dashboard_path))
           expect(controller.user_signed_in?).to eq false
         end
       end
@@ -76,8 +74,7 @@ describe SignupController do
       user = build(:user, password: "password")
       post "create", params: { user: { email: user.email, password: "password" } }
 
-      expect(response).to have_http_status(:conflict)
-      expect(response.headers["X-Inertia-Location"]).to eq(dashboard_path)
+      expect(response).to redirect_to(dashboard_path)
 
       last_user = User.last
       expect(last_user.email).to eq user.email
@@ -92,8 +89,7 @@ describe SignupController do
       user = build(:user, password: "password")
       post :create, params: { user: { email: user.email, password: "password" } }
 
-      expect(response).to have_http_status(:conflict)
-      expect(response.headers["X-Inertia-Location"]).to eq(dashboard_path)
+      expect(response).to redirect_to(dashboard_path)
     end
 
     describe "Sign up and connect to OAuth app" do
@@ -106,8 +102,7 @@ describe SignupController do
       it "redirects to the OAuth authorization path after successful login" do
         post "create", params: { user: { email: @user.email, password: "password" }, next: @next_url }
 
-        expect(response).to have_http_status(:conflict)
-        expect(response.headers["X-Inertia-Location"]).to eq(CGI.unescape(@next_url))
+        expect(response).to redirect_to(CGI.unescape(@next_url))
       end
     end
 
@@ -212,8 +207,7 @@ describe SignupController do
       expect do
         post :create, params: { user:
           { email: purchase.email, add_purchase_to_existing_account: false, buyer_signup: true, password: "password", purchase_id: purchase.external_id } }
-        expect(response).to have_http_status(:conflict)
-        expect(response.headers["X-Inertia-Location"]).to eq(Addressable::URI.escape(referrer_path))
+        expect(response).to redirect_to(Addressable::URI.escape(referrer_path))
       end.to change { User.count }.by(1)
     end
 

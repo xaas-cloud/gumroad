@@ -1,4 +1,5 @@
 import { Link, useForm, usePage } from "@inertiajs/react";
+
 import * as React from "react";
 
 import { Layout } from "$app/components/Authentication/Layout";
@@ -6,37 +7,33 @@ import { SocialAuth } from "$app/components/Authentication/SocialAuth";
 import { Button } from "$app/components/Button";
 import { PasswordInput } from "$app/components/PasswordInput";
 import { Separator } from "$app/components/Separator";
+import { useFlashError } from "$app/components/useFlashError";
 import { useOriginalLocation } from "$app/components/useOriginalLocation";
 import { RecaptchaCancelledError, useRecaptcha } from "$app/components/useRecaptcha";
 import { formatPrice } from "$app/utils/price";
-import { type AlertPayload } from "$app/components/server-components/Alert";
 
 type PageProps = {
-  auth_props: {
-    email: string | null;
-    application_name: string | null;
-    recaptcha_site_key: string | null;
-    referrer: {
-      id: string;
-      name: string;
-    } | null;
-    stats: {
-      number_of_creators: number;
-      total_made: number;
-    };
+  email: string | null;
+  application_name: string | null;
+  recaptcha_site_key: string | null;
+  referrer: {
+    id: string;
+    name: string;
+  } | null;
+  stats: {
+    number_of_creators: number;
+    total_made: number;
   };
-  flash: AlertPayload;
-  title: string;
 };
 
 function SignupPage() {
-  const { auth_props, flash } = usePage<PageProps>().props;
-  const { email: initialEmail, application_name, recaptcha_site_key, referrer, stats } = auth_props;
+  const { email: initialEmail, application_name, recaptcha_site_key, referrer, stats } = usePage<PageProps>().props;
   const { number_of_creators, total_made } = stats;
 
   const url = new URL(useOriginalLocation());
   const next = url.searchParams.get("next");
   const recaptcha = useRecaptcha({ siteKey: recaptcha_site_key });
+  const flashError = useFlashError();
   const uid = React.useId();
 
   const form = useForm({
@@ -65,8 +62,6 @@ function SignupPage() {
     }
   };
 
-  const errorMessage = flash?.status === "warning" ? (flash?.message ?? null) : null;
-
   const headerText = referrer
     ? `Join ${referrer.name} on Gumroad`
     : application_name
@@ -81,11 +76,7 @@ function SignupPage() {
           <span>or</span>
         </Separator>
         <section>
-          {errorMessage ? (
-            <div role="alert" className="danger">
-              {errorMessage}
-            </div>
-          ) : null}
+          {flashError}
           <fieldset>
             <legend>
               <label htmlFor={`${uid}-email`}>Email</label>

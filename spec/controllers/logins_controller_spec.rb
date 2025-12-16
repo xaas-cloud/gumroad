@@ -67,8 +67,7 @@ describe LoginsController do
 
     it "logs in if user already exists" do
       post "create", params: { user: { login_identifier: @user.email, password: "password" } }
-      expect(response).to have_http_status(:conflict)
-      expect(response.headers["X-Inertia-Location"]).to eq(dashboard_path)
+      expect(response).to redirect_to(dashboard_path)
     end
 
     it "shows proper error if password is incorrect" do
@@ -91,22 +90,19 @@ describe LoginsController do
 
     it "logs in if user already exists and redirects to next if present" do
       post "create", params: { user: { login_identifier: @user.email, password: "password" }, next: "/about" }
-      expect(response).to have_http_status(:conflict)
-      expect(response.headers["X-Inertia-Location"]).to eq("/about")
+      expect(response).to redirect_to("/about")
     end
 
     it "does not redirect to absolute url" do
       post "create", params: { user: { login_identifier: @user.email, password: "password" }, next: "https://elite.haxor.net/home?steal=everything#yes" }
-      expect(response).to have_http_status(:conflict)
-      expect(response.headers["X-Inertia-Location"]).to eq("/home?steal=everything")
+      expect(response).to redirect_to("/home?steal=everything")
     end
 
     it "redirects back to subdomain URL" do
       stub_const("ROOT_DOMAIN", "test.gumroad.com")
       post "create", params: { user: { login_identifier: @user.email, password: "password" }, next: "https://username.test.gumroad.com" }
 
-      expect(response).to have_http_status(:conflict)
-      expect(response.headers["X-Inertia-Location"]).to eq("https://username.test.gumroad.com")
+      expect(response).to redirect_to("https://username.test.gumroad.com")
     end
 
     it "disallows logging in if the user has been deleted" do
@@ -132,8 +128,7 @@ describe LoginsController do
     it "logs in a user when reCAPTCHA is completed correctly" do
       post :create, params: { user: { login_identifier: @user.email, password: "password" } }
 
-      expect(response).to have_http_status(:conflict)
-      expect(response.headers["X-Inertia-Location"]).to eq(dashboard_path)
+      expect(response).to redirect_to(dashboard_path)
       expect(controller.user_signed_in?).to be(true)
     end
 
@@ -143,8 +138,7 @@ describe LoginsController do
 
       post :create, params: { user: { login_identifier: @user.email, password: "password" } }
 
-      expect(response).to have_http_status(:conflict)
-      expect(response.headers["X-Inertia-Location"]).to eq(dashboard_path)
+      expect(response).to redirect_to(dashboard_path)
       expect(controller.user_signed_in?).to be(true)
     end
 
@@ -179,8 +173,7 @@ describe LoginsController do
 
         it "is allowed to login" do
           post :create, params: { user: { login_identifier: @user.email, password: "password" } }
-          expect(response).to have_http_status(:conflict)
-          expect(response.headers["X-Inertia-Location"]).to eq(dashboard_path)
+          expect(response).to redirect_to(dashboard_path)
         end
       end
 
@@ -208,8 +201,7 @@ describe LoginsController do
 
           it "redirects to library" do
             post :create, params: { user: { login_identifier: @user.email, password: "password" } }
-            expect(response).to have_http_status(:conflict)
-            expect(response.headers["X-Inertia-Location"]).to eq(library_path)
+            expect(response).to redirect_to(library_path)
           end
         end
 
@@ -220,8 +212,7 @@ describe LoginsController do
 
           it "redirects to dashboard" do
             post :create, params: { user: { login_identifier: @user.email, password: "password" } }
-            expect(response).to have_http_status(:conflict)
-            expect(response.headers["X-Inertia-Location"]).to eq(dashboard_path)
+            expect(response).to redirect_to(dashboard_path)
           end
         end
       end
@@ -234,8 +225,7 @@ describe LoginsController do
 
         it "redirects back to the last location" do
           post :create, params: { user: { login_identifier: @user.email, password: "password" } }
-          expect(response).to have_http_status(:conflict)
-          expect(response.headers["X-Inertia-Location"]).to eq(short_link_path(@product))
+          expect(response).to redirect_to(short_link_path(@product))
         end
       end
     end
@@ -249,8 +239,7 @@ describe LoginsController do
       it "redirects to the OAuth authorization path after successful login" do
         post "create", params: { user: { login_identifier: @user.email, password: "password" }, next: @next_url }
 
-        expect(response).to have_http_status(:conflict)
-        expect(response.headers["X-Inertia-Location"]).to eq(CGI.unescape(@next_url))
+        expect(response).to redirect_to(CGI.unescape(@next_url))
       end
     end
 
@@ -264,8 +253,7 @@ describe LoginsController do
         post "create", params: { user: { login_identifier: @user.email, password: "password" }, next: settings_main_path }
 
         expect(session[:verify_two_factor_auth_for]).to eq @user.id
-        expect(response).to have_http_status(:conflict)
-        expect(response.headers["X-Inertia-Location"]).to eq(two_factor_authentication_path(next: settings_main_path))
+        expect(response).to redirect_to(two_factor_authentication_path(next: settings_main_path))
         expect(controller.user_signed_in?).to eq false
       end
     end
@@ -274,7 +262,6 @@ describe LoginsController do
       let(:user) { @user }
       let(:call_action) { post "create", params: { user: { login_identifier: user.email, password: "password" } } }
       let(:expected_redirect_location) { dashboard_path }
-      let(:expects_inertia_redirect) { true }
     end
   end
 

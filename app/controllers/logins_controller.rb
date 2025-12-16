@@ -4,6 +4,7 @@ class LoginsController < Devise::SessionsController
   include OauthApplicationConfig, ValidateRecaptcha, InertiaRendering
 
   skip_before_action :check_suspended, only: %i[create destroy]
+  # before_action :block_json_request, only: :new
   after_action :clear_dashboard_preference, only: :destroy
   before_action :reset_impersonated_user, only: :destroy
   before_action :set_noindex_header, only: :new, if: -> { params[:next]&.start_with?("/oauth/authorize") }
@@ -11,12 +12,11 @@ class LoginsController < Devise::SessionsController
   layout "inertia", only: [:new]
 
   def new
+    # @hide_layouts = true
     return redirect_to login_path(next: request.referrer) if params[:next].blank? && request_referrer_is_a_valid_after_login_path?
 
     auth_presenter = AuthPresenter.new(params:, application: @application)
-    render inertia: "Auth/Login", props: {
-      auth_props: auth_presenter.login_props
-    }
+    render inertia: "Logins/New", props: auth_presenter.login_props
   end
 
   def create
@@ -48,7 +48,7 @@ class LoginsController < Devise::SessionsController
         flash[:warning] = "Your password has previously appeared in a data breach as per haveibeenpwned.com and should never be used. We strongly recommend you change your password everywhere you have used it."
       end
 
-      inertia_location login_path_for(@user)
+      redirect_to login_path_for(@user), allow_other_host: true
     end
   end
 

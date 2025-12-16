@@ -10,9 +10,7 @@ class SignupController < Devise::RegistrationsController
 
   def new
     auth_presenter = AuthPresenter.new(params:, application: @application)
-    render inertia: "Auth/Signup", props: {
-      auth_props: auth_presenter.signup_props
-    }
+    render inertia: "Signup/New", props: auth_presenter.signup_props
   end
 
   def create
@@ -48,7 +46,7 @@ class SignupController < Devise::RegistrationsController
       # Do not require 2FA for newly signed up users
       remember_two_factor_auth
 
-      inertia_location login_path_for(@user)
+      redirect_to login_path_for(@user), allow_other_host: true
     else
       error_message = if !params[:user] || params[:user][:email].blank?
         "Please provide a valid email address."
@@ -107,7 +105,7 @@ class SignupController < Devise::RegistrationsController
 
       if !user.deleted? && user.try(:valid_password?, params[:user][:password])
         sign_in_or_prepare_for_two_factor_auth(user)
-        inertia_location login_path_for(user)
+        redirect_to login_path_for(user), allow_other_host: true
       else
         redirect_with_signup_error("An account already exists with this email.")
       end
