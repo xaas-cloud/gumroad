@@ -72,8 +72,7 @@ class Products::ArchivedController < Sellers::BaseController
     authorize [:products, :archived, @product]
 
     @product.archived = true
-    @product.purchase_disabled_at ||= Time.current # Unpublish if not already unpublished
-    @product.save!
+    @product.unpublish!
     render json: { success: true }
   end
 
