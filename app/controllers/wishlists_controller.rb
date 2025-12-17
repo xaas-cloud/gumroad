@@ -34,7 +34,10 @@ class WishlistsController < ApplicationController
 
     wishlist = current_seller.wishlists.create!
 
-    redirect_to wishlists_path, notice: "Wishlist created!", status: :see_other
+    respond_to do |format|
+      format.html { redirect_to wishlists_path, notice: "Wishlist created!", status: :see_other }
+      format.json { render json: { wishlist: WishlistPresenter.new(wishlist:).listing_props }, status: :created }
+    end
   end
 
   def show
