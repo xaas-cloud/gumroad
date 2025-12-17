@@ -8,7 +8,6 @@ import { BooleanIcon, NoIcon } from "$app/components/Admin/Icons";
 import { Alert } from "$app/components/ui/Alert";
 
 export type AdminMerchantAccountProps = {
-  id: number;
   charge_processor_id: string;
   charge_processor_merchant_id: string | null;
   created_at: string;
@@ -33,16 +32,13 @@ const AdminMerchantAccountsShow = () => {
   return (
     <div className="override grid gap-4 rounded border border-border bg-background p-4">
       <div>
-        <h2>Merchant Account {merchant_account.id}</h2>
+        <h2>Merchant Account {merchant_account.external_id}</h2>
         <DateTimeWithRelativeTooltip date={merchant_account.created_at} utc />
       </div>
 
       <hr />
       <div>
         <dl>
-          <dt>ID</dt>
-          <dd>{merchant_account.id}</dd>
-
           <dt>External ID</dt>
           <dd>{merchant_account.external_id}</dd>
 
