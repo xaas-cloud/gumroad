@@ -83,7 +83,7 @@ class Admin::UserPresenter::Card
           created_at: membership.created_at,
           updated_at: membership.updated_at,
           seller: {
-            id: membership.seller.id,
+            external_id: membership.seller.external_id,
             avatar_url: membership.seller.avatar_url,
             display_name_or_email: membership.seller.display_name_or_email
           }

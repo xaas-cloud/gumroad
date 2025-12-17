@@ -17,7 +17,7 @@ import AdminUserPayoutInfo from "$app/components/Admin/Users/PayoutInfo";
 import AdminUserPermissionRisk from "$app/components/Admin/Users/PermissionRisk";
 
 export type Seller = {
-  id: number;
+  external_id: string;
   display_name_or_email: string;
   avatar_url: string;
 };

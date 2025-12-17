@@ -139,7 +139,7 @@ describe Admin::UserPresenter::Card do
           membership_data = props[:admin_manageable_user_memberships].first
 
           expect(membership_data[:seller]).to eq(
-            id: seller.id,
+            external_id: seller.external_id,
             avatar_url: seller.avatar_url,
             display_name_or_email: seller.display_name_or_email
           )
