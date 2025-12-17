@@ -36,7 +36,7 @@ class Admin::AffiliatesController < Admin::BaseController
       @affiliate_user = User.find_by(username: params[:external_id])
       @affiliate_user ||= User.find_by_external_id(params[:external_id])
 
-      if User.id?(params[:external_id]) && (user = User.find_by(id: params[:external_id]))
+      if @affiliate_user.nil? && User.id?(params[:external_id]) && (user = User.find_by(id: params[:external_id]))
         return redirect_to admin_affiliate_path(user.external_id)
       end
 

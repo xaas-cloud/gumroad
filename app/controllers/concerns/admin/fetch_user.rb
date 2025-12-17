@@ -11,7 +11,7 @@ module Admin::FetchUser
             .first
       end
 
-      if User.id?(user_param) && (user = User.find_by(id: user_param))
+      if @user.nil? && User.id?(user_param) && (user = User.find_by(id: user_param))
         new_path = request.fullpath.sub("/#{user_param}", "/#{user.external_id}")
         return redirect_to new_path
       end
