@@ -28,6 +28,7 @@ import { useAddThirdPartyAnalytics } from "$app/components/useAddThirdPartyAnaly
 import { useGlobalEventListener } from "$app/components/useGlobalEventListener";
 import { useIsAboveBreakpoint } from "$app/components/useIsAboveBreakpoint";
 import { useOriginalLocation } from "$app/components/useOriginalLocation";
+import { useRunOnce } from "$app/components/useRunOnce";
 
 import placeholder from "$assets/images/placeholders/library.png";
 
@@ -302,7 +303,7 @@ export default function LibraryPage() {
 
   const url = new URL(useOriginalLocation());
   const addThirdPartyAnalytics = useAddThirdPartyAnalytics();
-  React.useEffect(() => {
+  useRunOnce(() => {
     const purchaseIds = url.searchParams.getAll("purchase_id");
     if (purchaseIds.length === 0) return;
 
@@ -323,7 +324,7 @@ export default function LibraryPage() {
           purchaseId,
         });
     }
-  }, []);
+  });
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEnteredQuery(e.target.value);
