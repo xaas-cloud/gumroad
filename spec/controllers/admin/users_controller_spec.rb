@@ -66,6 +66,41 @@ describe Admin::UsersController, type: :controller, inertia: true do
       expect(inertia.component).to eq("Admin/Users/Show")
       expect(inertia.props[:user][:external_id]).to eq(user.external_id)
     end
+
+    context "when username starts with a number" do
+      let(:user_with_id_1) { create(:user, id: 1) }
+      let(:user_with_numeric_username) { create(:user, username: "1gum") }
+
+      before do
+        user_with_id_1
+        user_with_numeric_username
+      end
+
+      it "does not redirect to user with matching id when accessing by username" do
+        get :show, params: { external_id: "1gum" }
+
+        expect(response).to be_successful
+        expect(inertia.component).to eq("Admin/Users/Show")
+        expect(inertia.props[:user][:external_id]).to eq(user_with_numeric_username.external_id)
+      end
+    end
+
+    context "when user's id overlaps with another user's external_id" do
+      let(:user_1) { create(:user) }
+      let(:user_2) { create(:user) }
+
+      before do
+        user_2.update_column(:external_id, user_1.id.to_s)
+      end
+
+      it "finds user by external_id and does not redirect" do
+        get :show, params: { external_id: user_2.external_id }
+
+        expect(response).to be_successful
+        expect(inertia.component).to eq("Admin/Users/Show")
+        expect(inertia.props[:user][:external_id]).to eq(user_2.external_id)
+      end
+    end
   end
 
   describe "refund balance logic", :vcr, :sidekiq_inline do

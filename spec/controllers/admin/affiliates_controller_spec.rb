@@ -84,5 +84,39 @@ describe Admin::AffiliatesController, inertia: true do
         end.to raise_error(ActionController::RoutingError, "Not Found")
       end
     end
+
+    context "when username starts with a number" do
+      let(:user_with_id_1) { create(:user, id: 1) }
+      let(:affiliate_user_with_numeric_username) { create(:user, username: "1gum") }
+
+      before do
+        user_with_id_1
+        affiliate_user_with_numeric_username
+        create(:direct_affiliate, affiliate_user: affiliate_user_with_numeric_username)
+      end
+
+      it "does not redirect to user with matching id when accessing by username" do
+        get :show, params: { external_id: "1gum" }
+
+        expect(response).to be_successful
+        expect(assigns[:affiliate_user]).to eq(affiliate_user_with_numeric_username)
+      end
+    end
+    context "when user's id overlaps with another user's external_id" do
+      let(:user_1) { create(:user) }
+      let(:user_2) { create(:user) }
+
+      before do
+        user_2.update_column(:external_id, user_1.id.to_s)
+        create(:direct_affiliate, affiliate_user: user_2)
+      end
+
+      it "finds user by external_id and does not redirect" do
+        get :show, params: { external_id: user_2.external_id }
+
+        expect(response).to be_successful
+        expect(assigns[:affiliate_user]).to eq(user_2)
+      end
+    end
   end
 end

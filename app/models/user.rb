@@ -1215,8 +1215,8 @@ class User < ApplicationRecord
     end
 
     def self.id?(value)
-      raise ArgumentError, "value can't be blank" if value.blank?
+      return false if value.blank?
 
-      value.to_i.to_s == value
+      value.to_s == value.to_i.to_s
     end
 end
