@@ -9,6 +9,23 @@ class Product::VariantsUpdaterService
            :variant_categories_alive,
            :skus, to: :product
 
+  ALLOWED_OPTION_ATTRIBUTES = %i[
+    id
+    temp_id
+    name
+    description
+    url
+    customizable_price
+    recurrence_price_values
+    max_purchase_count
+    integrations
+    rich_content
+    apply_price_changes_to_existing_memberships
+    subscription_price_change_effective_date
+    subscription_price_change_message
+    duration_in_minutes
+  ].freeze
+
   def initialize(product:, variants_params:, skus_params: {})
     @product = product
     @variants_params = variants_params
@@ -55,7 +72,7 @@ class Product::VariantsUpdaterService
           title: variant[:name],
           id: variant[:id],
           options: options&.map do |option|
-            new_option = option.slice(:id, :temp_id, :name, :description, :url, :customizable_price, :recurrence_price_values, :max_purchase_count, :integrations, :rich_content, :apply_price_changes_to_existing_memberships, :subscription_price_change_effective_date, :subscription_price_change_message, :duration_in_minutes)
+            new_option = option.slice(*ALLOWED_OPTION_ATTRIBUTES)
 
             # TODO: :product_edit_react cleanup
             if option[:price_difference_cents].present?
@@ -64,18 +81,15 @@ class Product::VariantsUpdaterService
             end
 
             new_option.merge!(price_difference: option[:price])
-            if price_change_settings = option.dig(:settings, :apply_price_changes_to_existing_memberships)
-              if price_change_settings[:enabled] == "1"
-                new_option[:apply_price_changes_to_existing_memberships] = true
-                new_option[:subscription_price_change_effective_date] = price_change_settings[:effective_date]
-                new_option[:subscription_price_change_message] = price_change_settings[:custom_message]
-              else
-                new_option[:apply_price_changes_to_existing_memberships] = false
-                new_option[:subscription_price_change_effective_date] = nil
-                new_option[:subscription_price_change_message] = nil
-              end
-            end
-            if price_change_settings.blank? && !option[:apply_price_changes_to_existing_memberships]
+
+            price_change_settings = option.dig(:settings, :apply_price_changes_to_existing_memberships)
+            if price_change_settings
+              enabled = price_change_settings[:enabled] == "1"
+              new_option[:apply_price_changes_to_existing_memberships] = enabled
+              new_option[:subscription_price_change_effective_date] = enabled ? price_change_settings[:effective_date] : nil
+              new_option[:subscription_price_change_message] = enabled ? price_change_settings[:custom_message] : nil
+            elsif !option[:apply_price_changes_to_existing_memberships]
+              new_option[:apply_price_changes_to_existing_memberships] = false
               new_option[:subscription_price_change_effective_date] = nil
               new_option[:subscription_price_change_message] = nil
             end
