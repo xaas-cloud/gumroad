@@ -35,3 +35,4 @@ export default function WishlistShowPage() {
 
   return <Wishlist {...wishlistProps} />;
 }
+WishlistShowPage.layout = (page: React.ReactNode) => page;
