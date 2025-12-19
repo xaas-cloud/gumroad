@@ -9,6 +9,7 @@ class SignupController < Devise::RegistrationsController
   layout "inertia", only: [:new]
 
   def new
+    @load_recaptcha = true
     auth_presenter = AuthPresenter.new(params:, application: @application)
     render inertia: "Signup/New", props: auth_presenter.signup_props
   end

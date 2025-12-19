@@ -80,7 +80,7 @@ function LoginPage() {
                 id={`${uid}-email`}
                 type="email"
                 value={form.data.user.login_identifier}
-                onChange={(e) => form.setData("user", { ...form.data.user, login_identifier: e.target.value })}
+                onChange={(e) => form.setData("user.login_identifier", e.target.value)}
                 required
                 tabIndex={1}
                 autoComplete="email"
@@ -96,7 +96,7 @@ function LoginPage() {
               <PasswordInput
                 id={`${uid}-password`}
                 value={form.data.user.password}
-                onChange={(e) => form.setData("user", { ...form.data.user, password: e.target.value })}
+                onChange={(e) => form.setData("user.password", e.target.value)}
                 required
                 tabIndex={1}
                 autoComplete="current-password"

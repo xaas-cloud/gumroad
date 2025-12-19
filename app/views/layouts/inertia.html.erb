@@ -17,6 +17,9 @@
     <% end %>
     <%= javascript_include_tag "application" %>
     <%= load_pack("base") unless @hide_layouts %>
+    <% if @load_recaptcha %>
+      <script src="https://www.google.com/recaptcha/enterprise.js?render=explicit"></script>
+    <% end %>
     <%= yield :script %>
   </body>
 </html>

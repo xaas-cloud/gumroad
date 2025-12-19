@@ -93,7 +93,7 @@ function SignupPage() {
               id={`${uid}-email`}
               type="email"
               value={form.data.user.email}
-              onChange={(e) => form.setData("user", { ...form.data.user, email: e.target.value })}
+              onChange={(e) => form.setData("user.email", e.target.value)}
               required
             />
           </fieldset>
@@ -104,7 +104,7 @@ function SignupPage() {
             <PasswordInput
               id={`${uid}-password`}
               value={form.data.user.password}
-              onChange={(e) => form.setData("user", { ...form.data.user, password: e.target.value })}
+              onChange={(e) => form.setData("user.password", e.target.value)}
               required
             />
           </fieldset>
