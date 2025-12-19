@@ -185,7 +185,7 @@ export default function PaymentsPage() {
       setClientErrorMessage(null);
       previousCountryRef.current = currentCountry;
     }
-  }, [props.compliance_info]);
+  }, [props.compliance_info.country, props.compliance_info.business_country]);
 
   // Sync showNewBankAccount when bank account details change (e.g., after successful save or country change)
   React.useEffect(() => {

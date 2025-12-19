@@ -58,12 +58,8 @@ class Settings::ProfileController < Settings::BaseController
       [:settings, :profile]
     end
 
-    def inertia_request?
-      request.headers["X-Inertia"].present?
-    end
-
     def respond_error(message)
-      if inertia_request?
+      if request.inertia?
         redirect_to settings_profile_path, alert: message
       else
         render json: { success: false, error_message: message }
@@ -71,7 +67,7 @@ class Settings::ProfileController < Settings::BaseController
     end
 
     def respond_success
-      if inertia_request?
+      if request.inertia?
         redirect_to settings_profile_path, status: :see_other, notice: "Changes saved!"
       else
         render json: { success: true }
