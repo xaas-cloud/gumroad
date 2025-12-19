@@ -1,3 +1,4 @@
+import { Link } from "@inertiajs/react";
 import cx from "classnames";
 import * as React from "react";
 
@@ -257,23 +258,29 @@ const ProductsTable = ({ sales }: TableProps) => {
         {items.map(({ id, name, thumbnail, today, last_7, last_30, sales, visits, revenue }) => (
           <TableRow key={id}>
             <ProductIconCell href={Routes.edit_link_url({ id }, { host: appDomain })} thumbnail={thumbnail} />
-            <TableCell>
+            <TableCell label="Products">
               <a href={Routes.edit_link_url({ id }, { host: appDomain })} className="line-clamp-2" title={name}>
                 {name}
               </a>
             </TableCell>
-            <TableCell title={sales.toLocaleString(locale)} className="whitespace-nowrap">
+            <TableCell label="Sales" title={sales.toLocaleString(locale)} className="whitespace-nowrap">
               {sales.toLocaleString(locale, { notation: "compact" })}
             </TableCell>
-            <TableCell title={formatPrice(revenue)} className="whitespace-nowrap">
+            <TableCell label="Revenue" title={formatPrice(revenue)} className="whitespace-nowrap">
               {formatPrice(revenue)}
             </TableCell>
-            <TableCell title={visits.toLocaleString(locale)} className="whitespace-nowrap">
+            <TableCell label="Visits" title={visits.toLocaleString(locale)} className="whitespace-nowrap">
               {visits.toLocaleString(locale, { notation: "compact" })}
             </TableCell>
-            <TableCell className="whitespace-nowrap">{formatPrice(today)}</TableCell>
-            <TableCell className="whitespace-nowrap">{formatPrice(last_7)}</TableCell>
-            <TableCell className="whitespace-nowrap">{formatPrice(last_30)}</TableCell>
+            <TableCell label="Today" className="whitespace-nowrap">
+              {formatPrice(today)}
+            </TableCell>
+            <TableCell label="Last 7 days" className="whitespace-nowrap">
+              {formatPrice(last_7)}
+            </TableCell>
+            <TableCell label="Last 30 days" className="whitespace-nowrap">
+              {formatPrice(last_30)}
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -328,15 +335,11 @@ export const DashboardPage = ({
         <div role="alert" className="info">
           <div>
             Your 1099 tax form for {new Date().getFullYear() - 1} is ready!{" "}
-            <a
-              href={
-                tax_center_enabled
-                  ? Routes.tax_center_path({ year: new Date().getFullYear() - 1 })
-                  : Routes.dashboard_download_tax_form_path()
-              }
-            >
-              Click here to download
-            </a>
+            {tax_center_enabled ? (
+              <Link href={Routes.tax_center_path({ year: new Date().getFullYear() - 1 })}>Click here to download</Link>
+            ) : (
+              <a href={Routes.dashboard_download_tax_form_path()}>Click here to download</a>
+            )}
             .
           </div>
         </div>
