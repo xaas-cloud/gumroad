@@ -46,14 +46,14 @@ export const BundleProductItem = ({
       </CartItemMedia>
       <CartItemMain className="h-20 justify-center self-stretch border-l border-border p-4">
         <CartItemTitle>{bundleProduct.name}</CartItemTitle>
-        <CartItemFooter>
-          <span className="sr-only">Qty: {bundleProduct.quantity}</span>
-          {selectedVariant ? (
-            <span>
+        <span className="sr-only">Qty: {bundleProduct.quantity}</span>
+        {selectedVariant ? (
+          <CartItemFooter>
+            <span className="line-clamp-1">
               <strong>{variantLabel(bundleProduct.native_type)}:</strong> {selectedVariant.name}
             </span>
-          ) : null}
-        </CartItemFooter>
+          </CartItemFooter>
+        ) : null}
       </CartItemMain>
       <CartItemEnd className="mt-auto flex-row gap-4 p-4">
         {bundleProduct.is_quantity_enabled || bundleProduct.variants ? (
