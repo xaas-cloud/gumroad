@@ -277,7 +277,7 @@ const MenubarItem = ({
       onMouseLeave={closeAfterDelay}
     >
       <Popover open={menuOpen}>
-        <PopoverTrigger>{menuItemAnchor}</PopoverTrigger>
+        <PopoverTrigger asChild>{menuItemAnchor}</PopoverTrigger>
         <PopoverContent className="border-0 p-0 shadow-none" arrowClassName="dark:fill-black/35" usePortal>
           <ItemsList
             key={`${uid}-${menuOpen}`}

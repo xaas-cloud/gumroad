@@ -161,7 +161,9 @@ describe "Products Page Scenario", type: :system, js: true do
         select_disclosure "Open product action menu" do
           click_on "Duplicate"
         end
-        expect(page).to have_menuitem("Duplicating...", disabled: true)
+        select_disclosure "Open product action menu" do
+          expect(page).to have_menuitem("Duplicating...", disabled: true)
+        end
       end
       expect(page).to have_alert(text: "Duplicating the product. You will be notified once it's ready.")
     end
@@ -174,7 +176,9 @@ describe "Products Page Scenario", type: :system, js: true do
         select_disclosure "Open product action menu" do
           click_on "Duplicate"
         end
-        expect(page).to have_menuitem("Duplicating...", disabled: true)
+        select_disclosure "Open product action menu" do
+          expect(page).to have_menuitem("Duplicating...", disabled: true)
+        end
       end
     end
 
@@ -186,7 +190,9 @@ describe "Products Page Scenario", type: :system, js: true do
         select_disclosure "Open product action menu" do
           click_on "Duplicate"
         end
-        expect(page).to have_menuitem("Duplicating...", disabled: true)
+        select_disclosure "Open product action menu" do
+          expect(page).to have_menuitem("Duplicating...", disabled: true)
+        end
       end
       expect(page).to have_alert(text: "Duplication in progress...")
     end
@@ -490,7 +496,6 @@ describe "Products Page Scenario", type: :system, js: true do
       product = create(:product, user: seller, name: "Chicken", unique_permalink: "chicken")
       visit(products_path)
 
-      expect(page).to have_field("Search products", visible: false)
       table = find(:table, "Products").find("tbody")
       expect(table).to have_selector(:table_row, count: 2)
       expect(page).to have_selector("[aria-label='Pagination']")

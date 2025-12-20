@@ -75,7 +75,7 @@ RSpec.shared_examples_for "a product with 'Download all' buttons on file embed g
     visit(url)
 
     within_file_group("folder 1") do
-      expect(page).to have_disclosure("Download all")
+      expect(page).to have_disclosure_button("Download all")
     end
 
     within_file_group("Untitled") do

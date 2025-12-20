@@ -169,11 +169,11 @@ describe "User profile page", type: :system, js: true do
       end
 
       def add_section(type)
-        all(:disclosure, "Add section").last.select_disclosure do
+        all(:disclosure_button, "Add section").last.select_disclosure do
           click_on type
         end
         sleep 1
-        all(:disclosure, "Edit section").last.select_disclosure do
+        all(:disclosure_button, "Edit section").last.select_disclosure do
           click_on "Name"
           fill_in "Name", with: "New section"
         end

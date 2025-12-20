@@ -455,8 +455,8 @@ describe("Library Scenario", type: :system, js: true) do
 
     within find_product_card(purchase.link).hover do
       find_and_click "[aria-label='Open product action menu']"
-      click_on "Delete"
     end
+    click_on "Delete permanently"
     expect(page).to have_text("Are you sure you want to delete #{purchase.link_name}?")
     click_on "Confirm"
 
