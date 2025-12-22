@@ -223,7 +223,7 @@ export default function AffiliatesEdit() {
                       type="url"
                       value={data.affiliate.destination_url || ""}
                       placeholder="https://link.com"
-                      onChange={(e) => setData("affiliate", { ...data.affiliate, destination_url: e.target.value })}
+                      onChange={(e) => setData("affiliate.destination_url", e.target.value)}
                       disabled={processing || !applyToAllProducts}
                     />
                   </fieldset>

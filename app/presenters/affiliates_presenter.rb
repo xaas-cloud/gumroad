@@ -35,7 +35,7 @@ class AffiliatesPresenter
   def onboarding_props
     {
       creator_subdomain: seller.subdomain,
-      products: self_service_affiliate_product_details.values.sort_by { |product| [product[:enabled] ? 0 : 1, product[:name]] },
+      products: products_props,
       disable_global_affiliate: seller.disable_global_affiliate?,
       global_affiliate_percentage: seller.global_affiliate.affiliate_percentage,
       affiliates_disabled_reason:,
@@ -43,7 +43,7 @@ class AffiliatesPresenter
   end
 
   def new_affiliate_props
-    products = onboarding_props[:products].map do |product|
+    products = products_props.map do |product|
       product.merge(enabled: false, fee_percent: nil, referral_url: "", destination_url: nil)
     end
 
@@ -80,6 +80,10 @@ class AffiliatesPresenter
 
     def affiliates_disabled_reason
       seller.has_brazilian_stripe_connect_account? ? "Affiliates with Brazilian Stripe accounts are not supported." : nil
+    end
+
+    def products_props
+      self_service_affiliate_product_details.values.sort_by { |product| [product[:enabled] ? 0 : 1, product[:name]] }
     end
 
     def existing_self_service_affiliate_product_details(self_service_affiliate_product)

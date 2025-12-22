@@ -8,6 +8,7 @@ class AffiliatesController < Sellers::BaseController
   after_action :verify_authorized, except: PUBLIC_ACTIONS
 
   before_action :set_direct_affiliate, only: PUBLIC_ACTIONS
+  before_action :set_affiliate, only: %i[edit update destroy statistics]
   before_action :set_title
   before_action :hide_layouts, only: PUBLIC_ACTIONS
 
@@ -51,9 +52,6 @@ class AffiliatesController < Sellers::BaseController
   end
 
   def edit
-    @affiliate = current_seller.direct_affiliates.find_by_external_id(params[:id])
-    return e404 if @affiliate.nil?
-
     authorize @affiliate, :update?
 
     presenter = AffiliatesPresenter.new(pundit_user)
@@ -73,10 +71,9 @@ class AffiliatesController < Sellers::BaseController
   end
 
   def statistics
-    affiliate = current_seller.direct_affiliates.find_by_external_id!(params[:id])
-    authorize affiliate
+    authorize @affiliate
 
-    products = affiliate.product_sales_info
+    products = @affiliate.product_sales_info
     total_volume_cents = products.values.sum { _1[:volume_cents] }
 
     render json: { total_volume_cents:, products: }
@@ -96,9 +93,6 @@ class AffiliatesController < Sellers::BaseController
   end
 
   def update
-    @affiliate = current_seller.direct_affiliates.find_by_external_id(params[:id])
-    return e404 if @affiliate.nil?
-
     authorize @affiliate, :update?
 
     result = process_affiliate_params(@affiliate)
@@ -111,9 +105,6 @@ class AffiliatesController < Sellers::BaseController
   end
 
   def destroy
-    @affiliate = current_seller.direct_affiliates.find_by_external_id(params[:id])
-    return e404 if @affiliate.nil?
-
     authorize @affiliate, :destroy?
 
     @affiliate.mark_deleted!
@@ -232,6 +223,11 @@ class AffiliatesController < Sellers::BaseController
 
     def set_direct_affiliate
       @direct_affiliate = DirectAffiliate.find_by_external_id(params[:id])
+    end
+
+    def set_affiliate
+      @affiliate = current_seller.direct_affiliates.find_by_external_id(params[:id])
+      e404 if @affiliate.nil?
     end
 
     def extract_sort_params
