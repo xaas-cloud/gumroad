@@ -42,7 +42,6 @@ export default function EmailsScheduled() {
     [installments, userAgentInfo.locale, currentSeller.timeZone.name],
   );
 
-  // Use shared hook for audience counts
   const audienceCounts = useAudienceCounts(installments);
 
   const [selectedInstallmentId, setSelectedInstallmentId] = React.useState<string | null>(null);
@@ -55,7 +54,6 @@ export default function EmailsScheduled() {
   const handleLoadMore = () => {
     if (!pagination.next) return;
     setIsLoadingMore(true);
-    // Server uses InertiaRails.merge, so items will be appended automatically
     router.reload({
       data: { page: pagination.next },
       only: ["installments", "pagination"],
