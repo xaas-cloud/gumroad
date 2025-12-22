@@ -45,8 +45,6 @@ import GenerateInvoicePage from "$app/components/server-components/GenerateInvoi
 import GumroadBlogIndexPage from "$app/components/server-components/GumroadBlog/IndexPage";
 import GumroadBlogPostPage from "$app/components/server-components/GumroadBlog/PostPage";
 import HelpCenterArticlesIndexPage from "$app/components/server-components/HelpCenter/ArticlesIndexPage";
-import LibraryPage from "$app/components/server-components/LibraryPage";
-import LoginPage from "$app/components/server-components/LoginPage";
 import Nav from "$app/components/server-components/Nav";
 import PasswordResetPage from "$app/components/server-components/PasswordResetPage";
 import PayoutCreditCard from "$app/components/server-components/PayoutPage/CreditCard";
@@ -137,8 +135,6 @@ ReactOnRails.register({
   GenerateInvoicePage,
   GumroadBlogIndexPage,
   GumroadBlogPostPage,
-  LibraryPage,
-  LoginPage,
   MainSettingsPage,
   Nav,
   PasswordResetPage,
