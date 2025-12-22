@@ -25,7 +25,12 @@ class EmailsController < Sellers::BaseController
       page: params[:page],
       query: params[:query],
     )
-    render inertia: "Emails/Published", props: presenter.props
+    props = presenter.props
+    render inertia: "Emails/Published", props: {
+      installments: InertiaRails.merge { props[:installments] },
+      pagination: props[:pagination],
+      has_posts: props[:has_posts],
+    }
   end
 
   def scheduled
@@ -38,7 +43,12 @@ class EmailsController < Sellers::BaseController
       page: params[:page],
       query: params[:query],
     )
-    render inertia: "Emails/Scheduled", props: presenter.props
+    props = presenter.props
+    render inertia: "Emails/Scheduled", props: {
+      installments: InertiaRails.merge { props[:installments] },
+      pagination: props[:pagination],
+      has_posts: props[:has_posts],
+    }
   end
 
   def drafts
@@ -51,7 +61,12 @@ class EmailsController < Sellers::BaseController
       page: params[:page],
       query: params[:query],
     )
-    render inertia: "Emails/Drafts", props: presenter.props
+    props = presenter.props
+    render inertia: "Emails/Drafts", props: {
+      installments: InertiaRails.merge { props[:installments] },
+      pagination: props[:pagination],
+      has_posts: props[:has_posts],
+    }
   end
 
   def new

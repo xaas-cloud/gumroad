@@ -6,14 +6,13 @@ import { Pagination, PublishedInstallment } from "$app/data/installments";
 import { assertDefined } from "$app/utils/assert";
 import { formatStatNumber } from "$app/utils/formatStatNumber";
 
-import { Button, NavigationButton } from "$app/components/Button";
+
 import { useCurrentSeller } from "$app/components/CurrentSeller";
 import { EmptyStatePlaceholder } from "$app/components/EmailsPage/EmptyStatePlaceholder";
-import { EditEmailButton, EmailsLayout, NewEmailButton } from "$app/components/EmailsPage/Layout";
-import { ViewEmailButton } from "$app/components/EmailsPage/ViewEmailButton";
+import { EmailsLayout } from "$app/components/EmailsPage/Layout";
+import { DeleteEmailModal, EmailSheetActions, LoadMoreButton } from "$app/components/EmailsPage/shared";
+
 import { Icon } from "$app/components/Icons";
-import { Modal } from "$app/components/Modal";
-import { showAlert } from "$app/components/server-components/Alert";
 import { Sheet, SheetHeader } from "$app/components/ui/Sheet";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "$app/components/ui/Table";
 import { useUserAgentInfo } from "$app/components/UserAgent";
@@ -28,30 +27,23 @@ type PageProps = {
 };
 
 export default function EmailsPublished() {
-  const pageProps = cast<PageProps>(usePage().props);
-  const { installments, pagination, has_posts } = pageProps;
+  const { installments, pagination, has_posts } = cast<PageProps>(usePage().props);
+
   const currentSeller = assertDefined(useCurrentSeller(), "currentSeller is required");
   const [selectedInstallmentId, setSelectedInstallmentId] = React.useState<string | null>(null);
-  const [deletingInstallment, setDeletingInstallment] = React.useState<{
-    id: string;
-    name: string;
-    state: "delete-confirmation" | "deleting";
-  } | null>(null);
+  const [deletingInstallment, setDeletingInstallment] = React.useState<{ id: string; name: string } | null>(null);
+  const [isLoadingMore, setIsLoadingMore] = React.useState(false);
   const selectedInstallment = selectedInstallmentId
     ? (installments.find((i) => i.external_id === selectedInstallmentId) ?? null)
     : null;
 
-  const handleDelete = () => {
-    if (!deletingInstallment) return;
-    setDeletingInstallment({ ...deletingInstallment, state: "deleting" });
-    router.delete(Routes.email_path(deletingInstallment.id), {
-      onSuccess: () => {
-        setDeletingInstallment(null);
-      },
-      onError: () => {
-        setDeletingInstallment({ ...deletingInstallment, state: "delete-confirmation" });
-        showAlert("Sorry, something went wrong. Please try again.", "error");
-      },
+  const handleLoadMore = () => {
+    if (!pagination.next) return;
+    setIsLoadingMore(true);
+    router.reload({
+      data: { page: pagination.next },
+      only: ["installments", "pagination"],
+      onFinish: () => setIsLoadingMore(false),
     });
   };
 
@@ -62,10 +54,7 @@ export default function EmailsPublished() {
       <div className="space-y-4 p-4 md:p-8">
         {installments.length > 0 ? (
           <>
-            <Table
-              aria-live="polite"
-              aria-label="Published"
-            >
+            <Table aria-live="polite" aria-label="Published">
               <TableHeader>
                 <TableRow>
                   <TableHead>Subject</TableHead>
@@ -144,16 +133,7 @@ export default function EmailsPublished() {
                 ))}
               </TableBody>
             </Table>
-            {pagination.next ? (
-              <Button
-                color="primary"
-                onClick={() => {
-                  router.reload({ data: { page: pagination.next } });
-                }}
-              >
-                Load more
-              </Button>
-            ) : null}
+            {pagination.next ? <LoadMoreButton isLoading={isLoadingMore} onClick={handleLoadMore} /> : null}
             {selectedInstallment ? (
               <Sheet open onOpenChange={() => setSelectedInstallmentId(null)}>
                 <SheetHeader>{selectedInstallment.name}</SheetHeader>
@@ -194,65 +174,22 @@ export default function EmailsPublished() {
                     })}
                   </div>
                 </div>
-                <div className="grid grid-flow-col gap-4">
-                  {selectedInstallment.send_emails ? <ViewEmailButton installment={selectedInstallment} /> : null}
-                  {selectedInstallment.shown_on_profile ? (
-                    <NavigationButton href={selectedInstallment.full_url} target="_blank" rel="noopener noreferrer">
-                      <Icon name="file-earmark-medical-fill"></Icon>
-                      View post
-                    </NavigationButton>
-                  ) : null}
-                </div>
-                <div className="grid grid-flow-col gap-4">
-                  <NewEmailButton copyFrom={selectedInstallment.external_id} />
-                  <EditEmailButton id={selectedInstallment.external_id} />
-                  <Button
-                    color="danger"
-                    onClick={() =>
-                      setDeletingInstallment({
-                        id: selectedInstallment.external_id,
-                        name: selectedInstallment.name,
-                        state: "delete-confirmation",
-                      })
-                    }
-                  >
-                    Delete
-                  </Button>
-                </div>
+                <EmailSheetActions
+                  installment={selectedInstallment}
+                  onDelete={() =>
+                    setDeletingInstallment({
+                      id: selectedInstallment.external_id,
+                      name: selectedInstallment.name,
+                    })
+                  }
+                />
               </Sheet>
             ) : null}
-            {deletingInstallment ? (
-              <Modal
-                open
-                allowClose={deletingInstallment.state === "delete-confirmation"}
-                onClose={() => setDeletingInstallment(null)}
-                title="Delete email?"
-                footer={
-                  <>
-                    <Button
-                      disabled={deletingInstallment.state === "deleting"}
-                      onClick={() => setDeletingInstallment(null)}
-                    >
-                      Cancel
-                    </Button>
-                    {deletingInstallment.state === "deleting" ? (
-                      <Button color="danger" disabled>
-                        Deleting...
-                      </Button>
-                    ) : (
-                      <Button color="danger" onClick={() => void handleDelete()}>
-                        Delete email
-                      </Button>
-                    )}
-                  </>
-                }
-              >
-                <h4>
-                  Are you sure you want to delete the email "{deletingInstallment.name}"? Customers who had access will
-                  no longer be able to see it. This action cannot be undone.
-                </h4>
-              </Modal>
-            ) : null}
+            <DeleteEmailModal
+              installment={deletingInstallment}
+              onClose={() => setDeletingInstallment(null)}
+              warningMessage="Customers who had access will no longer be able to see it. This action cannot be undone."
+            />
           </>
         ) : (
           <EmptyStatePlaceholder

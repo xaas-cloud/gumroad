@@ -205,7 +205,7 @@ export const EmailForm = ({ context, installment }: EmailFormProps) => {
       window.open(fullUrl, "_blank");
       urlParams.delete("preview_post");
       const newUrl = window.location.pathname + (urlParams.toString() ? `?${urlParams.toString()}` : "");
-      router.visit(newUrl, { replace: true, preserveState: true, preserveScroll: true, only: [] });
+      router.replace({ url: newUrl, preserveState: true, preserveScroll: true });
     }
   }, [installment?.full_url]);
   const [bought, setBought] = React.useState<string[]>(() => {
@@ -231,12 +231,21 @@ export const EmailForm = ({ context, installment }: EmailFormProps) => {
   const [allowComments, setAllowComments] = React.useState(
     installment?.allow_comments ?? context.allow_comments_by_default,
   );
-  const [title, setTitle] = React.useState(installment?.name ?? "");
   const [publishDate, setPublishDate] = React.useState(toISODateString(installment?.published_at));
   React.useEffect(() => setPublishDate(toISODateString(installment?.published_at)), [installment]);
-  const [message, setMessage] = React.useState(installment?.message ?? "");
-  const [initialMessage, setInitialMessage] = React.useState<Content>(message);
-  const handleMessageChange = useDebouncedCallback(setMessage, 500);
+
+  const form = useForm({
+    installment: {
+      name: installment?.name ?? "",
+      message: installment?.message ?? "",
+    },
+  });
+
+  const handleMessageChange = useDebouncedCallback((newMessage: string) => {
+    form.setData("installment", { ...form.data.installment, message: newMessage });
+  }, 500);
+
+  const [initialMessage, setInitialMessage] = React.useState<Content>(form.data.installment.message);
   const [messageEditor, setMessageEditor] = React.useState<Editor | null>(null);
   React.useEffect(() => {
     if (initialMessage !== "" && messageEditor?.isEmpty) {
@@ -331,7 +340,7 @@ export const EmailForm = ({ context, installment }: EmailFormProps) => {
 
     if (template === "content_updates" && permalink) {
       const bought = searchParams.getAll("bought[]");
-      setTitle(`New content added to ${productName}`);
+      form.setData("installment", { ...form.data.installment, name: `New content added to ${productName}` });
       setBought(bought);
       setAudienceType("customers");
       setChannel({ profile: false, email: true });
@@ -388,7 +397,7 @@ export const EmailForm = ({ context, installment }: EmailFormProps) => {
         setAudienceType("customers");
         setBought([permalink]);
       }
-      setTitle(`${productName} - updated!`);
+      form.setData("installment", { ...form.data.installment, name: `${productName} - updated!` });
       setInitialMessage({
         type: "doc",
         content: [
@@ -415,7 +424,7 @@ export const EmailForm = ({ context, installment }: EmailFormProps) => {
       const bundleName = searchParams.get("bundle_name");
       const bundlePermalink = searchParams.get("bundle_permalink");
       if (bundleName && bundlePermalink) {
-        setTitle(`Introducing ${bundleName}`);
+        form.setData("installment", { ...form.data.installment, name: `Introducing ${bundleName}` });
         setInitialMessage({ type: "doc", content: getBundleMarketingMessage(searchParams) });
       }
     }
@@ -492,7 +501,7 @@ export const EmailForm = ({ context, installment }: EmailFormProps) => {
     const invalidFieldRefsAndErrors: [React.RefObject<HTMLElement> | null, string][] = [];
     const invalidFieldNames = new Set<InvalidFieldName>();
 
-    if (title.trim() === "") {
+    if (form.data.installment.name.trim() === "") {
       invalidFieldNames.add("title");
       invalidFieldRefsAndErrors.push([titleRef, "Please set a title."]);
     }
@@ -555,8 +564,6 @@ export const EmailForm = ({ context, installment }: EmailFormProps) => {
     }
   };
 
-  const form = useForm({});
-
   // Keep isSaving for countdown feature (separate from form submission)
   const [isSaving, setIsSaving] = React.useState(false);
 
@@ -565,8 +572,8 @@ export const EmailForm = ({ context, installment }: EmailFormProps) => {
 
     const payload = {
       installment: {
-        name: title,
-        message,
+        name: form.data.installment.name,
+        message: form.data.installment.message,
         files: files.map((file, position) => ({
           external_id: file.id,
           position,
@@ -1076,9 +1083,9 @@ export const EmailForm = ({ context, installment }: EmailFormProps) => {
                     type="text"
                     placeholder="Title"
                     maxLength={255}
-                    value={title}
+                    value={form.data.installment.name}
                     onChange={(e) => {
-                      setTitle(e.target.value);
+                      form.setData("installment", { ...form.data.installment, name: e.target.value });
                       markFieldAsValid("title");
                     }}
                   />

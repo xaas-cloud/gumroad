@@ -142,4 +142,108 @@ describe EmailsController, type: :controller, inertia: true do
       end
     end
   end
+
+  describe "POST create" do
+    it_behaves_like "authorize called for action", :post, :create do
+      let(:record) { Installment }
+      let(:request_params) { { installment: { subject: "Test Email" } } }
+    end
+
+    context "when save is successful" do
+      before do
+        allow_any_instance_of(SaveInstallmentService).to receive(:process).and_return(true)
+        allow_any_instance_of(SaveInstallmentService).to receive(:installment).and_return(build(:installment, seller:))
+      end
+
+      it "redirects to emails path with success notice" do
+        post :create, params: { installment: { subject: "Test Email" } }
+
+        expect(response).to redirect_to(emails_path)
+        expect(flash[:notice]).to eq("Email saved successfully.")
+      end
+
+      it "redirects to edit path when save_and_preview_post is clicked" do
+        installment = create(:installment, seller:)
+        allow_any_instance_of(SaveInstallmentService).to receive(:installment).and_return(installment)
+
+        post :create, params: { installment: { subject: "Test Email" }, save_action_name: "save_and_preview_post" }
+
+        expect(response).to redirect_to(edit_email_path(installment.external_id, preview_post: true))
+        expect(flash[:notice]).to eq("Email saved successfully.")
+      end
+    end
+
+    context "when save fails" do
+      before do
+        allow_any_instance_of(SaveInstallmentService).to receive(:process).and_return(false)
+        allow_any_instance_of(SaveInstallmentService).to receive(:error).and_return("Something went wrong")
+      end
+
+      it "redirects to new email path with alert" do
+        post :create, params: { installment: { subject: "Test Email" } }
+
+        expect(response).to redirect_to(new_email_path)
+        expect(flash[:alert]).to eq("Something went wrong")
+      end
+    end
+  end
+
+  describe "PATCH update" do
+    let(:installment) { create(:installment, seller:) }
+
+    it_behaves_like "authorize called for action", :patch, :update do
+      let(:record) { installment }
+      let(:request_params) { { id: installment.external_id, installment: { subject: "Updated Email" } } }
+    end
+
+    context "when save is successful" do
+      before do
+        allow_any_instance_of(SaveInstallmentService).to receive(:process).and_return(true)
+        allow_any_instance_of(SaveInstallmentService).to receive(:installment).and_return(installment)
+      end
+
+      it "redirects to emails path with success notice" do
+        patch :update, params: { id: installment.external_id, installment: { subject: "Updated Email" } }
+
+        expect(response).to redirect_to(emails_path)
+        expect(flash[:notice]).to eq("Email saved successfully.")
+      end
+    end
+
+    context "when save fails" do
+      before do
+        allow_any_instance_of(SaveInstallmentService).to receive(:process).and_return(false)
+        allow_any_instance_of(SaveInstallmentService).to receive(:error).and_return("Something went wrong")
+      end
+
+      it "redirects to edit email path with alert" do
+        patch :update, params: { id: installment.external_id, installment: { subject: "Updated Email" } }
+
+        expect(response).to redirect_to(edit_email_path(installment.external_id))
+        expect(flash[:alert]).to eq("Something went wrong")
+      end
+    end
+  end
+
+  describe "DELETE destroy" do
+    let!(:installment) { create(:installment, seller:) }
+
+    it_behaves_like "authorize called for action", :delete, :destroy do
+      let(:record) { installment }
+      let(:request_params) { { id: installment.external_id } }
+    end
+
+    it "destroys the installment" do
+      expect {
+        delete :destroy, params: { id: installment.external_id }
+      }.to change(Installment, :count).by(-1)
+    end
+
+    it "redirects to emails path with success notice" do
+      delete :destroy, params: { id: installment.external_id }
+
+      expect(response).to redirect_to(emails_path)
+      expect(flash[:notice]).to eq("Email deleted!")
+    end
+  end
 end
