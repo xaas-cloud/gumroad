@@ -201,6 +201,19 @@ describe Products::ArchivedController, inertia: true do
       expect(membership.archived?).to be(true)
       expect(membership.purchase_disabled_at).to be_present
     end
+
+    it "does not change purchase_disabled_at on an already unpublished product" do
+      original_disabled_at = 1.week.ago
+      membership.update!(purchase_disabled_at: original_disabled_at)
+      original_disabled_at = membership.reload.purchase_disabled_at
+
+      post :create, params: { id: membership.unique_permalink }, as: :json
+
+      expect(response).to have_http_status(:ok)
+      membership.reload
+      expect(membership.archived?).to be(true)
+      expect(membership.purchase_disabled_at).to eq(original_disabled_at)
+    end
   end
 
   describe "DELETE destroy" do
