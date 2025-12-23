@@ -627,42 +627,4 @@ describe Api::Internal::InstallmentsController do
       expect(response.parsed_body).to eq("message" => "Please include a message as part of the update.")
     end
   end
-
-  describe "DELETE destroy" do
-    let(:installment) { create(:installment, seller:) }
-    let(:installment_rule) { create(:installment_rule, installment:) }
-
-    it_behaves_like "authentication required for action", :delete, :destroy do
-      let(:request_params) { { id: installment.external_id } }
-    end
-
-    it_behaves_like "authorize called for action", :delete, :destroy do
-      let(:record) { installment }
-      let(:request_params) { { id: installment.external_id } }
-    end
-
-    it "marks the installment as deleted" do
-      expect do
-        delete :destroy, params: { id: installment.external_id }, format: :json
-      end.to change { installment.reload.deleted_at }.from(nil).to(be_within(5.seconds).of(DateTime.current))
-         .and change { installment_rule.reload.deleted_at }.from(nil).to(be_within(5.seconds).of(DateTime.current))
-
-      expect(response).to be_successful
-      expect(response.parsed_body).to eq("success" => true)
-    end
-
-    it "returns an error if the installment cannot be deleted" do
-      installment.published_at = DateTime.current + 1.day
-      installment.save(validate: false)
-
-      expect do
-        expect do
-          delete :destroy, params: { id: installment.external_id }, format: :json
-        end.to_not change { installment.reload.deleted_at }
-      end.to_not change { installment_rule.reload.deleted_at }
-
-      expect(response).to be_successful
-      expect(response.parsed_body).to eq("success" => false, "message" => "Sorry, something went wrong. Please try again.")
-    end
-  end
 end

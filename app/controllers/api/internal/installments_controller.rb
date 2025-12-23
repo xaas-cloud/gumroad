@@ -3,8 +3,8 @@
 class Api::Internal::InstallmentsController < Api::Internal::BaseController
   before_action :authenticate_user!
   after_action :verify_authorized
-  before_action :set_installment, only: %i[edit update destroy]
-  before_action :authorize_user, only: %i[edit update destroy]
+  before_action :set_installment, only: %i[edit update]
+  before_action :authorize_user, only: %i[edit update]
 
   def index
     authorize Installment
@@ -34,16 +34,6 @@ class Api::Internal::InstallmentsController < Api::Internal::BaseController
 
   def update
     save_installment
-  end
-
-  def destroy
-    if @installment.mark_deleted
-      @installment.installment_rule&.mark_deleted!
-
-      render json: { success: true }
-    else
-      render json: { success: false, message: "Sorry, something went wrong. Please try again." }
-    end
   end
 
   private

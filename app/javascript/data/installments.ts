@@ -190,19 +190,6 @@ export function getRecipientCount(requestPayload: RecipientCountRequestPayload) 
   };
 }
 
-export async function deleteInstallment(externalId: string) {
-  const response = await request({
-    method: "DELETE",
-    accept: "json",
-    url: Routes.internal_installment_path(externalId),
-  });
-
-  if (!response.ok) throw new ResponseError();
-  const responseData = cast<{ success: true } | { success: false; message: string }>(await response.json());
-  if (!responseData.success) throw new ResponseError(responseData.message);
-  return responseData;
-}
-
 export async function getNewInstallment(copy_from: string | null = null) {
   const response = await request({
     method: "GET",
