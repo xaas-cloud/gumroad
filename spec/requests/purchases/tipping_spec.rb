@@ -129,7 +129,7 @@ describe("Product checkout with tipping", type: :system, js: true) do
 
     it "does not show tip selector and allows checkout without tip" do
       visit free_product.long_url
-      add_to_cart(free_product)
+      add_to_cart(free_product, pwyw_price: 0)
 
       expect(page).not_to have_text("Add a tip")
       expect(page).not_to have_radio_button("0%")
