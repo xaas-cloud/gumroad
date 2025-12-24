@@ -5,9 +5,12 @@ import { useOriginalLocation } from "$app/components/useOriginalLocation";
 import { useFeatureFlags } from "$app/components/FeatureFlags";
 
 export const SocialAuth = () => {
-  const next = new URL(useOriginalLocation()).searchParams.get("next");
+  const originalLocation = useOriginalLocation();
   const featureFlags = useFeatureFlags();
-  const showStripe = window.location.pathname === "/signup" ? !featureFlags.disable_stripe_signup : true;
+
+  const next = new URL(originalLocation).searchParams.get("next");
+  const isSignupPage = new URL(originalLocation).pathname === "/signup";
+  const showStripe = isSignupPage ? !featureFlags.disable_stripe_signup : true;
   return (
     <section className="flex flex-col gap-4">
       <SocialAuthButton provider="facebook" href={Routes.user_facebook_omniauth_authorize_path({ referer: next })}>
