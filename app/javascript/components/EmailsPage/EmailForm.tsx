@@ -80,7 +80,7 @@ const getRecipientType = (audienceType: AudienceType, boughtItems: ProductOrVari
 const selectableProductOptions = (options: ProductOrVariantOption[], alwaysIncludeIds: string[]) =>
   options.filter((option) => alwaysIncludeIds.includes(option.id) || !option.archived);
 
-const getBundleMarketingMessage = (searchParams: URLSearchParams) => {
+const getBundleMarketingMessage = (searchParams: URLSearchParams, host: string, protocol: string) => {
   const bundleName = searchParams.get("bundle_name");
   const bundlePermalink = searchParams.get("bundle_permalink");
   if (!bundleName || !bundlePermalink) return [];
@@ -126,7 +126,7 @@ I've put together a bundle of my products that I think you'll love.`.split("\n")
                       {
                         type: "link",
                         attrs: {
-                          href: Routes.short_link_url(assertDefined(permalinks[index])),
+                          href: Routes.short_link_url(assertDefined(permalinks[index]), { host, protocol }),
                           rel: "noopener noreferrer nofollow",
                           target: "_blank",
                         },
@@ -143,7 +143,7 @@ I've put together a bundle of my products that I think you'll love.`.split("\n")
   messageContent.push({
     type: "button",
     attrs: {
-      href: Routes.short_link_url(bundlePermalink),
+      href: Routes.short_link_url(bundlePermalink, { host, protocol }),
       rel: "noopener noreferrer nofollow",
       target: "_blank",
     },
@@ -174,10 +174,16 @@ type EmailFormProps = {
   installment: Installment | null;
 };
 
-const parseInitialValue = (value: string) => {
+const isJSONContent = (value: unknown): value is JSONContent =>
+  value !== null && typeof value === "object" && "type" in value;
+
+const parseInitialValue = (value: string): string | JSONContent => {
   try {
-    const parsed = JSON.parse(value);
-    if (parsed && typeof parsed === "object" && "type" in parsed) {
+    let parsed: unknown = JSON.parse(value);
+    if (typeof parsed === "string") {
+      parsed = JSON.parse(parsed);
+    }
+    if (isJSONContent(parsed)) {
       return parsed;
     }
   } catch {}
@@ -354,48 +360,51 @@ export const EmailForm = ({ context, installment }: EmailFormProps) => {
       setBought(bought);
       setAudienceType("customers");
       setChannel({ profile: false, email: true });
-      form.setData("installment.message", JSON.stringify({
-        type: "doc",
-        content: [
-          {
-            type: "paragraph",
-            content: [
-              {
-                type: "text",
-                text: "New content has been added to ",
-              },
-              {
-                type: "text",
-                marks: [
-                  {
-                    type: "link",
-                    attrs: {
-                      href: Routes.short_link_url(permalink, {
-                        host: currentSeller.subdomain || appDomain,
-                        protocol: window.location.protocol.replace(":", ""),
-                      }),
+      form.setData(
+        "installment.message",
+        JSON.stringify({
+          type: "doc",
+          content: [
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: "New content has been added to ",
+                },
+                {
+                  type: "text",
+                  marks: [
+                    {
+                      type: "link",
+                      attrs: {
+                        href: Routes.short_link_url(permalink, {
+                          host: currentSeller.subdomain || appDomain,
+                          protocol: window.location.protocol.replace(":", ""),
+                        }),
+                      },
                     },
-                  },
-                ],
-                text: productName ?? "your product",
-              },
-              {
-                type: "text",
-                text: ".",
-              },
-            ],
-          },
-          {
-            type: "paragraph",
-            content: [
-              {
-                type: "text",
-                text: "You can access it by visiting your Gumroad Library or through the link in your email receipt.",
-              },
-            ],
-          },
-        ],
-      }));
+                  ],
+                  text: productName ?? "your product",
+                },
+                {
+                  type: "text",
+                  text: ".",
+                },
+              ],
+            },
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: "You can access it by visiting your Gumroad Library or through the link in your email receipt.",
+                },
+              ],
+            },
+          ],
+        }),
+      );
 
       return;
     }
@@ -441,7 +450,14 @@ export const EmailForm = ({ context, installment }: EmailFormProps) => {
         form.setData("installment.name", `Introducing ${bundleName}`);
         form.setData(
           "installment.message",
-          JSON.stringify({ type: "doc", content: getBundleMarketingMessage(searchParams) }),
+          JSON.stringify({
+            type: "doc",
+            content: getBundleMarketingMessage(
+              searchParams,
+              window.location.host,
+              window.location.protocol.replace(":", ""),
+            ),
+          }),
         );
       }
     }

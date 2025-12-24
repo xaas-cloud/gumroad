@@ -135,8 +135,12 @@ class EmailsController < Sellers::BaseController
 
         if params[:save_action_name] == "save_and_preview_post"
           redirect_to edit_email_path(service.installment.external_id, preview_post: true), notice: notice_message, status: :see_other
+        elsif params[:save_action_name] == "save_and_publish"
+          redirect_to published_emails_path, notice: notice_message, status: :see_other
+        elsif params[:save_action_name] == "save_and_schedule"
+          redirect_to scheduled_emails_path, notice: notice_message, status: :see_other
         else
-          redirect_to emails_path, notice: notice_message, status: :see_other
+          redirect_to edit_email_path(service.installment.external_id), notice: notice_message, status: :see_other
         end
       elsif @installment
         redirect_to edit_email_path(@installment.external_id), alert: service.error

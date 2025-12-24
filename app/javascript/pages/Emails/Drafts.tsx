@@ -16,9 +16,9 @@ import {
   LoadMoreButton,
   useAudienceCounts,
 } from "$app/components/EmailsPage/shared";
+import { useEmailSearch } from "$app/components/EmailsPage/useEmailSearch";
 import { Sheet, SheetHeader } from "$app/components/ui/Sheet";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "$app/components/ui/Table";
-import { useDebouncedCallback } from "$app/components/useDebouncedCallback";
 import { useUserAgentInfo } from "$app/components/UserAgent";
 
 import draftsPlaceholder from "$assets/images/placeholders/draft_posts.png";
@@ -42,26 +42,7 @@ export default function EmailsDrafts() {
   const [deletingInstallment, setDeletingInstallment] = React.useState<{ id: string; name: string } | null>(null);
   const [isLoadingMore, setIsLoadingMore] = React.useState(false);
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const initialQuery = urlParams.get("query") || "";
-  const [query, setQuery] = React.useState(initialQuery);
-  const isInitialMount = React.useRef(true);
-
-  const debouncedSearch = useDebouncedCallback((searchQuery: string) => {
-    router.reload({
-      data: { query: searchQuery || undefined, page: undefined },
-      only: ["installments", "pagination", "has_posts"],
-      reset: ["installments"],
-    });
-  }, 500);
-
-  React.useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-    debouncedSearch(query);
-  }, [query]);
+  const { query, setQuery } = useEmailSearch();
 
   const handleLoadMore = () => {
     if (!pagination.next) return;

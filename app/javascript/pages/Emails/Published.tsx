@@ -10,6 +10,7 @@ import { useCurrentSeller } from "$app/components/CurrentSeller";
 import { EmptyStatePlaceholder } from "$app/components/EmailsPage/EmptyStatePlaceholder";
 import { EmailsLayout } from "$app/components/EmailsPage/Layout";
 import { DeleteEmailModal, EmailSheetActions, LoadMoreButton } from "$app/components/EmailsPage/shared";
+import { useEmailSearch } from "$app/components/EmailsPage/useEmailSearch";
 import { Icon } from "$app/components/Icons";
 import { Sheet, SheetHeader } from "$app/components/ui/Sheet";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "$app/components/ui/Table";
@@ -35,10 +36,12 @@ export default function EmailsPublished() {
     ? (installments.find((i) => i.external_id === selectedInstallmentId) ?? null)
     : null;
 
+  const { query, setQuery } = useEmailSearch();
+
   const handleLoadMore = () => {
     if (!pagination.next) return;
     router.reload({
-      data: { page: pagination.next },
+      data: { page: pagination.next, query: query || undefined },
       only: ["installments", "pagination"],
       onStart: () => setIsLoadingMore(true),
       onFinish: () => setIsLoadingMore(false),
@@ -48,7 +51,7 @@ export default function EmailsPublished() {
   const userAgentInfo = useUserAgentInfo();
 
   return (
-    <EmailsLayout selectedTab="published" hasPosts={has_posts}>
+    <EmailsLayout selectedTab="published" hasPosts={has_posts} query={query} onQueryChange={setQuery}>
       <div className="space-y-4 p-4 md:p-8">
         {installments.length > 0 ? (
           <>

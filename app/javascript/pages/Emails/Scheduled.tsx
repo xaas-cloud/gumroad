@@ -15,6 +15,7 @@ import {
   LoadMoreButton,
   useAudienceCounts,
 } from "$app/components/EmailsPage/shared";
+import { useEmailSearch } from "$app/components/EmailsPage/useEmailSearch";
 import { Sheet, SheetHeader } from "$app/components/ui/Sheet";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "$app/components/ui/Table";
 import { useUserAgentInfo } from "$app/components/UserAgent";
@@ -57,10 +58,12 @@ export default function EmailsScheduled() {
   const [deletingInstallment, setDeletingInstallment] = React.useState<{ id: string; name: string } | null>(null);
   const [isLoadingMore, setIsLoadingMore] = React.useState(false);
 
+  const { query, setQuery } = useEmailSearch();
+
   const handleLoadMore = () => {
     if (!pagination.next) return;
     router.reload({
-      data: { page: pagination.next },
+      data: { page: pagination.next, query: query || undefined },
       only: ["installments", "pagination"],
       onStart: () => setIsLoadingMore(true),
       onFinish: () => setIsLoadingMore(false),
@@ -68,7 +71,7 @@ export default function EmailsScheduled() {
   };
 
   return (
-    <EmailsLayout selectedTab="scheduled" hasPosts={has_posts}>
+    <EmailsLayout selectedTab="scheduled" hasPosts={has_posts} query={query} onQueryChange={setQuery}>
       <div className="space-y-4 p-4 md:p-8">
         {installments.length > 0 ? (
           <>

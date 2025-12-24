@@ -223,8 +223,19 @@ export const useRichTextEditor = ({
       walk(child, /^(p|h\d)$/iu.test(child.tagName) ? { target: node, before: child.nextSibling } : undefined);
     }
   }
-  const content = React.useMemo(() => {
+  const isContent = (value: unknown): value is Content =>
+    value !== null && typeof value === "object" && "type" in value;
+
+  const content: Content = React.useMemo(() => {
     if (!SSR && typeof initialValue === "string") {
+      try {
+        let parsed: unknown = JSON.parse(initialValue);
+        if (typeof parsed === "string") {
+          parsed = JSON.parse(parsed);
+        }
+        if (isContent(parsed)) return parsed;
+      } catch {}
+
       const dom = document.createElement("div");
       dom.innerHTML = initialValue;
       walk(dom);
@@ -281,20 +292,21 @@ export const useRichTextEditor = ({
 
   React.useEffect(() => editor?.setOptions({ editable }), [editable]);
 
-  React.useEffect(
-    () =>
-      queueMicrotask(() => {
-        // discard any history from before content was reset
-        editor?.view.updateState(
-          EditorState.create({
-            doc: createDocument(content, editor.state.schema),
-            schema: editor.schema,
-            plugins: editor.state.plugins,
-          }),
-        );
-      }),
-    [content],
-  );
+  React.useEffect(() => {
+    if (!editor) return;
+    queueMicrotask(() => {
+      // discard any history from before content was reset
+      editor.view.updateState(
+        EditorState.create({
+          doc: createDocument(content, editor.state.schema),
+          schema: editor.schema,
+          plugins: editor.state.plugins,
+        }),
+      );
+      // Trigger onChange to update form with HTML content
+      onUpdate(editor);
+    });
+  }, [content, editor]);
 
   return editor ?? null;
 };
