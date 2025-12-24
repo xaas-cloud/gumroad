@@ -102,7 +102,6 @@ ReactOnRails.register({
   AdminAddCreditForm,
   HelpCenterArticlesIndexPage,
   SupportHeader,
-  AuthorizedApplicationsSettingsPage,
   BundleEditPage,
   CheckoutPage,
   CodeSnippet,
