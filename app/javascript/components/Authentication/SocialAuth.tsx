@@ -2,9 +2,12 @@ import * as React from "react";
 
 import { SocialAuthButton } from "$app/components/SocialAuthButton";
 import { useOriginalLocation } from "$app/components/useOriginalLocation";
+import { useFeatureFlags } from "$app/components/FeatureFlags";
 
 export const SocialAuth = () => {
   const next = new URL(useOriginalLocation()).searchParams.get("next");
+  const featureFlags = useFeatureFlags();
+  const showStripe = window.location.pathname === "/signup" ? !featureFlags.disable_stripe_signup : true;
   return (
     <section className="flex flex-col gap-4">
       <SocialAuthButton provider="facebook" href={Routes.user_facebook_omniauth_authorize_path({ referer: next })}>
@@ -22,9 +25,14 @@ export const SocialAuth = () => {
       >
         X
       </SocialAuthButton>
-      <SocialAuthButton provider="stripe" href={Routes.user_stripe_connect_omniauth_authorize_path({ referer: next })}>
-        Stripe
-      </SocialAuthButton>
+      {showStripe && (
+        <SocialAuthButton
+          provider="stripe"
+          href={Routes.user_stripe_connect_omniauth_authorize_path({ referer: next })}
+        >
+          Stripe
+        </SocialAuthButton>
+      )}
     </section>
   );
 };
