@@ -10,16 +10,11 @@ import { buttonVariants, NavigationButtonProps, useValidateClassName } from "$ap
     since the other NavigationButton is used in a lot of ssr pages  and we can't import inertia Link there
 */
 export const NavigationButtonInertia = React.forwardRef<HTMLAnchorElement, NavigationButtonProps>(
-  ({ className, color, outline, small, disabled, children, style, onClick, ...props }, ref) => {
+  ({ className, color, outline, small, disabled, children, ...props }, ref) => {
     useValidateClassName(className);
 
     const variant = outline ? "outline" : color === "danger" ? "destructive" : "default";
     const size = small ? "sm" : "default";
-
-    const combinedStyle: React.CSSProperties = {
-      ...(style || {}),
-      ...(disabled ? { pointerEvents: "none", cursor: "not-allowed", opacity: 0.3 } : {}),
-    };
 
     return (
       <Link
@@ -29,10 +24,12 @@ export const NavigationButtonInertia = React.forwardRef<HTMLAnchorElement, Navig
           "no-underline",
         )}
         ref={ref}
+        inert={disabled}
         {...props}
-        {...(onClick ? { onClick } : {})}
-        {...(disabled ? { inert: "" } : {})}
-        style={combinedStyle}
+        style={{
+          ...props.style,
+          ...(disabled ? { pointerEvents: "none", cursor: "not-allowed", opacity: 0.3 } : {}),
+        }}
       >
         {children}
       </Link>
