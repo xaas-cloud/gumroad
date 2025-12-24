@@ -151,6 +151,42 @@ describe User::OmniauthCallbacksController do
         expect(response).to redirect_to safe_redirect_path(two_factor_authentication_path(next: oauth_completions_stripe_path))
       end
     end
+
+    context "when disable_stripe_signup feature flag is active" do
+      before do
+        Feature.activate(:disable_stripe_signup)
+        request.env["omniauth.params"] = { "referer" => signup_path }
+      end
+
+      after { Feature.deactivate(:disable_stripe_signup) }
+
+      it "does not allow new users to sign up via Stripe" do
+        expect { post :stripe_connect }.not_to change { User.count }
+
+        expect(flash[:alert]).to eq "Signing up with Stripe is currently disabled. Please sign up with email first, then connect your Stripe account."
+        expect(response).to redirect_to signup_url
+      end
+
+      it "allows existing users with Stripe account to log in" do
+        user = create(:user, email: "stripe.connect@gum.co")
+        create(:merchant_account_stripe_connect, user:, charge_processor_merchant_id: stripe_uid)
+
+        expect { post :stripe_connect }.not_to change { User.count }
+
+        expect(response).to redirect_to safe_redirect_path(two_factor_authentication_path(next: oauth_completions_stripe_path))
+      end
+
+      it "allows existing users without email to log in" do
+        user = create(:user)
+        user.update_column(:email, nil)
+        create(:merchant_account_stripe_connect, user:, charge_processor_merchant_id: stripe_uid)
+
+        expect { post :stripe_connect }.not_to change { User.count }
+
+        expect(controller.user_signed_in?).to be true
+        expect(response).to redirect_to safe_redirect_path(oauth_completions_stripe_path)
+      end
+    end
   end
 
   describe "#facebook" do
