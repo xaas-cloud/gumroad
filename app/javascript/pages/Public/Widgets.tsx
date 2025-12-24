@@ -1,6 +1,7 @@
 import { usePage } from "@inertiajs/react";
-import * as React from "react";
+import React from "react";
 import ReactDOMServer from "react-dom/server";
+import { cast } from "ts-safe-cast";
 
 import { useExternalScript } from "$app/hooks/useExternalScript";
 import { buildOverlayCodeToCopy, buildEmbedCodeToCopy } from "$app/utils/widgetCodeToCopyBuilders";
@@ -24,8 +25,8 @@ type WidgetsPageProps = {
   affiliated_products: Product[];
 };
 
-function PublicWidgets() {
-  const props = usePage<WidgetsPageProps>().props;
+export default function PublicWidgets() {
+  const props = cast<WidgetsPageProps>(usePage().props);
 
   useExternalScript("/js/gumroad.js");
   useExternalScript("/js/gumroad-embed.js");
@@ -266,5 +267,3 @@ const EmbedPanel = ({ selectedProduct }: PanelProps) => {
     </>
   );
 };
-
-export default PublicWidgets;
