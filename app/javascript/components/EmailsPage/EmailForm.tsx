@@ -174,6 +174,16 @@ type EmailFormProps = {
   installment: Installment | null;
 };
 
+const parseInitialValue = (value: string) => {
+  try {
+    const parsed = JSON.parse(value);
+    if (parsed && typeof parsed === "object" && "type" in parsed) {
+      return parsed;
+    }
+  } catch {}
+  return value;
+};
+
 export const EmailForm = ({ context, installment }: EmailFormProps) => {
   const uid = React.useId();
   const currentSeller = assertDefined(useCurrentSeller());
@@ -361,7 +371,8 @@ export const EmailForm = ({ context, installment }: EmailFormProps) => {
                     type: "link",
                     attrs: {
                       href: Routes.short_link_url(permalink, {
-                        host: `${window.location.protocol}//${currentSeller.subdomain || appDomain}`,
+                        host: currentSeller.subdomain || appDomain,
+                        protocol: window.location.protocol.replace(":", ""),
                       }),
                     },
                   },
@@ -1110,7 +1121,7 @@ export const EmailForm = ({ context, installment }: EmailFormProps) => {
                     className="textarea"
                     ariaLabel="Email message"
                     placeholder="Write a personalized message..."
-                    initialValue={form.data.installment.message}
+                    initialValue={parseInitialValue(form.data.installment.message)}
                     onChange={handleMessageChange}
                     onCreate={setMessageEditor}
                     extensions={[UpsellCard]}
