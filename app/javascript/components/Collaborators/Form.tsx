@@ -3,7 +3,6 @@ import cx from "classnames";
 import * as React from "react";
 
 import { isValidEmail } from "$app/utils/email";
-import * as Routes from "$app/utils/routes";
 
 import { Button } from "$app/components/Button";
 import { Layout } from "$app/components/Collaborators/Layout";
@@ -15,6 +14,7 @@ import { showAlert } from "$app/components/server-components/Alert";
 import { Pill } from "$app/components/ui/Pill";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "$app/components/ui/Table";
 import { WithTooltip } from "$app/components/WithTooltip";
+import type { CollaboratorFormProduct, CollaboratorFormData } from "$app/data/collaborators";
 
 const DEFAULT_PERCENT_COMMISSION = 50;
 const MIN_PERCENT_COMMISSION = 1;
@@ -26,52 +26,19 @@ const validCommission = (percentCommission: number | null) =>
   percentCommission >= MIN_PERCENT_COMMISSION &&
   percentCommission <= MAX_PERCENT_COMMISSION;
 
-export type CollaboratorFormProduct = {
-  id: string;
-  name: string;
-  has_another_collaborator: boolean;
-  has_affiliates: boolean;
-  published: boolean;
-  enabled: boolean;
-  percent_commission: number | null;
-  dont_show_as_co_creator: boolean;
-};
-
-type NewCollaboratorFormData = {
-  products: CollaboratorFormProduct[];
-  collaborators_disabled_reason: string | null;
-};
-
-type EditCollaboratorFormData = NewCollaboratorFormData & {
-  id: string;
-  email: string;
-  name: string;
-  avatar_url: string;
-  apply_to_all_products: boolean;
-  dont_show_as_co_creator: boolean;
-  percent_commission: number | null;
-  setup_incomplete: boolean;
-};
-
-export type CollaboratorFormData = NewCollaboratorFormData | EditCollaboratorFormData;
-
 type CollaboratorProduct = CollaboratorFormProduct & {
   has_error: boolean;
 };
 
-type Props = {
-  formData: CollaboratorFormData;
-};
-
-const CollaboratorForm = ({ formData }: Props) => {
+const CollaboratorForm = ({ formData }: { formData: CollaboratorFormData }) => {
   const isEditing = "id" in formData;
   const emailInputRef = React.useRef<HTMLInputElement>(null);
 
-  const initialApplyToAll = isEditing ? formData.apply_to_all_products : true;
-  const initialDefaultCommission = isEditing
+  const initialApplyToAllProducts = isEditing ? formData.apply_to_all_products : true;
+  const initialDefaultPercentCommission = isEditing
     ? formData.percent_commission || DEFAULT_PERCENT_COMMISSION
     : DEFAULT_PERCENT_COMMISSION;
-  const initialDontShow = isEditing ? formData.dont_show_as_co_creator : false;
+  const initialDontShowAsCoCreator = isEditing ? formData.dont_show_as_co_creator : false;
 
   const hasEnabledUnpublishedOrIneligibleProducts =
     isEditing &&
@@ -91,30 +58,23 @@ const CollaboratorForm = ({ formData }: Props) => {
     return !product.has_another_collaborator && product.published;
   };
 
-  const { data, setData, post, patch, processing, errors, setError, transform } = useForm<{
-    email: string;
-    apply_to_all_products: boolean;
-    percent_commission: number | null;
-    dont_show_as_co_creator: boolean;
-    products: CollaboratorProduct[];
-    default_commission_has_error: boolean;
-  }>({
+  const { data, setData, post, patch, processing, errors, setError, transform } = useForm({
     email: isEditing ? formData.email : "",
-    apply_to_all_products: initialApplyToAll,
-    percent_commission: initialDefaultCommission,
-    dont_show_as_co_creator: initialDontShow,
+    apply_to_all_products: initialApplyToAllProducts,
+    percent_commission: initialDefaultPercentCommission,
+    dont_show_as_co_creator: initialDontShowAsCoCreator,
     products: formData.products.map((product) =>
       isEditing
         ? {
             ...product,
-            percent_commission: product.percent_commission || initialDefaultCommission,
-            dont_show_as_co_creator: initialApplyToAll ? initialDontShow : product.dont_show_as_co_creator,
+            percent_commission: product.percent_commission || initialDefaultPercentCommission,
+            dont_show_as_co_creator: initialApplyToAllProducts ? initialDontShowAsCoCreator : product.dont_show_as_co_creator,
             has_error: false,
           }
         : {
             ...product,
             enabled: shouldEnableProduct(product),
-            percent_commission: initialDefaultCommission,
+            percent_commission: initialDefaultPercentCommission,
             has_error: false,
             dont_show_as_co_creator: false,
           },
@@ -253,12 +213,7 @@ const CollaboratorForm = ({ formData }: Props) => {
         </>
       }
     >
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          submitForm();
-        }}
-      >
+      <form>
         <section className="p-8!">
           <header>
             {isEditing ? <h2>Products</h2> : null}
