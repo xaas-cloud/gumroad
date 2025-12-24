@@ -151,6 +151,69 @@ describe User::OmniauthCallbacksController do
         expect(response).to redirect_to safe_redirect_path(two_factor_authentication_path(next: oauth_completions_stripe_path))
       end
     end
+
+    context "when stripe_signup_enabled feature flag is disabled" do
+      before do
+        Feature.deactivate(:stripe_signup_enabled)
+      end
+
+      after do
+        Feature.activate(:stripe_signup_enabled)
+      end
+
+      context "when referer is signup" do
+        before { request.env["omniauth.params"] = { "referer" => signup_path } }
+
+        it "does not create a new user account" do
+          expect { post :stripe_connect }.not_to change { User.count }
+
+          expect(flash[:alert]).to eq "Signing up with Stripe is currently disabled. Please use another method to create an account, or log in if you already have an account."
+          expect(response).to redirect_to signup_url
+        end
+
+        it "allows existing user to log in by email" do
+          existing_user = create(:user, email: "stripe.connect@gum.co")
+
+          expect { post :stripe_connect }.not_to change { User.count }
+
+          expect(controller.user_signed_in?).to be true
+          expect(controller.current_user).to eq(existing_user)
+          expect(response).to redirect_to safe_redirect_path(two_factor_authentication_path(next: oauth_completions_stripe_path))
+        end
+
+        it "allows existing user to log in by merchant account" do
+          existing_user = create(:user)
+          create(:merchant_account_stripe_connect, user: existing_user, charge_processor_merchant_id: stripe_uid)
+
+          expect { post :stripe_connect }.not_to change { User.count }
+
+          expect(controller.user_signed_in?).to be true
+          expect(controller.current_user).to eq(existing_user)
+          expect(response).to redirect_to safe_redirect_path(two_factor_authentication_path(next: oauth_completions_stripe_path))
+        end
+      end
+
+      context "when referer is login" do
+        before { request.env["omniauth.params"] = { "referer" => login_path } }
+
+        it "allows existing user to log in by email" do
+          existing_user = create(:user, email: "stripe.connect@gum.co")
+
+          expect { post :stripe_connect }.not_to change { User.count }
+
+          expect(controller.user_signed_in?).to be true
+          expect(controller.current_user).to eq(existing_user)
+          expect(response).to redirect_to safe_redirect_path(two_factor_authentication_path(next: oauth_completions_stripe_path))
+        end
+
+        it "shows error message when no existing user is found" do
+          expect { post :stripe_connect }.not_to change { User.count }
+
+          expect(flash[:alert]).to eq "Signing up with Stripe is currently disabled. Please use another method to create an account, or log in if you already have an account."
+          expect(response).to redirect_to login_url
+        end
+      end
+    end
   end
 
   describe "#facebook" do

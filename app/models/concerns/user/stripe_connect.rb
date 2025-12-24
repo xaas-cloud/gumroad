@@ -4,31 +4,38 @@ module User::StripeConnect
   extend ActiveSupport::Concern
 
   class_methods do
-    def find_or_create_for_stripe_connect_account(data)
+    def find_or_create_for_stripe_connect_account(data, allow_signup: true)
       return nil if data.blank?
 
       user = MerchantAccount.where(charge_processor_merchant_id: data["uid"]).alive
                  .find { |ma| ma.is_a_stripe_connect_account? }&.user
 
       if user.nil?
-        ActiveRecord::Base.transaction do
-          user = User.new
-          user.provider = :stripe_connect
-          email = data["info"]["email"]
-          user.email = email if EmailFormatValidator.valid?(email)
-          user.name = data["info"]["name"]
-          user.password = Devise.friendly_token[0, 20]
-          user.skip_confirmation!
-          user.save!
-          user.user_compliance_infos.build.tap do |new_user_compliance_info|
-            new_user_compliance_info.country = Compliance::Countries.mapping[data["extra"]["extra_info"]["country"]]
-            new_user_compliance_info.json_data = {}
-            new_user_compliance_info.save!
-          end
-          if user.email.present?
-            Purchase.where(email: user.email, purchaser_id: nil).each do |past_purchase|
-              past_purchase.attach_to_user_and_card(user, nil, nil)
+        if allow_signup
+          ActiveRecord::Base.transaction do
+            user = User.new
+            user.provider = :stripe_connect
+            email = data["info"]["email"]
+            user.email = email if EmailFormatValidator.valid?(email)
+            user.name = data["info"]["name"]
+            user.password = Devise.friendly_token[0, 20]
+            user.skip_confirmation!
+            user.save!
+            user.user_compliance_infos.build.tap do |new_user_compliance_info|
+              new_user_compliance_info.country = Compliance::Countries.mapping[data["extra"]["extra_info"]["country"]]
+              new_user_compliance_info.json_data = {}
+              new_user_compliance_info.save!
             end
+            if user.email.present?
+              Purchase.where(email: user.email, purchaser_id: nil).each do |past_purchase|
+                past_purchase.attach_to_user_and_card(user, nil, nil)
+              end
+            end
+          end
+        else
+          email = data["info"]["email"]
+          if email.present? && EmailFormatValidator.valid?(email)
+            user = User.find_by(email: email)
           end
         end
       end

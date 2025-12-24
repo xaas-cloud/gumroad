@@ -92,10 +92,15 @@ class User::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     end
 
     if logged_in_user.blank?
-      user = User.find_or_create_for_stripe_connect_account(auth)
+      allow_signup = Feature.active?(:stripe_signup_enabled)
+      user = User.find_or_create_for_stripe_connect_account(auth, allow_signup: allow_signup)
 
       if user.nil?
-        flash[:alert] = "An account already exists with this email."
+        if allow_signup
+          flash[:alert] = "An account already exists with this email."
+        else
+          flash[:alert] = "Signing up with Stripe is currently disabled. Please use another method to create an account, or log in if you already have an account."
+        end
         return safe_redirect_to referer
       elsif user.is_team_member?
         flash[:alert] = "You're an admin, you can't login with Stripe."
@@ -105,13 +110,15 @@ class User::OmniauthCallbacksController < Devise::OmniauthCallbacksController
         return safe_redirect_to referer
       end
 
+      is_new_user = user.provider == :stripe_connect && user.stripe_connect_account.blank? && user.created_at > 10.seconds.ago
+
       session[:stripe_connect_data] = {
         "auth_uid" => auth.uid,
         "referer" => referer,
-        "signup" => true
+        "signup" => is_new_user
       }
 
-      if user.stripe_connect_account.blank?
+      if is_new_user
         create_user_event("signup")
       end
 

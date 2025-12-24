@@ -1,10 +1,14 @@
 import * as React from "react";
 
+import { useFeatureFlags } from "$app/components/FeatureFlags";
 import { SocialAuthButton } from "$app/components/SocialAuthButton";
 import { useOriginalLocation } from "$app/components/useOriginalLocation";
 
-export const SocialAuth = () => {
+export const SocialAuth = ({ isSignup = false }: { isSignup?: boolean }) => {
   const next = new URL(useOriginalLocation()).searchParams.get("next");
+  const featureFlags = useFeatureFlags();
+  const showStripe = isSignup ? featureFlags.stripe_signup_enabled : true;
+
   return (
     <section className="flex flex-col gap-4">
       <SocialAuthButton provider="facebook" href={Routes.user_facebook_omniauth_authorize_path({ referer: next })}>
@@ -22,9 +26,14 @@ export const SocialAuth = () => {
       >
         X
       </SocialAuthButton>
-      <SocialAuthButton provider="stripe" href={Routes.user_stripe_connect_omniauth_authorize_path({ referer: next })}>
-        Stripe
-      </SocialAuthButton>
+      {showStripe ? (
+        <SocialAuthButton
+          provider="stripe"
+          href={Routes.user_stripe_connect_omniauth_authorize_path({ referer: next })}
+        >
+          Stripe
+        </SocialAuthButton>
+      ) : null}
     </section>
   );
 };

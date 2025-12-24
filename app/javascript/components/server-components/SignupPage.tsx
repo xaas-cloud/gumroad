@@ -78,7 +78,7 @@ export const SignupPage = ({
       headerActions={<a href={Routes.login_path({ next })}>Log in</a>}
     >
       <form onSubmit={(e) => void handleSubmit(e)}>
-        <SocialAuth />
+        <SocialAuth isSignup />
         <Separator>
           <span>or</span>
         </Separator>

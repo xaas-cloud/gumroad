@@ -4,8 +4,8 @@ require "spec_helper"
 
 describe User::StripeConnect do
   describe ".find_or_create_for_stripe_connect_account" do
-    before do
-      @data = {
+    let(:data) do
+      {
         "provider" => "stripe_connect",
         "uid" => "acct_1MbJuNSAp3rt4s0F",
         "info" => {
@@ -13,7 +13,8 @@ describe User::StripeConnect do
           "email" => "bot@gum.co",
           "nickname" => "gumbot",
           "scope" => "read_write",
-          "livemode" => false },
+          "livemode" => false
+        },
         "extra" => {
           "extra_info" => {
             "id" => "acct_1MbJuNSAp3rt4s0F",
@@ -26,19 +27,24 @@ describe User::StripeConnect do
       }
     end
 
+    it "returns nil when data is blank" do
+      expect(User.find_or_create_for_stripe_connect_account(nil)).to be nil
+      expect(User.find_or_create_for_stripe_connect_account({})).to be nil
+    end
+
     it "returns the user associated with the Stripe Connect account if one exists" do
       creator = create(:user)
-      create(:merchant_account_stripe_connect, user: creator, charge_processor_merchant_id: @data["uid"])
+      create(:merchant_account_stripe_connect, user: creator, charge_processor_merchant_id: data["uid"])
 
-      expect(User.find_or_create_for_stripe_connect_account(@data)).to eq(creator)
+      expect(User.find_or_create_for_stripe_connect_account(data)).to eq(creator)
     end
 
     it "does not return the user associated with the email and does not create a new one as email is already taken" do
-      create(:user, email: @data["info"]["email"])
+      create(:user, email: data["info"]["email"])
 
       expect do
         expect do
-          expect(User.find_or_create_for_stripe_connect_account(@data)).to be nil
+          expect(User.find_or_create_for_stripe_connect_account(data)).to be nil
         end.not_to change { User.count }
       end.not_to change { UserComplianceInfo.count }
     end
@@ -46,27 +52,125 @@ describe User::StripeConnect do
     it "creates a new user account and sets email and country" do
       expect do
         expect do
-          User.find_or_create_for_stripe_connect_account(@data)
+          User.find_or_create_for_stripe_connect_account(data)
         end.to change { User.count }.by(1)
       end.to change { UserComplianceInfo.count }.by(1)
 
-      expect(User.last.email).to eq(@data["info"]["email"])
-      expect(User.last.alive_user_compliance_info.country).to eq(Compliance::Countries.mapping[@data["extra"]["extra_info"]["country"]])
-      expect(User.last.confirmed?).to be true
+      user = User.last
+      expect(user.email).to eq(data["info"]["email"])
+      expect(user.name).to eq(data["info"]["name"])
+      expect(user.provider).to eq("stripe_connect")
+      expect(user.alive_user_compliance_info.country).to eq(Compliance::Countries.mapping[data["extra"]["extra_info"]["country"]])
+      expect(user.confirmed?).to be true
     end
 
     it "associates past purchases with the same email to the new user" do
-      email = @data["info"]["email"]
+      email = data["info"]["email"]
       purchase1 = create(:purchase, email:)
       purchase2 = create(:purchase, email:)
       expect(purchase1.purchaser_id).to be_nil
       expect(purchase2.purchaser_id).to be_nil
 
-      user = User.find_or_create_for_stripe_connect_account(@data)
+      user = User.find_or_create_for_stripe_connect_account(data)
 
       expect(user.email).to eq("bot@gum.co")
       expect(purchase1.reload.purchaser_id).to eq(user.id)
       expect(purchase2.reload.purchaser_id).to eq(user.id)
+    end
+
+    it "creates user without email when email is not provided" do
+      data_without_email = data.dup
+      data_without_email["info"].delete("email")
+
+      expect do
+        user = User.find_or_create_for_stripe_connect_account(data_without_email)
+        expect(user.email).to be_nil
+        expect(user.name).to eq(data["info"]["name"])
+        expect(user.provider).to eq("stripe_connect")
+      end.to change { User.count }.by(1)
+    end
+
+    it "creates user without email when email is invalid" do
+      data_with_invalid_email = data.dup
+      data_with_invalid_email["info"]["email"] = "invalid-email"
+
+      expect do
+        user = User.find_or_create_for_stripe_connect_account(data_with_invalid_email)
+        expect(user.email).to be_nil
+        expect(user.name).to eq(data["info"]["name"])
+      end.to change { User.count }.by(1)
+    end
+
+    context "when allow_signup is false" do
+      it "does not create a new user account when no existing user is found" do
+        expect do
+          expect do
+            expect(User.find_or_create_for_stripe_connect_account(data, allow_signup: false)).to be nil
+          end.not_to change { User.count }
+        end.not_to change { UserComplianceInfo.count }
+      end
+
+      it "returns existing user by email if one exists" do
+        existing_user = create(:user, email: data["info"]["email"])
+
+        expect do
+          user = User.find_or_create_for_stripe_connect_account(data, allow_signup: false)
+          expect(user).to eq(existing_user)
+        end.not_to change { User.count }
+      end
+
+      it "returns existing user by merchant account if one exists" do
+        creator = create(:user)
+        create(:merchant_account_stripe_connect, user: creator, charge_processor_merchant_id: data["uid"])
+
+        expect do
+          user = User.find_or_create_for_stripe_connect_account(data, allow_signup: false)
+          expect(user).to eq(creator)
+        end.not_to change { User.count }
+      end
+
+      it "returns nil when email is not provided and no merchant account exists" do
+        data_without_email = data.dup
+        data_without_email["info"].delete("email")
+
+        expect do
+          expect(User.find_or_create_for_stripe_connect_account(data_without_email, allow_signup: false)).to be nil
+        end.not_to change { User.count }
+      end
+
+      it "returns nil when email is invalid and no merchant account exists" do
+        data_with_invalid_email = data.dup
+        data_with_invalid_email["info"]["email"] = "invalid-email"
+
+        expect do
+          expect(User.find_or_create_for_stripe_connect_account(data_with_invalid_email, allow_signup: false)).to be nil
+        end.not_to change { User.count }
+      end
+
+      it "prioritizes merchant account lookup over email lookup" do
+        merchant_user = create(:user)
+        create(:merchant_account_stripe_connect, user: merchant_user, charge_processor_merchant_id: data["uid"])
+        email_user = create(:user, email: data["info"]["email"])
+
+        user = User.find_or_create_for_stripe_connect_account(data, allow_signup: false)
+
+        expect(user).to eq(merchant_user)
+        expect(user).not_to eq(email_user)
+      end
+    end
+
+    context "when allow_signup is true (default)" do
+      it "creates a new user account when explicitly set to true" do
+        expect do
+          User.find_or_create_for_stripe_connect_account(data, allow_signup: true)
+        end.to change { User.count }.by(1)
+      end
+
+      it "creates a new user account when not specified (defaults to true)" do
+        expect do
+          User.find_or_create_for_stripe_connect_account(data)
+        end.to change { User.count }.by(1)
+      end
     end
   end
 

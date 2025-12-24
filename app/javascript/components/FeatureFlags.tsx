@@ -2,10 +2,12 @@ import * as React from "react";
 
 type FeatureFlags = {
   require_email_typo_acknowledgment: boolean;
+  stripe_signup_enabled: boolean;
 };
 
 const FeatureFlagsContext = React.createContext<FeatureFlags>({
   require_email_typo_acknowledgment: false,
+  stripe_signup_enabled: true,
 });
 
 export const FeatureFlagsProvider = FeatureFlagsContext.Provider;
