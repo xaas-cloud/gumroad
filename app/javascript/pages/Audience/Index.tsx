@@ -25,7 +25,7 @@ type AudienceProps = {
   total_follower_count: number;
 };
 
-export default function Audience() {
+export default function AudiencePage() {
   const { total_follower_count } = usePage<AudienceProps>().props;
   const dateRange = useAnalyticsDateRange();
   const [data, setData] = React.useState<AudienceDataByDate | null>(null);
