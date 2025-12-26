@@ -5,7 +5,7 @@ import * as React from "react";
 import { AudienceDataByDate, fetchAudienceDataByDate } from "$app/data/audience";
 import { AbortError } from "$app/utils/request";
 
-import { AnalyticsLayout } from "$app/components/Analytics/Layout";
+import { AnalyticsLayout } from "$app/components/Analytics/AnalyticsLayout";
 import { useAnalyticsDateRange } from "$app/components/Analytics/useAnalyticsDateRange";
 import { AudienceChart } from "$app/components/Audience/AudienceChart";
 import { AudienceQuickStats } from "$app/components/Audience/AudienceQuickStats";
