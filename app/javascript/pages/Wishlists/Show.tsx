@@ -35,4 +35,4 @@ export default function WishlistShowPage() {
 
   return <Wishlist {...wishlistProps} />;
 }
-WishlistShowPage.disableLayout = true;
+WishlistShowPage.loggedInUserLayout = true;

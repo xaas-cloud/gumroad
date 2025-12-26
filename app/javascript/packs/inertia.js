@@ -48,6 +48,8 @@ async function resolvePageComponent(name) {
     const module = await import(`../pages/${name}.tsx`);
     const page = module.default;
     if (page.disableLayout) {
+      return page;
+    } else if (page.loggedInUserLayout) {
       page.layout ||= (page) => createElement(LoggedInUserLayout, { children: page });
       return page;
     }
@@ -58,6 +60,8 @@ async function resolvePageComponent(name) {
       const module = await import(`../pages/${name}.jsx`);
       const page = module.default;
       if (page.disableLayout) {
+        return page;
+      } else if (page.loggedInUserLayout) {
         page.layout ||= (page) => createElement(LoggedInUserLayout, { children: page });
         return page;
       }
