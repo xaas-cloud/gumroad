@@ -3,7 +3,7 @@
 class AudienceController < Sellers::BaseController
   layout "inertia"
 
-  before_action :set_time_range, only: %i[data_by_date]
+  before_action :set_time_range, only: %i[index data_by_date]
 
   after_action :set_dashboard_preference_to_audience, only: :index
   before_action :check_payment_details, only: :index
@@ -12,7 +12,8 @@ class AudienceController < Sellers::BaseController
     authorize :audience
 
     render inertia: "Audience/Index", props: {
-      total_follower_count: current_seller.audience_members.where(follower: true).count
+      total_follower_count: current_seller.audience_members.where(follower: true).count,
+      audience_data: -> { fetch_audience_data }
     }
   end
 
@@ -52,5 +53,12 @@ class AudienceController < Sellers::BaseController
 
     def set_title
       @title = "Analytics"
+    end
+
+  private
+    def fetch_audience_data
+      return nil unless current_seller.audience_members.where(follower: true).exists?
+
+      CreatorAnalytics::Following.new(current_seller).by_date(start_date: @start_date.to_date, end_date: @end_date.to_date)
     end
 end

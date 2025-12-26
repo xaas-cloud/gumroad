@@ -32,6 +32,24 @@ describe AudienceController, inertia: true do
       expect(inertia.props[:total_follower_count]).to eq(1)
     end
 
+    it "renders Inertia component with audience_data when followers exist" do
+      create(:active_follower, user: seller).confirm!
+
+      get :index
+
+      expect(response).to be_successful
+      expect(inertia.props[:audience_data]).to be_present
+      expect(inertia.props[:audience_data]).to have_key(:by_date)
+      expect(inertia.props[:audience_data]).to have_key(:dates)
+    end
+
+    it "renders Inertia component with nil audience_data when no followers" do
+      get :index
+
+      expect(response).to be_successful
+      expect(inertia.props[:audience_data]).to be_nil
+    end
+
     it "sets the last viewed dashboard cookie" do
       get :index
 

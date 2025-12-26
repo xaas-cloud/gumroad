@@ -1,9 +1,8 @@
-import { usePage } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import { lightFormat } from "date-fns";
 import * as React from "react";
 
-import { AudienceDataByDate, fetchAudienceDataByDate } from "$app/data/audience";
-import { AbortError } from "$app/utils/request";
+import { AudienceDataByDate } from "$app/data/audience";
 
 import { AnalyticsLayout } from "$app/components/Analytics/AnalyticsLayout";
 import { useAnalyticsDateRange } from "$app/components/Analytics/useAnalyticsDateRange";
@@ -23,36 +22,36 @@ import placeholder from "$assets/images/placeholders/audience.png";
 
 type AudienceProps = {
   total_follower_count: number;
+  audience_data: AudienceDataByDate | null;
 };
 
 export default function AudiencePage() {
-  const { total_follower_count } = usePage<AudienceProps>().props;
+  const { total_follower_count, audience_data } = usePage<AudienceProps>().props;
   const dateRange = useAnalyticsDateRange();
-  const [data, setData] = React.useState<AudienceDataByDate | null>(null);
   const startTime = lightFormat(dateRange.from, "yyyy-MM-dd");
   const endTime = lightFormat(dateRange.to, "yyyy-MM-dd");
+  const [isLoading, setIsLoading] = React.useState(false);
+  const isInitialMount = React.useRef(true);
 
   const hasContent = total_follower_count > 0;
 
-  const activeRequest = React.useRef<AbortController | null>(null);
   React.useEffect(() => {
-    const loadData = async () => {
-      if (!hasContent) return;
+    // Skip initial mount - data is already loaded via Inertia props
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
 
-      try {
-        if (activeRequest.current) activeRequest.current.abort();
-        setData(null);
-        const request = fetchAudienceDataByDate({ startTime, endTime });
-        activeRequest.current = request.abort;
-        setData(await request.response);
-        activeRequest.current = null;
-      } catch (e) {
-        if (e instanceof AbortError) return;
-        showAlert("Sorry, something went wrong. Please try again.", "error");
-      }
-    };
-    void loadData();
-  }, [startTime, endTime]);
+    if (!hasContent) return;
+
+    router.reload({
+      only: ["audience_data"],
+      data: { start_time: startTime, end_time: endTime },
+      onStart: () => setIsLoading(true),
+      onFinish: () => setIsLoading(false),
+      onError: () => showAlert("Sorry, something went wrong. Please try again.", "error"),
+    });
+  }, [startTime, endTime, hasContent]);
 
   return (
     <AnalyticsLayout
@@ -79,9 +78,12 @@ export default function AudiencePage() {
     >
       {hasContent ? (
         <div className="space-y-8 p-4 md:p-8">
-          <AudienceQuickStats totalFollowers={total_follower_count} newFollowers={data?.new_followers ?? null} />
-          {data ? (
-            <AudienceChart data={data} />
+          <AudienceQuickStats
+            totalFollowers={total_follower_count}
+            newFollowers={audience_data?.new_followers ?? null}
+          />
+          {!isLoading && audience_data ? (
+            <AudienceChart data={audience_data} />
           ) : (
             <div className="input">
               <LoadingSpinner />
