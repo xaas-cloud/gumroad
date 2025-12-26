@@ -173,11 +173,9 @@ describe "Product page wishlist selector", js: true, type: :system do
       create_new_wishlist("First Wishlist")
       expect(page).to have_alert(text: "Wishlist created")
 
-      # Reopen - should show "+ New wishlist" option, not the form
       find(:combo_box, "Add to wishlist").click
       expect(page).not_to have_field("Wishlist name")
 
-      # Expand form again - input should be empty
       find(:list_box_option, "New wishlist").click
       expect(find_field("Wishlist name").value).to eq("")
     end
