@@ -35,8 +35,13 @@ class WishlistsController < ApplicationController
     wishlist = current_seller.wishlists.new(params.require(:wishlist).permit(:name))
 
     respond_to do |format|
-      format.html { redirect_to wishlists_path, notice: "Wishlist created!", status: :see_other }
-      format.json { render json: { wishlist: WishlistPresenter.new(wishlist:).listing_props }, status: :created }
+      if wishlist.save
+        format.html { redirect_to wishlists_path, notice: "Wishlist created!", status: :see_other }
+        format.json { render json: { wishlist: WishlistPresenter.new(wishlist:).listing_props }, status: :created }
+      else
+        format.html { redirect_to wishlists_path, inertia: { errors: { base: wishlist.errors.full_messages } }, status: :see_other }
+        format.json { render json: { error: wishlist.errors.full_messages.first }, status: :unprocessable_entity }
+      end
     end
   end
 
