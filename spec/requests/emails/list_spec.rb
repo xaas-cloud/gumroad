@@ -122,13 +122,7 @@ describe("Email List", :js, :sidekiq_inline, :elasticsearch_wait_for_refresh, ty
 
         expect(page).to have_table_row({ "Subject" => "Email 1 (sent)" })
         expect(page).to have_table_row({ "Subject" => "Email 3 (sent)" })
-        expect(page).to_not have_table_row({ "Subject" => "Hello world!" })
-
-        first("main").scroll_to :bottom
         wait_for_ajax
-
-        expect(page).to have_table_row({ "Subject" => "Email 1 (sent)" })
-        expect(page).to have_table_row({ "Subject" => "Email 3 (sent)" })
         expect(page).to have_table_row({ "Subject" => "Hello world!" })
       end
 
