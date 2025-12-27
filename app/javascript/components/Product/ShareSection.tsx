@@ -149,6 +149,7 @@ export const ShareSection = ({
                 <input
                   ref={inputRef}
                   type="text"
+                  autoFocus
                   placeholder="Wishlist name"
                   value={newWishlistName}
                   onChange={(e) => setNewWishlistName(e.target.value)}
@@ -162,14 +163,7 @@ export const ShareSection = ({
                 </Button>
               </form>
             ) : (
-              <div
-                {...props}
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => {
-                  setIsCreatingNew(true);
-                  setTimeout(() => inputRef.current?.focus(), 0);
-                }}
-              >
+              <div {...props} onMouseDown={(e) => e.preventDefault()} onClick={() => setIsCreatingNew(true)}>
                 <div>
                   <Icon name="plus" /> New wishlist
                 </div>
