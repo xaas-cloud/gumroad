@@ -42,6 +42,52 @@ describe AudienceController, inertia: true do
       expect(inertia.props[:total_follower_count]).to eq(1)
     end
 
+    context "with date range parameters" do
+      before do
+        seller.update!(timezone: "UTC")
+
+        travel_to Time.utc(2021, 1, 3) do
+          create(:active_follower, user: seller).confirm!
+          follower = create(:active_follower, user: seller)
+          follower.confirm!
+          follower.mark_deleted!
+        end
+      end
+
+      it "returns audience_data with expected structure", :sidekiq_inline, :elasticsearch_wait_for_refresh do
+        get :index, params: { start_time: Time.utc(2021, 1, 1), end_time: Time.utc(2021, 1, 3) }
+
+        expect(response).to be_successful
+        expect(inertia.props[:audience_data]).to eq(
+          dates: ["Friday, January 1st", "Saturday, January 2nd", "Sunday, January 3rd"],
+          start_date: "Jan  1, 2021",
+          end_date: "Jan  3, 2021",
+          by_date: {
+            new_followers: [0, 0, 2],
+            followers_removed: [0, 0, 1],
+            totals: [0, 0, 1]
+          },
+          first_follower_date: "Jan  3, 2021",
+          new_followers: 1
+        )
+      end
+
+      it "handles various timezone formats in date parameters" do
+        travel_to Time.utc(2024, 4, 15) do
+          create(:active_follower, user: seller).confirm!
+        end
+
+        mask = "%a %b %d %Y %H:%M:%S GMT-1200 (Changement de date)"
+        start_time = Time.utc(2024, 4, 1).strftime(mask)
+        end_time = Time.utc(2024, 4, 30).strftime(mask)
+
+        get :index, params: { start_time: start_time, end_time: end_time }
+
+        expect(response).to be_successful
+        expect(inertia.props[:audience_data]).to be_present
+      end
+    end
+
     it "renders Inertia component with nil audience_data when no followers" do
       get :index
 

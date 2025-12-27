@@ -1,8 +1,9 @@
 import { router, usePage } from "@inertiajs/react";
 import { lightFormat } from "date-fns";
 import * as React from "react";
+import { cast } from "ts-safe-cast";
 
-import { AudienceDataByDate } from "$app/data/audience";
+import { type AudienceDataByDate } from "$app/data/audience";
 
 import { AnalyticsLayout } from "$app/components/Analytics/AnalyticsLayout";
 import { useAnalyticsDateRange } from "$app/components/Analytics/useAnalyticsDateRange";
@@ -19,28 +20,40 @@ import { WithTooltip } from "$app/components/WithTooltip";
 
 import placeholder from "$assets/images/placeholders/audience.png";
 
+interface AudiencePageProps {
+  total_follower_count: number;
+  audience_data?: AudienceDataByDate;
+}
+
 function Audience() {
-  const { total_follower_count, audience_data } = usePage<{
-    total_follower_count: number;
-    audience_data?: AudienceDataByDate;
-  }>().props;
+  const { total_follower_count, audience_data } = cast<AudiencePageProps>(usePage().props);
   const dateRange = useAnalyticsDateRange();
   const [loading, setLoading] = React.useState(false);
+  const isInitialMount = React.useRef(true);
   const startTime = lightFormat(dateRange.from, "yyyy-MM-dd");
   const endTime = lightFormat(dateRange.to, "yyyy-MM-dd");
 
   const hasContent = total_follower_count > 0;
 
-  React.useEffect(() => {
-    if (!hasContent) return;
-
+  const reloadAudienceData = React.useCallback((start: string, end: string) => {
     router.reload({
       only: ["audience_data"],
-      data: { start_time: startTime, end_time: endTime },
+      data: { start_time: start, end_time: end },
       onStart: () => setLoading(true),
       onFinish: () => setLoading(false),
     });
-  }, [startTime, endTime]);
+  }, []);
+
+  React.useEffect(() => {
+    if (!hasContent) return;
+
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    reloadAudienceData(startTime, endTime);
+  }, [startTime, endTime, hasContent, reloadAudienceData]);
 
   return (
     <AnalyticsLayout

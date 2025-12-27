@@ -17,7 +17,7 @@ class AudienceController < Sellers::BaseController
     }
 
     if total_follower_count > 0
-      props[:audience_data] = InertiaRails.optional { fetch_audience_data }
+      props[:audience_data] = -> { fetch_audience_data }
     end
 
     render inertia: "Audience/Index", props: props
