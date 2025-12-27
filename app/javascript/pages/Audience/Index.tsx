@@ -1,7 +1,7 @@
 import { router, usePage } from "@inertiajs/react";
 import { lightFormat } from "date-fns";
-import { cast } from "ts-safe-cast";
 import * as React from "react";
+import { cast } from "ts-safe-cast";
 
 import { type AudienceDataByDate } from "$app/data/audience";
 
