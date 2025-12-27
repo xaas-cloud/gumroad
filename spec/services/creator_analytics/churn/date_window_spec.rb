@@ -210,8 +210,8 @@ describe CreatorAnalytics::Churn::DateWindow do
     end
   end
 
-  describe "#timezone_offset" do
-    it "returns seller's timezone formatted offset" do
+  describe "#timezone_id" do
+    it "returns seller's timezone identifier" do
       window = described_class.new(
         seller:,
         product_scope:,
@@ -219,7 +219,7 @@ describe CreatorAnalytics::Churn::DateWindow do
         end_date: Date.new(2020, 1, 20)
       )
 
-      expect(window.timezone_offset).to eq(seller.timezone_formatted_offset)
+      expect(window.timezone_id).to eq(seller.timezone_id)
     end
   end
 

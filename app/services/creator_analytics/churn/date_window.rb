@@ -18,8 +18,8 @@ class CreatorAnalytics::Churn::DateWindow
 
   attr_reader :end_date
 
-  def timezone_offset
-    seller.timezone_formatted_offset
+  def timezone_id
+    seller.timezone_id
   end
 
   def daily_dates

@@ -22,9 +22,9 @@ class CreatorAnalytics::Churn::ElasticsearchFetcher
     query[:bool][:filter] << {
       range: {
         subscription_deactivated_at: {
-          time_zone: date_window.timezone_offset,
-          gte: date_window.start_date.beginning_of_day.iso8601,
-          lte: date_window.end_date.end_of_day.iso8601
+          time_zone: date_window.timezone_id,
+          gte: date_window.start_date.to_s,
+          lte: date_window.end_date.to_s
         }
       }
     }
@@ -54,9 +54,9 @@ class CreatorAnalytics::Churn::ElasticsearchFetcher
     query[:bool][:filter] << {
       range: {
         created_at: {
-          time_zone: date_window.timezone_offset,
-          gte: date_window.start_date.beginning_of_day.iso8601,
-          lte: date_window.end_date.end_of_day.iso8601
+          time_zone: date_window.timezone_id,
+          gte: date_window.start_date.to_s,
+          lte: date_window.end_date.to_s
         }
       }
     }
@@ -79,11 +79,11 @@ class CreatorAnalytics::Churn::ElasticsearchFetcher
     return {} if product_ids.empty?
 
     query = base_query
-    start_boundary = date_window.start_date.beginning_of_day.iso8601
-    query[:bool][:filter] << { range: { created_at: { lt: start_boundary, time_zone: date_window.timezone_offset } } }
+    start_boundary = date_window.start_date.to_s
+    query[:bool][:filter] << { range: { created_at: { lt: start_boundary, time_zone: date_window.timezone_id } } }
     query[:bool][:should] ||= []
     query[:bool][:should] << { bool: { must_not: { exists: { field: "subscription_deactivated_at" } } } }
-    query[:bool][:should] << { range: { subscription_deactivated_at: { time_zone: date_window.timezone_offset, gt: start_boundary } } }
+    query[:bool][:should] << { range: { subscription_deactivated_at: { time_zone: date_window.timezone_id, gt: start_boundary } } }
     query[:bool][:minimum_should_match] = 1
 
     sources = [
@@ -128,7 +128,7 @@ class CreatorAnalytics::Churn::ElasticsearchFetcher
               field: field,
               calendar_interval: "day",
               format: "yyyy-MM-dd",
-              time_zone: date_window.timezone_offset
+              time_zone: date_window.timezone_id
             }
           }
         }
