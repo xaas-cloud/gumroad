@@ -16,6 +16,7 @@ import { Icon } from "$app/components/Icons";
 import { LoadingSpinner } from "$app/components/LoadingSpinner";
 import { Popover } from "$app/components/Popover";
 import Placeholder from "$app/components/ui/Placeholder";
+import { useDebouncedCallback } from "$app/components/useDebouncedCallback";
 import { WithTooltip } from "$app/components/WithTooltip";
 
 import placeholder from "$assets/images/placeholders/audience.png";
@@ -28,28 +29,33 @@ type AudienceProps = {
 export default function AudiencePage() {
   const { total_follower_count, audience_data } = cast<AudienceProps>(usePage().props);
   const dateRange = useAnalyticsDateRange();
-  const startTime = lightFormat(dateRange.from, "yyyy-MM-dd");
-  const endTime = lightFormat(dateRange.to, "yyyy-MM-dd");
   const [isLoading, setIsLoading] = React.useState(false);
-  const isInitialMount = React.useRef(true);
 
   const hasContent = total_follower_count > 0;
 
-  React.useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-
-    if (!hasContent) return;
-
+  const reloadAudienceData = (startTime: string, endTime: string) => {
     router.reload({
       only: ["audience_data"],
       data: { start_time: startTime, end_time: endTime },
       onStart: () => setIsLoading(true),
       onFinish: () => setIsLoading(false),
     });
-  }, [startTime, endTime, hasContent]);
+  };
+
+  const debouncedReloadAudienceData = useDebouncedCallback(() => {
+    if (!hasContent) return;
+    reloadAudienceData(lightFormat(dateRange.from, "yyyy-MM-dd"), lightFormat(dateRange.to, "yyyy-MM-dd"));
+  }, 100);
+
+  const handleSetFrom = (from: Date) => {
+    dateRange.setFrom(from);
+    debouncedReloadAudienceData();
+  };
+
+  const handleSetTo = (to: Date) => {
+    dateRange.setTo(to);
+    debouncedReloadAudienceData();
+  };
 
   return (
     <AnalyticsLayout
@@ -69,7 +75,7 @@ export default function AudiencePage() {
             >
               {(close) => <ExportSubscribersPopover closePopover={close} />}
             </Popover>
-            <DateRangePicker {...dateRange} />
+            <DateRangePicker from={dateRange.from} to={dateRange.to} setFrom={handleSetFrom} setTo={handleSetTo} />
           </>
         ) : null
       }
