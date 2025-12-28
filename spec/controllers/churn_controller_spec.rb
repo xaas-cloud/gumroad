@@ -32,17 +32,13 @@ describe ChurnController, type: :controller, inertia: true do
       expect(inertia.props[:churn]).to eq(churn_data)
     end
 
-    it "uses default dates when params are invalid" do
-      travel_to Time.zone.local(2024, 6, 15) do
-        expect(LargeSeller).to receive(:create_if_warranted).with(anything)
-        expected_start_date = 30.days.ago
-        expected_end_date = Date.current
-        expect(service).to receive(:generate_data).with(start_date: expected_start_date, end_date: expected_end_date).and_return(churn_data)
+    it "passes nil dates when params are invalid" do
+      expect(LargeSeller).to receive(:create_if_warranted).with(anything)
+      expect(service).to receive(:generate_data).with(start_date: nil, end_date: nil).and_return(churn_data)
 
-        get :show, params: { from: "bad", to: "" }
+      get :show, params: { from: "bad", to: "" }
 
-        expect(response).to be_successful
-      end
+      expect(response).to be_successful
     end
 
     describe "payment requirements" do
@@ -110,7 +106,7 @@ describe ChurnController, type: :controller, inertia: true do
 
         it "clears the redis flag and renders churn data" do
           expect(LargeSeller).to receive(:create_if_warranted).with(anything)
-          expect(service).to receive(:generate_data).with(start_date: kind_of(ActiveSupport::TimeWithZone), end_date: kind_of(Date)).and_return(churn_data)
+          expect(service).to receive(:generate_data).with(start_date: nil, end_date: nil).and_return(churn_data)
 
           get :show
 

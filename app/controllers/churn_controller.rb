@@ -12,8 +12,8 @@ class ChurnController < Sellers::BaseController
 
     service = CreatorAnalytics::Churn.new(seller: current_seller)
 
-    start_date = parse_date(params[:from]) || 30.days.ago
-    end_date = parse_date(params[:to]) || Date.current
+    start_date = parse_date(params[:from])
+    end_date = parse_date(params[:to])
 
     render(
       inertia: "Churn/Show",

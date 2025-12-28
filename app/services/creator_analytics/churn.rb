@@ -15,7 +15,7 @@ class CreatorAnalytics::Churn
 
   # Coordinator for churn analytics: scopes to subscription products, fetches churn/new/active
   # series via Elasticsearch, builds daily/monthly/summary payloads, and caches older ranges
-  # like other sales analytics. Uses Stripe's formula (cancellations ÷ (active-at-start + new))
+  # like other sales analytics. Uses formula (cancellations ÷ (active-at-start + new))
   # and refreshes the most recent two days instead of caching them.
   def generate_data(start_date:, end_date:)
     current_date_window = CreatorAnalytics::Churn::DateWindow.new(
@@ -97,7 +97,7 @@ class CreatorAnalytics::Churn
       version = $redis.get(RedisKey.seller_analytics_cache_version) || 0
       [
         "creator_analytics_churn",
-        "payload_v3",
+        "payload",
         "v#{version}",
         "seller_#{seller.id}",
         seller.timezone,
