@@ -46,6 +46,7 @@ describe Api::Internal::Helper::PurchasesController, :vcr do
         purchase3.reload
         expect(purchase3.email).to eq(to_email)
         expect(purchase3.purchaser_id).to eq(target_user.id)
+        expect(target_user.purchases.for_library).to include(purchase3)
 
         subscription_purchase.reload
         expect(subscription_purchase.email).to eq(to_email)

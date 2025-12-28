@@ -510,11 +510,7 @@ class Api::Internal::Helper::PurchasesController < Api::Internal::Helper::BaseCo
         reassigned_purchase_ids << purchase.original_purchase.id if purchase.original_purchase.saved_changes?
       end
 
-      if target_user
-        purchase.purchaser_id = target_user.id
-      else
-        purchase.purchaser_id = nil
-      end
+      purchase.purchaser_id = target_user&.id
 
       if purchase.is_original_subscription_purchase? && purchase.subscription.present?
         if target_user
@@ -533,10 +529,6 @@ class Api::Internal::Helper::PurchasesController < Api::Internal::Helper::BaseCo
 
     if reassigned_purchase_ids.any?
       CustomerMailer.grouped_receipt(reassigned_purchase_ids).deliver_later(queue: "critical")
-    end
-
-    if target_user
-      Purchase.where(email: to_email, purchaser_id: nil).update_all(purchaser_id: target_user.id)
     end
 
     render json: {
