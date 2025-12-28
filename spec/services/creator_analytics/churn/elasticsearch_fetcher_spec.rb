@@ -35,6 +35,42 @@ describe CreatorAnalytics::Churn::ElasticsearchFetcher do
   end
 
   describe "#churn_events" do
+    context "when seller timezone observes DST" do
+      let(:seller) { create(:user, timezone: "Pacific Time (US & Canada)") }
+      let(:products) { [product1, product2] }
+      let(:start_date) { Date.new(2020, 5, 31) }
+      let(:end_date) { Date.new(2020, 6, 1) }
+
+      before do
+        create_subscription_purchase(
+          product: product1,
+          created_at: Time.utc(2020, 5, 1),
+          subscription_deactivated_at: Time.utc(2020, 6, 1, 7, 30),
+          price_cents: 100
+        )
+        create_subscription_purchase(
+          product: product2,
+          created_at: Time.utc(2020, 5, 1),
+          subscription_deactivated_at: Time.utc(2020, 6, 1, 6, 30),
+          price_cents: 200
+        )
+        index_model_records(Purchase)
+      end
+
+      it "buckets churn events using the seller timezone" do
+        result = service.churn_events
+
+        expect(result[[product1.id, Date.new(2020, 6, 1)]]).to include(
+          churned_count: 1,
+          revenue_lost_cents: 100
+        )
+        expect(result[[product2.id, Date.new(2020, 5, 31)]]).to include(
+          churned_count: 1,
+          revenue_lost_cents: 200
+        )
+      end
+    end
+
     context "when products are empty" do
       let(:products) { [] }
 
@@ -104,6 +140,54 @@ describe CreatorAnalytics::Churn::ElasticsearchFetcher do
         result = service.churn_events
 
         expect(result.keys.length).to eq(3)
+      end
+    end
+
+    context "when a subscription changes plans before cancellation" do
+      let(:product) { create(:product, :is_subscription, user: seller) }
+      let(:products) { [product] }
+      let(:start_date) { Date.new(2020, 4, 1) }
+      let(:end_date) { Date.new(2020, 4, 30) }
+      let(:original_price) { create(:price, link: product, price_cents: 1_000, recurrence: BasePrice::Recurrence::MONTHLY) }
+      let(:new_price) { create(:price, link: product, price_cents: 3_000, recurrence: BasePrice::Recurrence::MONTHLY) }
+      let(:subscription) { create(:subscription, link: product, user: seller, price: original_price) }
+      let(:original_purchase) do
+        create(
+          :purchase,
+          link: product,
+          seller:,
+          subscription:,
+          is_original_subscription_purchase: true,
+          created_at: Time.utc(2020, 4, 1),
+          price_cents: original_price.price_cents
+        )
+      end
+
+      before do
+        original_purchase.update_flag!(:is_archived_original_subscription_purchase, true, true)
+        subscription.last_payment_option.update!(price: new_price)
+        create(
+          :purchase,
+          link: product,
+          seller:,
+          subscription:,
+          is_original_subscription_purchase: true,
+          purchase_state: "not_charged",
+          succeeded_at: nil,
+          created_at: Time.utc(2020, 4, 5),
+          price_cents: new_price.price_cents
+        )
+        subscription.update!(deactivated_at: Time.utc(2020, 4, 10, 12))
+        index_model_records(Purchase)
+      end
+
+      it "uses the archived original purchase price for revenue lost" do
+        result = service.churn_events
+
+        expect(result[[product.id, Date.new(2020, 4, 10)]]).to include(
+          churned_count: 1,
+          revenue_lost_cents: original_price.price_cents
+        )
       end
     end
   end
