@@ -62,11 +62,11 @@ export const ChurnChart = ({ data }: { data: DataPoint[] }) => {
     >
       <XAxis {...xAxisProps} dataKey="label" />
       <YAxis {...yAxisProps} domain={yDomain} tickFormatter={(value: number) => `${Number(value.toFixed(2))}%`} />
-      <Area dataKey="churnRate" fill="var(--color-dark-gray)" fillOpacity={1} stroke="none" isAnimationActive={false} />
+      <Area dataKey="churnRate" fill="rgb(var(--info))" fillOpacity={0.2} stroke="none" isAnimationActive={false} />
       <Line
         {...lineProps(dotRef, data.length)}
         dataKey="churnRate"
-        stroke="rgb(var(--primary))"
+        stroke="rgb(var(--info))"
         dot={({ key, cx, cy, width }: DotProps) => (
           <circle
             ref={dotRef}
@@ -74,7 +74,7 @@ export const ChurnChart = ({ data }: { data: DataPoint[] }) => {
             cx={cx}
             cy={cy}
             r={Math.min(width / data.length / 7, 8)}
-            fill="rgb(var(--primary))"
+            fill="rgb(var(--info))"
             data-testid="chart-dot"
           />
         )}
