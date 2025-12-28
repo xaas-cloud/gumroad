@@ -81,7 +81,7 @@ describe CreatorAnalytics::Churn::DateWindow do
 
         today = Time.current.in_time_zone(seller.timezone).to_date
         expect(window.end_date).to eq(today)
-        expect(window.start_date).to eq(today - 30)
+        expect(window.start_date).to eq(today - described_class::DEFAULT_RANGE_DAYS)
       end
     end
 

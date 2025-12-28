@@ -4,6 +4,8 @@
 # and monthly buckets.
 #
 class CreatorAnalytics::Churn::DateWindow
+  DEFAULT_RANGE_DAYS = 30
+
   attr_reader :seller, :product_scope
 
   def initialize(seller:, product_scope:, start_date:, end_date:)
@@ -61,7 +63,7 @@ class CreatorAnalytics::Churn::DateWindow
     end
 
     def default_start_date
-      default_end_date - 30
+      default_end_date - DEFAULT_RANGE_DAYS
     end
 
     def default_end_date
