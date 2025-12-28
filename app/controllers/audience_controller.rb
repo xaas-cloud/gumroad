@@ -34,6 +34,10 @@ class AudienceController < Sellers::BaseController
       begin
         end_time = DateTime.parse(params[:to])
         start_date = DateTime.parse(params[:from])
+        if start_date > end_time
+          flash.now[:warning] = "Please select a valid date range."
+          @invalid_date_range = true
+        end
       rescue StandardError
         end_time = DateTime.current
         start_date = end_time.ago(29.days)
@@ -49,6 +53,7 @@ class AudienceController < Sellers::BaseController
 
   private
     def fetch_audience_data
+      return nil if @invalid_date_range
       return nil unless current_seller.audience_members.where(follower: true).exists?
 
       CreatorAnalytics::Following.new(current_seller).by_date(start_date: @start_date.to_date, end_date: @end_date.to_date)

@@ -98,6 +98,14 @@ describe AudienceController, inertia: true do
         expect(response).to be_successful
         expect(inertia.props[:audience_data]).to be_present
       end
+
+      it "returns nil audience_data and sets a flash warning when from date is after to date" do
+        get :index, params: { from: "2021-01-10", to: "2021-01-01" }
+
+        expect(response).to be_successful
+        expect(flash[:warning]).to eq("Please select a valid date range.")
+        expect(inertia.props[:audience_data]).to be_nil
+      end
     end
   end
 

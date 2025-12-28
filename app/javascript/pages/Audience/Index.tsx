@@ -38,7 +38,7 @@ export default function AudiencePage() {
 
   const reloadAudienceData = React.useCallback((start: string, end: string) => {
     router.reload({
-      only: ["audience_data"],
+      only: ["audience_data", "flash"],
       data: { from: start, to: end },
       onStart: () => setIsLoading(true),
       onFinish: () => setIsLoading(false),
