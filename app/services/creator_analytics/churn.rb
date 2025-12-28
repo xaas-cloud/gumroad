@@ -80,7 +80,7 @@ class CreatorAnalytics::Churn
     end
 
     def cache_cutoff_date
-      @cache_cutoff_date ||= (Time.zone.now.in_time_zone(seller.timezone).to_date - 2.days)
+      @cache_cutoff_date ||= (Time.current.in_time_zone(seller.timezone).to_date - 2.days)
     end
 
     def read_cached_payload(date_window)

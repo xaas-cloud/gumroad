@@ -449,7 +449,7 @@ class CreatorAnalytics::Churn::DemoData
     end
 
     def current_time
-      Time.zone ? Time.zone.now : Time.now
+      Time.current
     end
 
     def format_time(value)

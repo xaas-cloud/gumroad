@@ -69,7 +69,7 @@ describe CreatorAnalytics::Churn::DateWindow do
     end
 
     context "with nil dates" do
-      let(:today) { Time.zone.now.in_time_zone(seller.timezone).to_date }
+      let(:today) { Time.current.in_time_zone(seller.timezone).to_date }
 
       it "uses default dates" do
         window = described_class.new(
@@ -79,7 +79,7 @@ describe CreatorAnalytics::Churn::DateWindow do
           end_date: nil
         )
 
-        today = Time.zone.now.in_time_zone(seller.timezone).to_date
+        today = Time.current.in_time_zone(seller.timezone).to_date
         expect(window.end_date).to eq(today)
         expect(window.start_date).to eq(today - 30)
       end
@@ -153,7 +153,7 @@ describe CreatorAnalytics::Churn::DateWindow do
     context "when end_date is after today" do
       it "clamps end_date to today" do
         travel_to Time.utc(2020, 2, 1) do
-          today = Time.zone.now.in_time_zone(seller.timezone).to_date
+          today = Time.current.in_time_zone(seller.timezone).to_date
           start_date = today - 10
           end_date = today + 5
 

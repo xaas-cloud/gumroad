@@ -65,6 +65,6 @@ class CreatorAnalytics::Churn::DateWindow
     end
 
     def default_end_date
-      @default_end_date ||= Time.zone.now.in_time_zone(seller.timezone).to_date
+      @default_end_date ||= Time.current.in_time_zone(seller.timezone).to_date
     end
 end
