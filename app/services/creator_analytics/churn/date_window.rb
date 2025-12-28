@@ -16,9 +16,7 @@ class CreatorAnalytics::Churn::DateWindow
     @start_date, @end_date = clamp_dates(parse_date(@raw_start_date), parse_date(@raw_end_date))
   end
 
-  attr_reader :start_date
-
-  attr_reader :end_date
+  attr_reader :start_date, :end_date
 
   def timezone_id
     seller.timezone_id
@@ -54,10 +52,6 @@ class CreatorAnalytics::Churn::DateWindow
 
       clamped_start = start_value.clamp(earliest, latest)
       clamped_end = end_value.clamp(clamped_start, latest)
-
-      if clamped_start > clamped_end
-        raise CreatorAnalytics::Churn::InvalidDateRange, "Start date must be before end date"
-      end
 
       [clamped_start, clamped_end]
     end

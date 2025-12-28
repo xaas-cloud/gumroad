@@ -2,7 +2,7 @@
 
 # Usage:
 #   CreatorAnalytics::Churn::DemoData.seed("creator@example.com")
-#   CreatorAnalytics::Churn::DemoData.seed("creator@example.com", dataset: :classic, intensity: 0.5)
+#   CreatorAnalytics::Churn::DemoData.seed("creator@example.com", intensity: 0.5)
 #   CreatorAnalytics::Churn::DemoData.purge("creator@example.com")
 #   CreatorAnalytics::Churn::DemoData.check("creator@example.com")
 #
