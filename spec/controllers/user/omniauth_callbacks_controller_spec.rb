@@ -175,6 +175,14 @@ describe User::OmniauthCallbacksController do
         expect(response).to redirect_to safe_redirect_path(two_factor_authentication_path(next: oauth_completions_stripe_path))
       end
 
+      it "allows existing users with matching email (without Stripe connected) to log in" do
+        create(:user, email: "stripe.connect@gum.co")
+
+        expect { post :stripe_connect }.not_to change { User.count }
+
+        expect(response).to redirect_to safe_redirect_path(two_factor_authentication_path(next: oauth_completions_stripe_path))
+      end
+
       it "allows existing users without email to log in" do
         user = create(:user)
         user.update_column(:email, nil)
