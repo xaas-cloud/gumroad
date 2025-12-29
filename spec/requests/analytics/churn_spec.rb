@@ -151,6 +151,7 @@ describe "Churn analytics", :js, :sidekiq_inline, :elasticsearch_wait_for_refres
         fill_in "To (including)", with: "12/20/2023"
         find("body").click
 
+        wait_for_ajax
         expect(page).to have_current_path(churn_dashboard_path(from: "2023-12-15", to: "2023-12-20"))
         expect(page).to have_css('[data-testid="chart-dot"]', count: 6)
       end
