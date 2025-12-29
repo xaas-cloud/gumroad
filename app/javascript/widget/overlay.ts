@@ -49,9 +49,11 @@ const registerButton = (button: HTMLAnchorElement) => {
     });
   }
 
-  const logo = document.createElement("span");
-  logo.className = "logo-full";
-  button.appendChild(logo);
+  if (!button.querySelector(".logo-full")) {
+    const logo = document.createElement("span");
+    logo.className = "logo-full";
+    button.appendChild(logo);
+  }
 };
 
 const registerChildrenButtons = (elt: Element | Document) => elt.querySelectorAll("a").forEach(registerButton);
