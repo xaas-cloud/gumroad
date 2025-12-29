@@ -1,8 +1,8 @@
 import * as React from "react";
 
+import { useFeatureFlags } from "$app/components/FeatureFlags";
 import { SocialAuthButton } from "$app/components/SocialAuthButton";
 import { useOriginalLocation } from "$app/components/useOriginalLocation";
-import { useFeatureFlags } from "$app/components/FeatureFlags";
 
 export const SocialAuth = () => {
   const originalLocation = useOriginalLocation();
@@ -28,14 +28,14 @@ export const SocialAuth = () => {
       >
         X
       </SocialAuthButton>
-      {showStripe && (
+      {showStripe ? (
         <SocialAuthButton
           provider="stripe"
           href={Routes.user_stripe_connect_omniauth_authorize_path({ referer: next })}
         >
           Stripe
         </SocialAuthButton>
-      )}
+      ) : null}
     </section>
   );
 };
