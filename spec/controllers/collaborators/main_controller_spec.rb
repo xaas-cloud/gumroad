@@ -45,6 +45,37 @@ describe Collaborators::MainController, inertia: true do
     end
   end
 
+  describe "GET edit" do
+    let!(:collaborator) { create(:collaborator, seller:, products: [create(:product, user: seller)]) }
+
+    it_behaves_like "authentication required for action", :get, :edit do
+      let(:request_params) { { id: collaborator.external_id } }
+    end
+
+    it_behaves_like "authorize called for action", :get, :edit do
+      let(:record) { collaborator }
+      let(:request_params) { { id: collaborator.external_id } }
+    end
+
+    it "renders the edit template with correct props" do
+      get :edit, params: { id: collaborator.external_id }
+
+      expect(response).to be_successful
+      expect(inertia.component).to eq("Collaborators/Edit")
+
+      presenter = CollaboratorPresenter.new(seller:, collaborator:)
+      expected_props = presenter.edit_collaborator_props
+      actual_props = inertia.props.slice(*expected_props.keys)
+      expect(actual_props).to eq(expected_props)
+    end
+
+    it "raises ActionController::RoutingError if the collaborator is not found" do
+      expect do
+        get :edit, params: { id: "non-existent-id" }
+      end.to raise_error(ActionController::RoutingError, "Not Found")
+    end
+  end
+
   describe "GET new" do
     it_behaves_like "authentication required for action", :get, :new
 
@@ -106,34 +137,63 @@ describe Collaborators::MainController, inertia: true do
     end
   end
 
-  describe "GET edit" do
-    let!(:collaborator) { create(:collaborator, seller:, products: [create(:product, user: seller)]) }
+  describe "DELETE destroy" do
+    let!(:collaborator) { create(:collaborator, seller:, products: [product]) }
 
-    it_behaves_like "authentication required for action", :get, :edit do
+    it_behaves_like "authentication required for action", :delete, :destroy do
       let(:request_params) { { id: collaborator.external_id } }
     end
 
-    it_behaves_like "authorize called for action", :get, :edit do
+    it_behaves_like "authorize called for action", :delete, :destroy do
       let(:record) { collaborator }
       let(:request_params) { { id: collaborator.external_id } }
     end
 
-    it "renders the edit template with correct props" do
-      get :edit, params: { id: collaborator.external_id }
+    it "deletes the collaborator and renders index" do
+      expect do
+        delete :destroy, params: { id: collaborator.external_id }
+        expect(response).to have_http_status(:ok)
+        expect(inertia.component).to eq("Collaborators/Index")
+        expect(flash[:notice]).to eq("The collaborator was removed successfully.")
+      end.to have_enqueued_mail(AffiliateMailer, :collaboration_ended_by_seller).with(collaborator.id)
 
-      expect(response).to be_successful
-      expect(inertia.component).to eq("Collaborators/Edit")
-
-      presenter = CollaboratorPresenter.new(seller:, collaborator:)
-      expected_props = presenter.edit_collaborator_props
-      actual_props = inertia.props.slice(*expected_props.keys)
-      expect(actual_props).to eq(expected_props)
+      expect(collaborator.reload.deleted_at).to be_present
     end
 
-    it "raises ActionController::RoutingError if the collaborator is not found" do
-      expect do
-        get :edit, params: { id: "non-existent-id" }
-      end.to raise_error(ActionController::RoutingError, "Not Found")
+    context "when affiliate user is deleting the collaboration" do
+      let(:affiliate_user) { collaborator.affiliate_user }
+
+      before do
+        sign_in(affiliate_user)
+      end
+
+      it "deletes the collaborator and sends the appropriate email" do
+        expect do
+          delete :destroy, params: { id: collaborator.external_id }
+          expect(response).to have_http_status(:ok)
+          expect(inertia.component).to eq("Collaborators/Index")
+          expect(flash[:notice]).to eq("The collaborator was removed successfully.")
+        end.to have_enqueued_mail(AffiliateMailer, :collaboration_ended_by_affiliate_user).with(collaborator.id)
+
+        expect(collaborator.reload.deleted_at).to be_present
+      end
+    end
+
+    context "collaborator is not found" do
+      it "raises ActionController::RoutingError" do
+        expect do
+          delete :destroy, params: { id: "fake" }
+        end.to raise_error(ActionController::RoutingError, "Not Found")
+      end
+    end
+
+    context "collaborator is soft deleted" do
+      it "raises ActionController::RoutingError" do
+        collaborator.mark_deleted!
+        expect do
+          delete :destroy, params: { id: collaborator.external_id }
+        end.to raise_error(ActionController::RoutingError, "Not Found")
+      end
     end
   end
 
@@ -212,66 +272,6 @@ describe Collaborators::MainController, inertia: true do
         collaborator.mark_deleted!
         expect do
           patch :update, params:
-        end.to raise_error(ActionController::RoutingError, "Not Found")
-      end
-    end
-  end
-
-  describe "DELETE destroy" do
-    let!(:collaborator) { create(:collaborator, seller:, products: [product]) }
-
-    it_behaves_like "authentication required for action", :delete, :destroy do
-      let(:request_params) { { id: collaborator.external_id } }
-    end
-
-    it_behaves_like "authorize called for action", :delete, :destroy do
-      let(:record) { collaborator }
-      let(:request_params) { { id: collaborator.external_id } }
-    end
-
-    it "deletes the collaborator and renders index" do
-      expect do
-        delete :destroy, params: { id: collaborator.external_id }
-        expect(response).to have_http_status(:ok)
-        expect(inertia.component).to eq("Collaborators/Index")
-        expect(flash[:notice]).to eq("The collaborator was removed successfully.")
-      end.to have_enqueued_mail(AffiliateMailer, :collaboration_ended_by_seller).with(collaborator.id)
-
-      expect(collaborator.reload.deleted_at).to be_present
-    end
-
-    context "when affiliate user is deleting the collaboration" do
-      let(:affiliate_user) { collaborator.affiliate_user }
-
-      before do
-        sign_in(affiliate_user)
-      end
-
-      it "deletes the collaborator and sends the appropriate email" do
-        expect do
-          delete :destroy, params: { id: collaborator.external_id }
-          expect(response).to have_http_status(:ok)
-          expect(inertia.component).to eq("Collaborators/Index")
-          expect(flash[:notice]).to eq("The collaborator was removed successfully.")
-        end.to have_enqueued_mail(AffiliateMailer, :collaboration_ended_by_affiliate_user).with(collaborator.id)
-
-        expect(collaborator.reload.deleted_at).to be_present
-      end
-    end
-
-    context "collaborator is not found" do
-      it "raises ActionController::RoutingError" do
-        expect do
-          delete :destroy, params: { id: "fake" }
-        end.to raise_error(ActionController::RoutingError, "Not Found")
-      end
-    end
-
-    context "collaborator is soft deleted" do
-      it "raises ActionController::RoutingError" do
-        collaborator.mark_deleted!
-        expect do
-          delete :destroy, params: { id: collaborator.external_id }
         end.to raise_error(ActionController::RoutingError, "Not Found")
       end
     end
