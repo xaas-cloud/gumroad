@@ -85,8 +85,7 @@ export const ShareSection = ({
     }
   };
 
-  const newWishlist = async (): Promise<SuccessState> => {
-    const name = dropdownState.state === "creating" ? dropdownState.newWishlistName : "";
+  const newWishlist = async (name: string): Promise<SuccessState> => {
     const { wishlist } = await createWishlist(name);
     setWishlists([...wishlists, { ...wishlist, selections_in_wishlist: [] }]);
     return { newlyCreated: true, wishlist };
@@ -134,11 +133,11 @@ export const ShareSection = ({
                 className="flex gap-2 p-2"
                 onSubmit={(e) => {
                   e.preventDefault();
-                  if (dropdownState.state === "creating" && !dropdownState.newWishlistName.trim()) {
+                  if (!dropdownState.newWishlistName.trim()) {
                     showAlert("Please enter a wishlist name", "error");
                     return;
                   }
-                  void addProduct(newWishlist());
+                  void addProduct(newWishlist(dropdownState.newWishlistName));
                 }}
               >
                 <input
