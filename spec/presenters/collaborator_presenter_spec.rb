@@ -23,13 +23,7 @@ describe CollaboratorPresenter do
 
     it "returns the seller's visible and not archived products" do
       props = described_class.new(seller:).new_collaborator_props
-      expect(props[:form_data]).to include(
-        email: "",
-        apply_to_all_products: true,
-        percent_commission: CollaboratorPresenter::DEFAULT_PERCENT_COMMISSION,
-        dont_show_as_co_creator: false,
-      )
-      expect(props[:page_metadata]).to_not include(:id)
+
       expect(props[:form_data][:products]).to eq([
                                                    { id: visible_product.external_id, name: visible_product.name, published: true, has_another_collaborator: false, has_affiliates: false, enabled: true, percent_commission: 50, dont_show_as_co_creator: false, has_error: false },
                                                    { id: product_with_affiliates.external_id, name: product_with_affiliates.name, published: true, has_another_collaborator: false, has_affiliates: true, enabled: true, percent_commission: 50, dont_show_as_co_creator: false, has_error: false },
@@ -37,6 +31,13 @@ describe CollaboratorPresenter do
                                                    { id: product_with_global_affiliate.external_id, name: product_with_global_affiliate.name, published: false, has_another_collaborator: false, has_affiliates: false, enabled: false, percent_commission: 50, dont_show_as_co_creator: false, has_error: false },
                                                    { id: product_with_deleted_collaborator.external_id, name: product_with_deleted_collaborator.name, published: true, has_another_collaborator: false, has_affiliates: false, enabled: true, percent_commission: 50, dont_show_as_co_creator: false, has_error: false },
                                                  ])
+      expect(props[:form_data]).to include(
+        email: "",
+        apply_to_all_products: true,
+        percent_commission: CollaboratorPresenter::DEFAULT_PERCENT_COMMISSION,
+        dont_show_as_co_creator: false,
+      )
+      expect(props[:page_metadata]).to_not include(:id)
       expect(props[:page_metadata]).to eq(
        title: "New collaborator",
        default_percent_commission: CollaboratorPresenter::DEFAULT_PERCENT_COMMISSION,

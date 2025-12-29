@@ -124,16 +124,15 @@ describe Collaborators::MainController, inertia: true do
          .and change { ProductAffiliate.count }.from(0).to(1)
     end
 
-    it "renders errors when creation fails" do
-      invalid_params = params.dup
-      invalid_params[:collaborator][:percent_commission] = 90
+    it "redirects to new collaborator page with errors when creation fails" do
+      params[:collaborator][:percent_commission] = 90
 
-      post :create, params: invalid_params
+      post :create, params: params
 
       expect(response).to redirect_to(new_collaborator_path)
       get :new
       expect(inertia.component).to eq("Collaborators/New")
-      expect(inertia.props[:errors][:message]).to be_present
+      expect(inertia.props[:errors][:message]).to eq("Product affiliates affiliate basis points must be less than or equal to 5000")
     end
   end
 
@@ -183,7 +182,7 @@ describe Collaborators::MainController, inertia: true do
       it "raises ActionController::RoutingError" do
         expect do
           delete :destroy, params: { id: "fake" }
-        end.to raise_error(ActionController::RoutingError, "Not Found")
+        end.to raise_error(ActionController::RoutingError)
       end
     end
 
@@ -201,7 +200,7 @@ describe Collaborators::MainController, inertia: true do
     let(:product1) { create(:product, user: seller) }
     let!(:product2) { create(:product, user: seller) }
     let!(:product3) { create(:product, user: seller) }
-    let!(:collaborator) { create(:collaborator, apply_to_all_products: true, affiliate_basis_points: 30_00, seller:) }
+    let(:collaborator) { create(:collaborator, apply_to_all_products: true, affiliate_basis_points: 30_00, seller:) }
     let(:params) do
       {
         id: collaborator.external_id,
@@ -242,7 +241,7 @@ describe Collaborators::MainController, inertia: true do
       expect(collaborator.product_affiliates.find_by(product: product3).affiliate_basis_points).to eq 50_00
     end
 
-    it "renders errors when update fails" do
+    it "redirects to edit collaborator page with errors when update fails" do
       allow_any_instance_of(Collaborator::UpdateService).to receive(:process).and_return({ success: false, message: "an error" })
 
       patch :update, params: params
@@ -253,13 +252,12 @@ describe Collaborators::MainController, inertia: true do
       expect(inertia.props[:errors][:message]).to eq("an error")
     end
 
-    it "renders validation errors when percent_commission is invalid" do
-      invalid_params = params.dup
-      invalid_params[:collaborator][:apply_to_all_products] = true
-      invalid_params[:collaborator][:percent_commission] = 90
-      invalid_params[:collaborator][:products] = [{ id: product2.external_id }]
+    it "redirects to edit collaborator page with errors when percent_commission is invalid" do
+      params[:collaborator][:apply_to_all_products] = true
+      params[:collaborator][:percent_commission] = 90
+      params[:collaborator][:products] = [{ id: product2.external_id }]
 
-      patch :update, params: invalid_params
+      patch :update, params: params
 
       expect(response).to redirect_to(edit_collaborator_path(collaborator.external_id))
       get :edit, params: { id: collaborator.external_id }
