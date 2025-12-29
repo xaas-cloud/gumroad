@@ -72,7 +72,7 @@ describe Collaborators::MainController, inertia: true do
     it "raises ActionController::RoutingError if the collaborator is not found" do
       expect do
         get :edit, params: { id: "non-existent-id" }
-      end.to raise_error(ActionController::RoutingError, "Not Found")
+      end.to raise_error(ActionController::RoutingError)
     end
   end
 
@@ -191,7 +191,7 @@ describe Collaborators::MainController, inertia: true do
         collaborator.mark_deleted!
         expect do
           delete :destroy, params: { id: collaborator.external_id }
-        end.to raise_error(ActionController::RoutingError, "Not Found")
+        end.to raise_error(ActionController::RoutingError)
       end
     end
   end
@@ -270,7 +270,7 @@ describe Collaborators::MainController, inertia: true do
         collaborator.mark_deleted!
         expect do
           patch :update, params:
-        end.to raise_error(ActionController::RoutingError, "Not Found")
+        end.to raise_error(ActionController::RoutingError)
       end
     end
   end

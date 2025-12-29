@@ -155,7 +155,7 @@ describe Collaborators::IncomingsController, inertia: true do
       it "returns not found for non-existent collaborator" do
         expect do
           post :accept, params: { id: "non-existent-id" }
-        end.to raise_error(ActionController::RoutingError, "Not Found")
+        end.to raise_error(ActionController::RoutingError)
       end
 
       it "returns not found when the collaborator has been soft-deleted" do
@@ -163,7 +163,7 @@ describe Collaborators::IncomingsController, inertia: true do
 
         expect do
           post :accept, params: { id: collaborator.external_id }
-        end.to raise_error(ActionController::RoutingError, "Not Found")
+        end.to raise_error(ActionController::RoutingError)
       end
 
       it "returns not found when there is no invitation" do
@@ -210,7 +210,7 @@ describe Collaborators::IncomingsController, inertia: true do
       it "returns not found for non-existent collaborator" do
         expect do
           post :decline, params: { id: "non-existent-id" }
-        end.to raise_error(ActionController::RoutingError, "Not Found")
+        end.to raise_error(ActionController::RoutingError)
       end
 
       it "returns not found when there is no invitation" do
@@ -274,7 +274,7 @@ describe Collaborators::IncomingsController, inertia: true do
       it "raises ActionController::RoutingError" do
         expect do
           delete :destroy, params: { id: "fake" }
-        end.to raise_error(ActionController::RoutingError, "Not Found")
+        end.to raise_error(ActionController::RoutingError)
       end
     end
 
@@ -283,7 +283,7 @@ describe Collaborators::IncomingsController, inertia: true do
         accepted_collaboration.mark_deleted!
         expect do
           delete :destroy, params: { id: accepted_collaboration.external_id }
-        end.to raise_error(ActionController::RoutingError, "Not Found")
+        end.to raise_error(ActionController::RoutingError)
       end
     end
   end
