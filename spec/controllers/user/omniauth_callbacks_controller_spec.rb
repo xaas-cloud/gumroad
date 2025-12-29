@@ -69,8 +69,7 @@ describe User::OmniauthCallbacksController do
 
         expect { post :stripe_connect }.not_to change { User.count }
 
-        expect(flash[:alert]).to eq "An account already exists with this email."
-        expect(response).to redirect_to send("#{referer}_url")
+        expect(response).to redirect_to safe_redirect_path(two_factor_authentication_path(next: oauth_completions_stripe_path))
       end
     end
 
@@ -163,7 +162,7 @@ describe User::OmniauthCallbacksController do
       it "does not allow new users to sign up via Stripe" do
         expect { post :stripe_connect }.not_to change { User.count }
 
-        expect(flash[:alert]).to eq "Signing up with Stripe is currently disabled. Please sign up with email first, then connect your Stripe account."
+        expect(flash[:alert]).to eq "Signing up with Stripe is currently disabled. Please sign up with email first."
         expect(response).to redirect_to signup_url
       end
 
