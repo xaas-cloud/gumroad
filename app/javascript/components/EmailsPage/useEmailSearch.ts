@@ -2,6 +2,7 @@ import { router } from "@inertiajs/react";
 import React from "react";
 
 import { useDebouncedCallback } from "$app/components/useDebouncedCallback";
+import { useOnChange } from "$app/components/useOnChange";
 
 /**
  * Custom hook for email search functionality.
@@ -11,7 +12,6 @@ export const useEmailSearch = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const initialQuery = urlParams.get("query") || "";
   const [query, setQuery] = React.useState(initialQuery);
-  const isInitialMount = React.useRef(true);
 
   const debouncedSearch = useDebouncedCallback((searchQuery: string) => {
     router.reload({
@@ -21,13 +21,7 @@ export const useEmailSearch = () => {
     });
   }, 500);
 
-  React.useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-    debouncedSearch(query);
-  }, [query]);
+  useOnChange(() => debouncedSearch(query), [query]);
 
   return { query, setQuery };
 };
