@@ -5,9 +5,9 @@ import { useOriginalLocation } from "$app/components/useOriginalLocation";
 
 export const useAnalyticsDateRange = () => {
   const location = useOriginalLocation();
+  const url = new URL(location);
 
   const tryParseDateParam = (paramName: string) => {
-    const url = new URL(location);
     const param = url.searchParams.get(paramName);
     if (!param) return null;
     const parsed = parseISO(param);
@@ -21,7 +21,6 @@ export const useAnalyticsDateRange = () => {
   });
 
   React.useEffect(() => {
-    const url = new URL(window.location.href);
     url.searchParams.set("from", lightFormat(from, "yyyy-MM-dd"));
     url.searchParams.set("to", lightFormat(to, "yyyy-MM-dd"));
     history.pushState(null, "", url);
