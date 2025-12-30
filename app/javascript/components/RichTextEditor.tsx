@@ -226,7 +226,6 @@ export const useRichTextEditor = ({
 
   const content: Content = React.useMemo(() => {
     if (!SSR && typeof initialValue === "string") {
-
       const dom = document.createElement("div");
       dom.innerHTML = initialValue;
       walk(dom);
