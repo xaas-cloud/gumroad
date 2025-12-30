@@ -29,7 +29,9 @@ const FlagForTosViolations = ({ product, compliance }: FlagForTosViolationsProps
     fetchData: fetchTosViolationFlags,
   } = useLazyFetch<TosViolationFlags[]>([], {
     fetchUnlessLoaded: open,
-    url: Routes.admin_user_product_tos_violation_flags_path(product.user.external_id, product.external_id, { format: "json" }),
+    url: Routes.admin_user_product_tos_violation_flags_path(product.user.external_id, product.external_id, {
+      format: "json",
+    }),
     responseParser: (data) => {
       const parsed = cast<{ tos_violation_flags: TosViolationFlags[] }>(data);
       return parsed.tos_violation_flags;

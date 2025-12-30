@@ -12,7 +12,11 @@ type AdminProductPurchasesProps = {
   userExternalId: string | null;
 };
 
-const AdminProductPurchases = ({ productExternalId, isAffiliateUser = false, userExternalId }: AdminProductPurchasesProps) => {
+const AdminProductPurchases = ({
+  productExternalId,
+  isAffiliateUser = false,
+  userExternalId,
+}: AdminProductPurchasesProps) => {
   const [open, setOpen] = React.useState(false);
 
   const url =
