@@ -109,7 +109,7 @@ const useChurnRangeSync = (
     ) {
       inFlightRange.current = null;
     }
-  }, [churn.metadata.current_period.start_date, churn.metadata.current_period.end_date, dateRange, toYMD]);
+  }, [churn.metadata.current_period.start_date, churn.metadata.current_period.end_date, toYMD]);
 
   // Trigger reload when picker changes to a range we haven't requested yet.
   React.useEffect(() => {
