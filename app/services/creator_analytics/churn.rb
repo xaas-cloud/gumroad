@@ -9,10 +9,6 @@ class CreatorAnalytics::Churn
     @seller = seller
   end
 
-  def subscription_products
-    product_scope.subscription_products
-  end
-
   # Coordinator for churn analytics: scopes to subscription products, fetches churn/new/active
   # series via Elasticsearch, builds daily/monthly/summary payloads, and caches older ranges
   # like other sales analytics. Uses formula (cancellations ÷ (active-at-start + new))
@@ -50,6 +46,10 @@ class CreatorAnalytics::Churn
   end
 
   private
+    def subscription_products
+      product_scope.subscription_products
+    end
+
     def product_scope
       @product_scope ||= CreatorAnalytics::Churn::ProductScope.new(seller:)
     end

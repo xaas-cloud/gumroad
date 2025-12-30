@@ -12,18 +12,6 @@ describe CreatorAnalytics::Churn do
   let!(:purchase1) { create(:purchase, link: product1, created_at: Date.new(2020, 1, 1).to_time) }
   let!(:purchase2) { create(:purchase, link: product2, created_at: Date.new(2020, 1, 1).to_time) }
 
-  describe "#subscription_products" do
-    it "delegates to product_scope" do
-      expect(service.subscription_products).to include(product1, product2)
-    end
-
-    it "memoizes product_scope" do
-      expect(CreatorAnalytics::Churn::ProductScope).to receive(:new).once.and_call_original
-      service.subscription_products
-      service.subscription_products
-    end
-  end
-
   describe "#generate_data" do
     let(:start_date) { Date.new(2020, 1, 15) }
     let(:end_date) { Date.new(2020, 1, 20) }
