@@ -648,8 +648,10 @@ export const EmailForm = ({ context, installment }: EmailFormProps) => {
       form.post(Routes.emails_path());
     }
   });
+
   const isBusy =
     form.processing ||
+    isSaving ||
     imagesUploading.size > 0 ||
     files.some((file) => isFileUploading(file) || file.subtitle_files.some(isFileUploading));
 
