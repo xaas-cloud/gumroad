@@ -12,7 +12,7 @@ import { EmailTab } from "$app/data/installments";
 type LayoutProps = {
   selectedTab: EmailTab;
   children: React.ReactNode;
-  hasPosts?: boolean
+  hasPosts?: boolean;
   query?: string;
   onQueryChange?: (query: string) => void;
   hideNewButton?: boolean;
