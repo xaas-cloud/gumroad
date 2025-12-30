@@ -5,7 +5,6 @@ import { cast } from "ts-safe-cast";
 import { Installment, InstallmentFormContext } from "$app/data/installments";
 
 import { EmailForm } from "$app/components/EmailsPage/EmailForm";
-import { EmailsLayout } from "$app/components/EmailsPage/Layout";
 
 export default function EmailsNew() {
   const { context, installment } = cast<{ context: InstallmentFormContext; installment: Installment | null }>(
@@ -13,8 +12,6 @@ export default function EmailsNew() {
   );
 
   return (
-    <EmailsLayout selectedTab={context.from_tab ?? "drafts"} hideNewButton>
-      <EmailForm context={context} installment={installment} />
-    </EmailsLayout>
+    <EmailForm context={context} installment={installment} />
   );
 }
