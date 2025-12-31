@@ -399,7 +399,6 @@ Rails.application.routes.draw do
     get "/collaborators/incomings", to: "collaborators#index"
     get "/collaborators/*other", to: "collaborators#index"
 
-    get "/emails/*other", to: "emails#index" # route handled by react-router
     get "/dashboard/utm_links/*other", to: "utm_links#index" # route handled by react-router
     get "/communities/*other", to: "communities#index" # route handled by react-router
 
@@ -803,7 +802,13 @@ Rails.application.routes.draw do
     get "/communities(/:seller_id/:community_id)", to: "communities#index", as: :community
 
     # emails
-    get "/emails", to: "emails#index", as: :emails
+    resources :emails, only: [:index, :new, :create, :edit, :update, :destroy] do
+      collection do
+        get :published
+        get :scheduled
+        get :drafts
+      end
+    end
     get "/posts", to: redirect("/emails")
 
     # workflows
@@ -912,7 +917,7 @@ Rails.application.routes.draw do
           resources :incomings, only: [:index]
         end
 
-        resources :installments, only: [:index, :new, :edit, :create, :update, :destroy] do
+        resources :installments, only: [] do
           member do
             resource :audience_count, only: [:show], controller: "installments/audience_counts", as: :installment_audience_count
             resource :preview_email, only: [:create], controller: "installments/preview_emails", as: :installment_preview_email
