@@ -97,7 +97,7 @@ export default function UtmLinksIndex() {
 
   const fetchUtmLinksStats = useDebouncedCallback((ids: string[]) => {
     router.reload({
-      data: { ids: ids.join(",") },
+      data: { ids },
       only: ["utm_links_stats"],
       preserveUrl: true,
     });
