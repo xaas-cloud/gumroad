@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { ResponseDropboxFile } from "$app/data/dropbox_upload";
 import { OtherRefundPolicy } from "$app/data/products/other_refund_policies";
 import { Thumbnail } from "$app/data/thumbnails";
 import {
@@ -97,6 +98,10 @@ export type Product = {
   installment_plan: InstallmentPlan | null;
   custom_button_text_option: CustomButtonTextOption | null;
   custom_summary: string | null;
+  custom_view_content_button_text: string | null;
+  custom_view_content_button_text_max_length: number;
+  custom_receipt_text: string | null;
+  custom_receipt_text_max_length: number;
   custom_attributes: Attribute[];
   file_attributes: Attribute[];
   max_purchase_count: number | null;
@@ -199,7 +204,7 @@ type UploadProgress = { percent: number; bitrate: number };
 type FileStatus =
   | { type: "saved" }
   | { type: "existing" }
-  | { type: "dropbox"; externalId: string; uploadState: string }
+  | { type: "dropbox"; externalId: string; uploadState: ResponseDropboxFile["state"] }
   | {
       type: "unsaved";
       uploadStatus: { type: "uploaded" } | { type: "uploading"; progress: UploadProgress };
