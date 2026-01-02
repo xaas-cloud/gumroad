@@ -112,7 +112,7 @@ jobs:
           WEB_BASE_REPO: quay.io/gumroad/web_base
           WEB_BASE_TEST_REPO: quay.io/gumroad/web_base_test
           WEB_REPO: quay.io/gumroad/web
-          REVISION: ${{ github.sha }}
+          REVISION: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
         run: |
           set -e
           GREEN='\033[0;32m'
@@ -189,11 +189,11 @@ jobs:
           WEB_REPO: quay.io/gumroad/web
         run: |
           docker run --rm --network ${{ env.COMPOSE_PROJECT_NAME }}_default \
-            $WEB_REPO:test-${{ github.sha }} \
+            $WEB_REPO:test-${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }} \
             docker/ci/wait_on_connection.sh db_test 3306
 
           docker run --rm --network ${{ env.COMPOSE_PROJECT_NAME }}_default \
-            $WEB_REPO:test-${{ github.sha }} \
+            $WEB_REPO:test-${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }} \
             docker/ci/wait_on_connection.sh minio 9000
         timeout-minutes: 5
 
@@ -204,7 +204,7 @@ jobs:
           docker run --rm --network ${{ env.COMPOSE_PROJECT_NAME }}_default \
             -e RAILS_ENV=test \
             -e RAILS_MASTER_KEY=${{ secrets.RAILS_MASTER_KEY }} \
-            $WEB_REPO:test-${{ github.sha }} \
+            $WEB_REPO:test-${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }} \
             bundle exec rake db:setup
 
       - name: Run tests
@@ -221,7 +221,7 @@ jobs:
             -e KNAPSACK_PRO_RSPEC_SPLIT_BY_TEST_EXAMPLES=true \
             -e KNAPSACK_PRO_TEST_FILE_PATTERN="spec/**/*_spec.rb" \
             -e KNAPSACK_PRO_TEST_FILE_EXCLUDE_PATTERN="spec/requests/**/*_spec.rb" \
-            -e KNAPSACK_PRO_COMMIT_HASH=${{ github.sha }} \
+            -e KNAPSACK_PRO_COMMIT_HASH=${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }} \
             -e KNAPSACK_PRO_BRANCH=${{ github.ref_name }} \
             -e KNAPSACK_PRO_CI_NODE_BUILD_ID=${{ github.run_id }} \
             -e KNAPSACK_PRO_CI_NODE_RETRY_COUNT=${{ github.run_attempt }} \
@@ -229,7 +229,7 @@ jobs:
             -e KNAPSACK_PRO_FIXED_QUEUE_SPLIT=true \
             -e CI=true \
             -e IN_DOCKER=true \
-            $WEB_REPO:test-${{ github.sha }} \
+            $WEB_REPO:test-${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }} \
             /usr/local/bin/gosu app bundle exec rake "knapsack_pro:queue:rspec[--format RSpec::Github::Formatter --tag ~skip --format progress]"
         timeout-minutes: 15
       - name: Clean up
@@ -320,11 +320,11 @@ jobs:
           WEB_REPO: quay.io/gumroad/web
         run: |
           docker run --rm --network ${{ env.COMPOSE_PROJECT_NAME }}_default \
-            $WEB_REPO:test-${{ github.sha }} \
+            $WEB_REPO:test-${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }} \
             docker/ci/wait_on_connection.sh db_test 3306
 
           docker run --rm --network ${{ env.COMPOSE_PROJECT_NAME }}_default \
-            $WEB_REPO:test-${{ github.sha }} \
+            $WEB_REPO:test-${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }} \
             docker/ci/wait_on_connection.sh minio 9000
         timeout-minutes: 5
       - name: Setup test database
@@ -334,7 +334,7 @@ jobs:
           docker run --rm --network ${{ env.COMPOSE_PROJECT_NAME }}_default \
             -e RAILS_ENV=test \
             -e RAILS_MASTER_KEY=${{ secrets.RAILS_MASTER_KEY }} \
-            $WEB_REPO:test-${{ github.sha }} \
+            $WEB_REPO:test-${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }} \
             bundle exec rake db:setup
 
       - name: Run tests
@@ -347,7 +347,7 @@ jobs:
           KNAPSACK_PRO_LOG_LEVEL: info
           KNAPSACK_PRO_RSPEC_SPLIT_BY_TEST_EXAMPLES: true
           KNAPSACK_PRO_TEST_FILE_PATTERN: "spec/requests/**/*_spec.rb"
-          KNAPSACK_PRO_COMMIT_HASH: ${{ github.sha }}
+          KNAPSACK_PRO_COMMIT_HASH: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
           KNAPSACK_PRO_BRANCH: ${{ github.ref_name }}
           KNAPSACK_PRO_CI_NODE_BUILD_ID: ${{ github.run_id }}
           KNAPSACK_PRO_CI_NODE_RETRY_COUNT: ${{ github.run_attempt }}
@@ -383,7 +383,7 @@ jobs:
             -e KNAPSACK_PRO_FIXED_QUEUE_SPLIT \
             -e CI \
             -e IN_DOCKER \
-            $WEB_REPO:test-${{ github.sha }} \
+            $WEB_REPO:test-${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }} \
             /usr/local/bin/gosu app bundle exec rake "knapsack_pro:queue:rspec[--format RSpec::Github::Formatter --tag ~skip --format progress]"
         timeout-minutes: 20
       - name: Archive capybara artifacts
@@ -477,6 +477,6 @@ jobs:
         env:
           UNBLOCK_DEPLOYMENT: ${{ secrets.UNBLOCK_DEPLOYMENT_FROM_BUILDKITE }}
           BUILDKITE_API_TOKEN: ${{ secrets.BUILDKITE_API_TOKEN }}
-          COMMIT_SHA: ${{ github.sha }}
+          COMMIT_SHA: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
           ORG_SLUG: gumroad-inc
           PIPELINE_SLUG: ${{ secrets.BUILDKITE_PIPELINE_SLUG }}
