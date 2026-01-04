@@ -3,9 +3,7 @@ name: Tests
 on:
   push:
     branches:
-      - "**"
-    tags-ignore:
-      - "production-*"
+      - main
   pull_request_target:
 
 permissions:
@@ -19,8 +17,7 @@ jobs:
   approve_fork_ci:
     name: Approve fork CI
     runs-on: ubicloud-standard-2
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
-    environment: ${{ github.event_name == 'pull_request_target' && 'ci-protected' || '' }}
+    environment: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository && 'ci-protected' || '' }}
     steps:
       - run: true
 
@@ -28,7 +25,6 @@ jobs:
     name: Build base image
     runs-on: hetzner
     needs: approve_fork_ci
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     steps:
       - uses: actions/checkout@v4
         with:
@@ -81,7 +77,6 @@ jobs:
     runs-on: hetzner
     name: Build test image
     needs: build_base
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     steps:
       - uses: actions/checkout@v4
         with:
@@ -175,7 +170,6 @@ jobs:
       COMPOSE_PROJECT_NAME: web_${{ github.run_id }}_${{ github.run_attempt }}_fast_${{ matrix.ci_node_index }}
     runs-on: hetzner
     needs: build_test
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     strategy:
       fail-fast: false
       matrix:
@@ -260,7 +254,6 @@ jobs:
       WEB_REPO: quay.io/gumroad/web
     runs-on: ubicloud-standard-4
     needs: build_test
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     strategy:
       fail-fast: false
       matrix:
