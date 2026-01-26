@@ -2386,18 +2386,20 @@ const ChargeRow = ({
   onChange,
   showRefundFeeNotice,
   canPing,
+  className,
 }: {
   purchase: Charge;
   customerEmail: string;
   onChange: (update: Partial<Charge>) => void;
   showRefundFeeNotice: boolean;
   canPing: boolean;
+  className?: string;
 }) => {
   const [isRefunding, setIsRefunding] = React.useState(false);
   const userAgentInfo = useUserAgentInfo();
 
   return (
-    <>
+    <section className={className}>
       <section key={purchase.id}>
         <section style={{ display: "flex", gap: "var(--spacer-1)", alignItems: "center" }}>
           <h5>
@@ -2458,7 +2460,7 @@ const ChargeRow = ({
           onClose={() => setIsRefunding(false)}
         />
       ) : null}
-    </>
+    </section>
   );
 };
 
